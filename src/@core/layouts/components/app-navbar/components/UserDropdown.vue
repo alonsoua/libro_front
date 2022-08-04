@@ -7,9 +7,13 @@
     <template #button-content>
       <div class="d-sm-flex d-none user-nav">
         <p class="user-name font-weight-bolder mb-0">
-          {{ userData.fullName || userData.username }}
+          Alonso Ugarte
+          <!-- {{ userData.fullName || userData.username }} -->
         </p>
-        <span class="user-status">{{ userData.role }}</span>
+        <span class="user-status">
+          CESA | Docente
+          <!-- {{ userData.role }} -->
+        </span>
       </div>
       <b-avatar
         size="40"
@@ -27,8 +31,9 @@
       </b-avatar>
     </template>
 
+    <!-- PERFIL -->
+    <!-- :to="{ name: 'pages-profile'}" -->
     <b-dropdown-item
-      :to="{ name: 'pages-profile'}"
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -36,10 +41,12 @@
         icon="UserIcon"
         class="mr-50"
       />
-      <span>Profile</span>
+      <span>Mi Perfil</span>
     </b-dropdown-item>
+
+    <!-- Mensajes -->
+    <!-- :to="{ name: 'apps-email' }" -->
     <b-dropdown-item
-      :to="{ name: 'apps-email' }"
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -47,20 +54,11 @@
         icon="MailIcon"
         class="mr-50"
       />
-      <span>Inbox</span>
+      <span>Mensajes</span>
     </b-dropdown-item>
-    <b-dropdown-item
-      :to="{ name: 'apps-todo' }"
-      link-class="d-flex align-items-center"
-    >
-      <feather-icon
-        size="16"
-        icon="CheckSquareIcon"
-        class="mr-50"
-      />
-      <span>Task</span>
-    </b-dropdown-item>
-    <b-dropdown-item
+
+    <!-- PERFIL -->
+    <!-- <b-dropdown-item
       :to="{ name: 'apps-chat' }"
       link-class="d-flex align-items-center"
     >
@@ -70,12 +68,13 @@
         class="mr-50"
       />
       <span>Chat</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
 
     <b-dropdown-divider />
 
+    <!-- AJUSTES -->
+    <!-- :to="{ name: 'pages-account-setting' }" -->
     <b-dropdown-item
-      :to="{ name: 'pages-account-setting' }"
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -83,19 +82,10 @@
         icon="SettingsIcon"
         class="mr-50"
       />
-      <span>Settings</span>
+      <span>Ajustes</span>
     </b-dropdown-item>
-    <b-dropdown-item
-      :to="{ name: 'pages-pricing' }"
-      link-class="d-flex align-items-center"
-    >
-      <feather-icon
-        size="16"
-        icon="CreditCardIcon"
-        class="mr-50"
-      />
-      <span>Pricing</span>
-    </b-dropdown-item>
+
+    <!-- FAQ -->
     <b-dropdown-item
       :to="{ name: 'pages-faq' }"
       link-class="d-flex align-items-center"
@@ -116,7 +106,7 @@
         icon="LogOutIcon"
         class="mr-50"
       />
-      <span>Logout</span>
+      <span>Cerrar Sesión</span>
     </b-dropdown-item></b-nav-item-dropdown>
 </template>
 

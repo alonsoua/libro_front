@@ -20,8 +20,8 @@
           />
         </b-col>
         <b-col
-          lg="6"
-          md="5"
+          lg="10"
+          md="10"
           sm="5"
           class="my-1"
         >
@@ -30,18 +30,18 @@
             :filter.sync="filter"
           />
         </b-col>
-        <b-col
+        <!-- <b-col
           md="4"
           sm="4"
           class="my-1"
         >
-          <!-- BOTON CREAR -->
+          BOTON CREAR
           <btnCrear
-            texto="Establecimiento"
-            modulo="establecimientos"
-            @processAdd="addEstablecimiento"
+            texto="Alumno"
+            modulo="alumnos"
+            @processAdd="addAlumno"
           />
-        </b-col>
+        </b-col> -->
 
         <b-col cols="12">
           <b-table
@@ -97,13 +97,13 @@
 
             </template>
 
-            <!-- Column: Establecimiento -->
+            <!-- Column: Alumno -->
             <template #cell(nombre)="data">
               <colNombreImg
                 :mostrarImg="true"
                 :imagen="data.item.insignia"
                 :nombre="data.item.nombre"
-                :txtMuted="data.item.abreviatura"
+                :txtMuted="data.item.rbd"
                 :nombreModal="null"
               />
             </template>
@@ -111,7 +111,7 @@
             <!-- COLUMNA PERIODO -->
             <template #cell(nombrePeriodo)="data">
               <colPeriodo
-                modulo="establecimientos"
+                modulo="alumnos"
                 :data="data.item"
                 @processUpdatePeriodo="updatePeriodo"
               />
@@ -121,7 +121,7 @@
             <template #cell(estado)="data">
               <colEstado
                 :data="data"
-                modulo="establecimientos"
+                modulo="alumnos"
                 @processUpdateEstado="updateEstado"
               />
             </template>
@@ -129,7 +129,7 @@
             <!-- Column: Action -->
             <template #cell(acciones)="data">
               <colAccionesBtnes
-                modulo="establecimientos"
+                modulo="alumnos"
                 :modal="`modal-lg-${data.item.id}`"
                 :data="data"
                 @processGoToConfig="goToConfig"
@@ -198,21 +198,23 @@ export default {
       cargando: false,
       spinner: false,
       // chk
-      items: [{
-        nombre: 'Complejo Educacional Sargento Aldea',
-        rbd: '1864',
-        abreviatura: 'CESA',
-        director: 'Cristian Vergara Guerra',
-        correo: 'cesa@gmail.com',
-        dependencia: 'Municipal',
-        tipoEvaluacion: 'Semestral',
-        estado: 'Activo',
-      }],
+      items: [
+        {
+          numLista: 1,
+          nombreCompleto: 'Valentina Victoria Dominguez Rivera',
+          rut: '20.289.574-3',
+          correo: 'valentina@gmail.com',
+          grado: '8vo Básico',
+          letra: 'A',
+          apoderado: 'Aline Díaz',
+          estado: 'Activo',
+        }
+      ],
       selectedchk: [],
       chkTodo: null,
       checked: null,
 
-      perPage: 25,
+      perPage: 100,
       totalRows: 1,
       currentPage: 1,
       sortBy: '',
@@ -220,7 +222,7 @@ export default {
       sortDirection: 'asc',
       filter: '',
       filterOn: [],
-      pageOptions: [10, 25, 50],
+      pageOptions: [100, 250, 500],
       infoModal: {
         id: 'info-modal',
         title: '',
@@ -238,21 +240,21 @@ export default {
         //   },
         // },
         {
-          key: 'nombre',
-          label: 'Nombre',
+          key: 'numLista',
+          label: 'Nº',
           sortable: true,
           thStyle: {
-            width: '200px !important',
+            width: '60px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'rbd',
-          label: 'RBD',
+          key: 'nombreCompleto',
+          label: 'Nombre Completo',
           sortable: true,
           thStyle: {
-            width: '60px !important',
+            width: '300px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -267,60 +269,56 @@ export default {
         //     'vertical-align': 'middle',
         //   },
         // },
-        // {
-        //   key: 'correo',
-        //   label: 'Correo',
-        //   sortable: false,
-        //   thStyle: {
-        //     width: '200px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
         {
-          key: 'director',
-          label: 'Director',
+          key: 'rut',
+          label: 'Rut',
           sortable: false,
           thStyle: {
-            width: '250px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'tipoEvaluacion',
-          label: 'Tipo Evaluación',
+          key: 'correo',
+          label: 'Correo',
           sortable: false,
           thStyle: {
-            width: '250px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'dependencia',
-          label: 'Dependencia',
-          sortable: true,
-          tdClass: 'text-center',
+          key: 'grado',
+          label: 'Grado',
+          sortable: false,
           thStyle: {
-            'text-align': 'center',
             width: '100px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
-        // {
-        //   key: 'nombrePeriodo',
-        //   label: 'Periodo Activo',
-        //   sortable: true,
-        //   tdClass: 'text-center',
-        //   thStyle: {
-        //     'text-align': 'center',
-        //     width: '200px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
+        {
+          key: 'letra',
+          label: 'Letra',
+          sortable: false,
+          thStyle: {
+            width: '100px !important',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
+        {
+          key: 'apoderado',
+          label: 'Apoderado',
+          sortable: false,
+          thStyle: {
+            width: '250px !important',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
         {
           key: 'estado',
           label: 'Estado',
@@ -350,7 +348,7 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getEstablecimientos: 'establecimientos/getEstablecimientos' }),
+    // ...mapGetters({ getAlumnos: 'alumnos/getAlumnos' }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -363,52 +361,52 @@ export default {
     },
   },
   watch: {
-    getEstablecimientos(val) {
+    getAlumnos(val) {
       this.totalRows = val.length
       // this.items = []
-      // this.items = this.getEstablecimientos
+      // this.items = this.getAlumnos
     },
     chkTodo() {
       this.chkAll()
     },
   },
   mounted() {
-    this.cargarEstablecimientos()
+    this.cargarAlumnos()
     this.setTableList()
   },
   methods: {
     // ...mapActions({
-    //   fetchEstablecimientos: 'establecimientos/fetchEstablecimientos',
-    //   updateEstablecimientoPeriodo: 'establecimientos/updateEstablecimientoPeriodo',
-    //   removeEstablecimientos: 'establecimientos/removeEstablecimientos',
+    //   fetchAlumnos: 'alumnos/fetchAlumnos',
+    //   updateAlumnoPeriodo: 'alumnos/updateAlumnoPeriodo',
+    //   removeAlumnos: 'alumnos/removeAlumnos',
     // }),
-    // ...mapMutations('establecimientos', ['setEstablecimiento']),
+    // ...mapMutations('alumnos', ['setAlumno']),
     setTableList() {
-      if (this.$can('update', 'establecimientos')
-        || this.$can('delete', 'establecimientos')
+      if (this.$can('update', 'alumnos')
+        || this.$can('delete', 'alumnos')
       ) {
         this.fields.push(this.fieldAcciones)
       }
     },
-    cargarEstablecimientos() {
-      // this.fetchEstablecimientos().then(() => {
+    cargarAlumnos() {
+      // this.fetchAlumnos().then(() => {
       //   this.cargando = false
       // })
     },
-    addEstablecimiento() {
+    addAlumno() {
       this.$router.replace({
-        name: 'establecimientos-create',
+        name: 'alumnos-create',
       })
     },
-    updatePeriodo(establecimiento) {
+    updatePeriodo(alumno) {
       this.$swal({
         title: 'Actualizar periodo!',
         html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' establecimiento<br><span class="font-weight-bolder">'
-          + `${establecimiento.nombre}</span>?`,
+          + ' alumno<br><span class="font-weight-bolder">'
+          + `${alumno.nombre}</span>?`,
         footer: '<div class="text-center text-primary">Al actualizar el'
           + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' establecimiento. No se puede devolver al periodo anterior.</div>',
+          + ' alumno. No se puede devolver al periodo anterior.</div>',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, actualízalo!',
@@ -421,54 +419,54 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateEstablecimientoPeriodo(establecimiento).then(() => {
+          // this.updateAlumnoPeriodo(alumno).then(() => {
           //   this.$swal({
           //     icon: 'success',
           //     title: 'Periodo activo actualizado!',
           //     html:
-          //       'El periodo activo del establecimiento<br>'
+          //       'El periodo activo del alumno<br>'
           //       + ' <span class="font-weight-bolder">'
-          //       + `${establecimiento.nombre}</span>`
+          //       + `${alumno.nombre}</span>`
           //       + '<br>ha sido actualizado con éxito!',
           //     customClass: {
           //       confirmButton: 'btn btn-primary',
           //     },
           //   })
           //   this.spinner = false
-          //   this.cargarEstablecimientos()
+          //   this.cargarAlumnos()
           // })
         } else {
           this.spinner = false
-          this.cargarEstablecimientos()
+          this.cargarAlumnos()
         }
       })
     },
     updateEstado() {
       // console.log('update')
     },
-    goToConfig(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToConfig(alumno) {
+      this.setAlumno(alumno)
       this.$router.push({
-        name: 'establecimientos-config',
+        name: 'alumnos-config',
       })
     },
-    goToUpdate(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToUpdate(alumno) {
+      this.setAlumno(alumno)
       this.$router.push({
-        name: 'establecimientos-update',
+        name: 'alumnos-update',
       })
     },
-    goToClone(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToClone(alumno) {
+      this.setAlumno(alumno)
       this.$router.push({
-        name: 'establecimientos-clone',
+        name: 'alumnos-clone',
       })
     },
-    remove(establecimiento) {
+    remove(alumno) {
       this.$swal({
-        title: 'Eliminar establecimiento!',
-        text: `Estás seguro que deseas eliminar el establecimiento
-          "${establecimiento.nombre}"?`,
+        title: 'Eliminar alumno!',
+        text: `Estás seguro que deseas eliminar el alumno
+          "${alumno.nombre}"?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, eliminalo!',
@@ -481,11 +479,11 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.removeEstablecimientos(establecimiento.id).then(() => {
+          // this.removeAlumnos(alumno.id).then(() => {
           //   this.$swal({
           //     icon: 'success',
           //     title: 'Eliminada con éxito!',
-          //     text: `"${establecimiento.nombre}" ha sido eliminada!`,
+          //     text: `"${alumno.nombre}" ha sido eliminada!`,
           //     customClass: {
           //       confirmButton: 'btn btn-success',
           //     },

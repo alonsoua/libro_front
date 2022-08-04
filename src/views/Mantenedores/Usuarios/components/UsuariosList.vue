@@ -37,9 +37,9 @@
         >
           <!-- BOTON CREAR -->
           <btnCrear
-            texto="Establecimiento"
-            modulo="establecimientos"
-            @processAdd="addEstablecimiento"
+            texto="Usuario"
+            modulo="usuarios"
+            @processAdd="addUsuario"
           />
         </b-col>
 
@@ -97,13 +97,13 @@
 
             </template>
 
-            <!-- Column: Establecimiento -->
-            <template #cell(nombre)="data">
+            <!-- Column: Usuario -->
+            <template #cell(nombreCompleto)="data">
               <colNombreImg
                 :mostrarImg="true"
-                :imagen="data.item.insignia"
-                :nombre="data.item.nombre"
-                :txtMuted="data.item.abreviatura"
+                :imagen="data.item.imagen"
+                :nombre="data.item.nombreCompleto"
+                :txtMuted="data.item.rut"
                 :nombreModal="null"
               />
             </template>
@@ -111,7 +111,7 @@
             <!-- COLUMNA PERIODO -->
             <template #cell(nombrePeriodo)="data">
               <colPeriodo
-                modulo="establecimientos"
+                modulo="usuarios"
                 :data="data.item"
                 @processUpdatePeriodo="updatePeriodo"
               />
@@ -121,7 +121,7 @@
             <template #cell(estado)="data">
               <colEstado
                 :data="data"
-                modulo="establecimientos"
+                modulo="usuarios"
                 @processUpdateEstado="updateEstado"
               />
             </template>
@@ -129,7 +129,7 @@
             <!-- Column: Action -->
             <template #cell(acciones)="data">
               <colAccionesBtnes
-                modulo="establecimientos"
+                modulo="usuarios"
                 :modal="`modal-lg-${data.item.id}`"
                 :data="data"
                 @processGoToConfig="goToConfig"
@@ -198,14 +198,21 @@ export default {
       cargando: false,
       spinner: false,
       // chk
-      items: [{
-        nombre: 'Complejo Educacional Sargento Aldea',
-        rbd: '1864',
-        abreviatura: 'CESA',
-        director: 'Cristian Vergara Guerra',
-        correo: 'cesa@gmail.com',
-        dependencia: 'Municipal',
-        tipoEvaluacion: 'Semestral',
+      items: [
+      {
+        nombreCompleto: 'Carlos Sanchez Casteletti',
+        rut: '12.057.963-0',
+        correo: 'carlos@gmail.com',
+        rol: 'Admin',
+        ultimaConexion: 'hace 2 horas',
+        estado: 'Activo',
+      },
+      {
+        nombreCompleto: 'Alonso Bastián Ugarte Álvarez',
+        rut: '17.993.226-1',
+        correo: 'alonso@gmail.com',
+        rol: 'Docente',
+        ultimaConexion: 'hace 5 horas',
         estado: 'Activo',
       }],
       selectedchk: [],
@@ -238,8 +245,8 @@ export default {
         //   },
         // },
         {
-          key: 'nombre',
-          label: 'Nombre',
+          key: 'nombreCompleto',
+          label: 'Nombre Completo',
           sortable: true,
           thStyle: {
             width: '200px !important',
@@ -247,30 +254,10 @@ export default {
             'vertical-align': 'middle',
           },
         },
-        {
-          key: 'rbd',
-          label: 'RBD',
-          sortable: true,
-          thStyle: {
-            width: '60px !important',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
         // {
-        //   key: 'rbd',
-        //   label: 'RBD',
+        //   key: 'rut',
+        //   label: 'Rut',
         //   sortable: true,
-        //   thStyle: {
-        //     width: '100px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
-        // {
-        //   key: 'correo',
-        //   label: 'Correo',
-        //   sortable: false,
         //   thStyle: {
         //     width: '200px !important',
         //     display: 'table-cell',
@@ -278,49 +265,35 @@ export default {
         //   },
         // },
         {
-          key: 'director',
-          label: 'Director',
+          key: 'correo',
+          label: 'Correo',
           sortable: false,
           thStyle: {
-            width: '250px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'tipoEvaluacion',
-          label: 'Tipo Evaluación',
+          key: 'rol',
+          label: 'Rol',
           sortable: false,
           thStyle: {
-            width: '250px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'dependencia',
-          label: 'Dependencia',
-          sortable: true,
-          tdClass: 'text-center',
+          key: 'ultimaConexion',
+          label: 'Última Conexión',
+          sortable: false,
           thStyle: {
-            'text-align': 'center',
             width: '100px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
-        // {
-        //   key: 'nombrePeriodo',
-        //   label: 'Periodo Activo',
-        //   sortable: true,
-        //   tdClass: 'text-center',
-        //   thStyle: {
-        //     'text-align': 'center',
-        //     width: '200px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
         {
           key: 'estado',
           label: 'Estado',
@@ -350,7 +323,7 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getEstablecimientos: 'establecimientos/getEstablecimientos' }),
+    // ...mapGetters({ getUsuarios: 'usuarios/getUsuarios' }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -363,52 +336,52 @@ export default {
     },
   },
   watch: {
-    getEstablecimientos(val) {
+    getUsuarios(val) {
       this.totalRows = val.length
       // this.items = []
-      // this.items = this.getEstablecimientos
+      // this.items = this.getUsuarios
     },
     chkTodo() {
       this.chkAll()
     },
   },
   mounted() {
-    this.cargarEstablecimientos()
+    this.cargarUsuarios()
     this.setTableList()
   },
   methods: {
     // ...mapActions({
-    //   fetchEstablecimientos: 'establecimientos/fetchEstablecimientos',
-    //   updateEstablecimientoPeriodo: 'establecimientos/updateEstablecimientoPeriodo',
-    //   removeEstablecimientos: 'establecimientos/removeEstablecimientos',
+    //   fetchUsuarios: 'usuarios/fetchUsuarios',
+    //   updateUsuarioPeriodo: 'usuarios/updateUsuarioPeriodo',
+    //   removeUsuarios: 'usuarios/removeUsuarios',
     // }),
-    // ...mapMutations('establecimientos', ['setEstablecimiento']),
+    // ...mapMutations('usuarios', ['setUsuario']),
     setTableList() {
-      if (this.$can('update', 'establecimientos')
-        || this.$can('delete', 'establecimientos')
+      if (this.$can('update', 'usuarios')
+        || this.$can('delete', 'usuarios')
       ) {
         this.fields.push(this.fieldAcciones)
       }
     },
-    cargarEstablecimientos() {
-      // this.fetchEstablecimientos().then(() => {
+    cargarUsuarios() {
+      // this.fetchUsuarios().then(() => {
       //   this.cargando = false
       // })
     },
-    addEstablecimiento() {
+    addUsuario() {
       this.$router.replace({
-        name: 'establecimientos-create',
+        name: 'usuarios-create',
       })
     },
-    updatePeriodo(establecimiento) {
+    updatePeriodo(usuario) {
       this.$swal({
         title: 'Actualizar periodo!',
         html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' establecimiento<br><span class="font-weight-bolder">'
-          + `${establecimiento.nombre}</span>?`,
+          + ' usuario<br><span class="font-weight-bolder">'
+          + `${usuario.nombre}</span>?`,
         footer: '<div class="text-center text-primary">Al actualizar el'
           + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' establecimiento. No se puede devolver al periodo anterior.</div>',
+          + ' usuario. No se puede devolver al periodo anterior.</div>',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, actualízalo!',
@@ -421,54 +394,54 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateEstablecimientoPeriodo(establecimiento).then(() => {
+          // this.updateUsuarioPeriodo(usuario).then(() => {
           //   this.$swal({
           //     icon: 'success',
           //     title: 'Periodo activo actualizado!',
           //     html:
-          //       'El periodo activo del establecimiento<br>'
+          //       'El periodo activo del usuario<br>'
           //       + ' <span class="font-weight-bolder">'
-          //       + `${establecimiento.nombre}</span>`
+          //       + `${usuario.nombre}</span>`
           //       + '<br>ha sido actualizado con éxito!',
           //     customClass: {
           //       confirmButton: 'btn btn-primary',
           //     },
           //   })
           //   this.spinner = false
-          //   this.cargarEstablecimientos()
+          //   this.cargarUsuarios()
           // })
         } else {
           this.spinner = false
-          this.cargarEstablecimientos()
+          this.cargarUsuarios()
         }
       })
     },
     updateEstado() {
       // console.log('update')
     },
-    goToConfig(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToConfig(usuario) {
+      this.setUsuario(usuario)
       this.$router.push({
-        name: 'establecimientos-config',
+        name: 'usuarios-config',
       })
     },
-    goToUpdate(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToUpdate(usuario) {
+      this.setUsuario(usuario)
       this.$router.push({
-        name: 'establecimientos-update',
+        name: 'usuarios-update',
       })
     },
-    goToClone(establecimiento) {
-      this.setEstablecimiento(establecimiento)
+    goToClone(usuario) {
+      this.setUsuario(usuario)
       this.$router.push({
-        name: 'establecimientos-clone',
+        name: 'usuarios-clone',
       })
     },
-    remove(establecimiento) {
+    remove(usuario) {
       this.$swal({
-        title: 'Eliminar establecimiento!',
-        text: `Estás seguro que deseas eliminar el establecimiento
-          "${establecimiento.nombre}"?`,
+        title: 'Eliminar usuario!',
+        text: `Estás seguro que deseas eliminar el usuario
+          "${usuario.nombre}"?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, eliminalo!',
@@ -481,11 +454,11 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.removeEstablecimientos(establecimiento.id).then(() => {
+          // this.removeUsuarios(usuario.id).then(() => {
           //   this.$swal({
           //     icon: 'success',
           //     title: 'Eliminada con éxito!',
-          //     text: `"${establecimiento.nombre}" ha sido eliminada!`,
+          //     text: `"${usuario.nombre}" ha sido eliminada!`,
           //     customClass: {
           //       confirmButton: 'btn btn-success',
           //     },

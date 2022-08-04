@@ -3,12 +3,17 @@ import VueRouter from 'vue-router'
 
 // import { canNavigate } from '@/libs/acl/routeProtection'
 // import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
+
+// Menu
 import inicio from './inicio/inicio'
 import home from './inicio/home'
 import libros from './libros/libros'
+import matriculas from './matriculas/matriculas'
+// Mantenedor
 import alumnos from './mantenedores/alumnos'
 import establecimientos from './mantenedores/establecimientos'
 import usuarios from './mantenedores/usuarios'
+// Acceso
 import login from './login'
 import error from './error404'
 
@@ -21,12 +26,16 @@ const router = new VueRouter({
     return { x: 0, y: 0 }
   },
   routes: [
+    // Menu
     ...inicio,
     ...home,
     ...libros,
+    ...matriculas,
+    // Mantenedor
     ...alumnos,
     ...establecimientos,
     ...usuarios,
+    // Acceso
     ...login,
     ...error,
     {

@@ -99,7 +99,7 @@
             md="2"
           >
             <b-form-group
-              label="RBD *"
+              label="RBD"
               label-for="rbd"
             >
               <b-form-input
@@ -129,7 +129,7 @@
             md="4"
           >
             <b-form-group
-              label="Nombre *"
+              label="Nombre"
               label-for="nombre"
             >
               <b-form-input
@@ -147,66 +147,6 @@
                 id="nombreInfo"
               >
                 <p v-for="error of v$.establecimiento.nombre.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </p>
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
-
-          <!-- Field: Abreviatura -->
-          <b-col
-            cols="12"
-            md="2"
-          >
-            <b-form-group
-              label="Abreviatura *"
-              label-for="abreviatura"
-            >
-              <b-form-input
-                id="abreviatura"
-                v-model="establecimiento.abreviatura"
-                placeholder="Ingresa la abreviatura"
-                :state="v$.establecimiento.abreviatura.$error === true
-                ? false
-                : null"
-                @blur.native="v$.establecimiento.abreviatura.$touch"
-              />
-              <!-- Mensajes Error Validación -->
-              <b-form-invalid-feedback
-                v-if="v$.establecimiento.abreviatura.$error"
-                id="abreviaturaInfo"
-              >
-                <p v-for="error of v$.establecimiento.abreviatura.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </p>
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
-
-          <!-- Field: Correo -->
-          <b-col
-            cols="12"
-            md="4"
-          >
-            <b-form-group
-              label="Correo *"
-              label-for="correo"
-            >
-              <b-form-input
-                id="correo"
-                v-model="establecimiento.correo"
-                placeholder="Ingresa el correo"
-                :state="v$.establecimiento.correo.$error === true
-                ? false
-                : null"
-                @blur.native="v$.establecimiento.correo.$touch"
-              />
-              <!-- Mensajes Error Validación -->
-              <b-form-invalid-feedback
-                v-if="v$.establecimiento.correo.$error"
-                id="correoInfo"
-              >
-                <p v-for="error of v$.establecimiento.correo.$errors" :key="error.$uid">
                   {{ error.$message }}
                 </p>
               </b-form-invalid-feedback>
@@ -245,7 +185,7 @@ import { ref } from '@vue/composition-api'
 
 // Validaciones //
 import useVuelidate from '@vuelidate/core'
-import { required, maxLength, email, helpers } from '@vuelidate/validators'
+import { required, maxLength, helpers } from '@vuelidate/validators'
 
 // Componentes //
 import btnSubmit from '../../../components/Form/btnSubmit.vue'
@@ -312,25 +252,15 @@ export default {
   validations() {
     return {
       establecimiento: {
-        rbd: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.', maxLength(8)),
-        },
         nombre: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
+          maxLength: maxLength(250),
         },
-        abreviatura: {
+        rbd: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.', maxLength(10)),
-        },
-        correo: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-          email: helpers.withMessage('Debe ser un correo valido.', email),
+          maxLength: maxLength(10),
         },
       }
     }

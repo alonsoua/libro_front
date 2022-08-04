@@ -26,10 +26,12 @@ route: [route_obj/route_name] (I have to resolve name somehow from the route obj
 import inicio from './inicio'
 import mantenedores from './mantenedores'
 import libros from './libros'
+import matriculas from './matriculas'
 
 // Array of sections
 export default [
     ...inicio
   , ...mantenedores
   , ...libros
+  , ...matriculas
 ]

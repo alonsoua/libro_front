@@ -39,7 +39,8 @@
     </b-col>
 
     <!-- Content Right -->
-    <!-- <b-col
+    <b-col
+      v-if="$route.meta.configs === true"
       class="content-header-right text-md-right d-md-block d-none mb-1"
       md="3"
       cols="12"
@@ -61,39 +62,57 @@
           </b-button>
         </template>
 
-        <b-dropdown-item :to="{ name: 'apps-todo' }">
-          <feather-icon
-            icon="CheckSquareIcon"
-            size="16"
-          />
-          <span class="align-middle ml-50">Todo</span>
-        </b-dropdown-item>
+        <template
+          v-for="item in $route.meta.breadcrumb"
+          :active="item.active"
+          :to="item.to"
+        >
+          <!-- Configuraciones: LIBRO ABIERTO -->
+          <!-- <template
+          >
+          {{item}}
+          </template> -->
+          <!-- :to="{ name: 'apps-todo' }" -->
+          <template
+            v-if="item.text === 'Libro Abierto'"
+          >
+            <template
+              v-for="config in item.optionsConfigs"
+            >
+              <b-dropdown-item
+                :to="{ name: config.to }"
+              >
+                <feather-icon
+                  :icon="config.icon"
+                  size="16"
+                />
+                <span class="align-middle ml-50">{{ config.txtBtn }}</span>
+              </b-dropdown-item>
+            </template>
+          </template>
+          <!-- <b-dropdown-item
+            v-if="item.text === 'Libro Abierto' && item.configs === true"
+          >
+            <feather-icon
+              icon="ToolIcon"
+              size="16"
+            />
+            <span class="align-middle ml-50">Configurar Asignaturas</span>
+          </b-dropdown-item>
 
-        <b-dropdown-item :to="{ name: 'apps-chat' }">
-          <feather-icon
-            icon="MessageSquareIcon"
-            size="16"
-          />
-          <span class="align-middle ml-50">Chat</span>
-        </b-dropdown-item>
+          <b-dropdown-item
+            v-if="item.text === 'Libro Abierto' && item.active === true"
+          >
+            <feather-icon
+              icon="ToolIcon"
+              size="16"
+            />
+            <span class="align-middle ml-50">Configurar Promedios</span>
+          </b-dropdown-item> -->
 
-        <b-dropdown-item :to="{ name: 'apps-email' }">
-          <feather-icon
-            icon="MailIcon"
-            size="16"
-          />
-          <span class="align-middle ml-50">Email</span>
-        </b-dropdown-item>
-
-        <b-dropdown-item :to="{ name: 'apps-calendar' }">
-          <feather-icon
-            icon="CalendarIcon"
-            size="16"
-          />
-          <span class="align-middle ml-50">Calendar</span>
-        </b-dropdown-item>
+        </template>
       </b-dropdown>
-    </b-col> -->
+    </b-col>
   </b-row>
 </template>
 

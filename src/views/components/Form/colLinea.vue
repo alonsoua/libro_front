@@ -1,5 +1,5 @@
 <template>
-  <hr :width="width" align="center">
+  <hr :width="width" :align="align">
 </template>
 
 <script>
@@ -9,6 +9,10 @@ export default {
     ancho: {
       type: String,
       default: 'xl',
+    },
+    align: {
+      type: String,
+      default: 'center',
     },
   },
   computed: {
@@ -23,7 +27,7 @@ export default {
       } else if (this.ancho === 'xs') {
         width = '78%'
       } else {
-        width = 'auto'
+        width = this.ancho
       }
       return width
     },

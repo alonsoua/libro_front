@@ -12,6 +12,8 @@ import matriculas from './matriculas/matriculas'
 // Mantenedor
 import alumnos from './mantenedores/alumnos'
 import establecimientos from './mantenedores/establecimientos'
+import periodos from './mantenedores/periodos'
+import horarios from './mantenedores/horarios'
 import usuarios from './mantenedores/usuarios'
 // Acceso
 import login from './login'
@@ -34,6 +36,8 @@ const router = new VueRouter({
     // Mantenedor
     ...alumnos,
     ...establecimientos,
+    ...periodos,
+    ...horarios,
     ...usuarios,
     // Acceso
     ...login,

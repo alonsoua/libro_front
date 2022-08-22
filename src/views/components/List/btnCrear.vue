@@ -8,7 +8,7 @@
       class="btn-sm"
       @click="$emit('processAdd')"
     >
-      <span class="text-nowrap">Crear {{ texto }}</span>
+      <span class="text-nowrap">{{ accion }} {{ texto }}</span>
     </b-button>
   </div>
 </template>
@@ -31,6 +31,10 @@ export default {
       type: String,
       required: true,
     },
+    accion: {
+      tyle: String,
+      default: 'Crear',
+    }
   },
   methods: {
   },

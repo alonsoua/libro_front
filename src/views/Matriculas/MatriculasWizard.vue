@@ -2,7 +2,7 @@
   <b-row>
     <b-col cols="12">
       <form-wizard
-        color="#7367F0"
+        color="#26a5ea"
         :title="null"
         :subtitle="null"
         class="mb-3"

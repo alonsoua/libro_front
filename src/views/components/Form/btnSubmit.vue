@@ -1,7 +1,7 @@
 <template>
   <b-button
     variant="relief-primary"
-    class="mr-0 btn-sm-block"
+    class="mr-0 btn-sm-block mt-25"
     @click="$emit('processBtn')"
   >
     {{ btnText }}

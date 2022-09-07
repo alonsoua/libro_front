@@ -102,10 +102,21 @@
           cols="12"
           md="12"
         >
+        <!-- INFORMATIVO -->
+                <!-- v-if="menu.informacion !== ''" -->
+          <popover
+            class="float-right"
+            id="0"
+            btnVariant="flat-secondary"
+            :texto="informacion"
+            direccion="right"
+            style="margin-right: 450px;margin-top: -13px; margin-bottom: -8px;"
+          />
           <b-form-group
             label="Criterios para la evaluación de la estrategia *"
             label-for="criterios"
           >
+
             <b-form-textarea
               id="criterios"
               placeholder="Ingresa los criterios"
@@ -135,22 +146,24 @@
 
 <script>
 
-// Etiquetas //
-import vSelect from 'vue-select'
+// ETIQUETAS
 import {
   BRow, BCol, BFormGroup, BFormInput, BForm, BFormInvalidFeedback,
   BMedia, BButton, BAvatar, BOverlay, BFormDatepicker, BFormTimepicker,
   BFormTextarea
 } from 'bootstrap-vue'
+import vSelect from 'vue-select'
 
-// Validaciones //
+// VALIDACIONES //
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
 
+// COMPONENTES
+import popover from '../../../../../../../components/Form/popover.vue'
+
 export default {
   components: {
-    vSelect,
-
+    // ETIQUETAS
     BRow,
     BCol,
     BFormGroup,
@@ -164,6 +177,10 @@ export default {
     BFormDatepicker,
     BFormTimepicker,
     BFormTextarea,
+    vSelect,
+
+    // COMPONENTES
+    popover,
   },
   setup() {
     return {
@@ -173,6 +190,7 @@ export default {
   data() {
     return {
       cargando: true,
+      informacion: `Sugerencias de criterios para la evaluación de la estrategia: Recursos educativos responden a los distintos estilos de aprendizaje; Participación de todos los estudiantes, especialmente aquellos que presentan NEE; Logros de los objetivos planteados para la clase; Interacción entre los estudiantes; entre otros.`,
       // required,
       // email,
       // dependenciasOption: [

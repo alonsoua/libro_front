@@ -19,7 +19,7 @@
           >
             <b-form-input
               id="tipoAprendizaje"
-              placeholder="Ingresa el tipo de aprendizaje"
+              placeholder="Ingresa el ámbito, asignatura y/o módulo de aprendizaje"
               v-model="apoyo.tipoAprendizaje"
             />
               <!-- :state="v$.reunion.acuerdos.$error === true

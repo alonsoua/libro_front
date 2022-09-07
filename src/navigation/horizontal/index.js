@@ -27,11 +27,13 @@ import inicio from './inicio'
 import mantenedores from './mantenedores'
 import libros from './libros'
 import matriculas from './matriculas'
+import configuraciones from './configuraciones'
 
 // Array of sections
 export default [
-    ...inicio
-  , ...mantenedores
-  , ...libros
-  , ...matriculas
+  ...inicio,
+  // ...configuraciones,
+  ...mantenedores,
+  ...libros,
+  ...matriculas,
 ]

@@ -20,127 +20,102 @@
         </b-card-text>
 
         <!-- form -->
-        <validation-observer
-          ref="loginForm"
-          #default="{invalid}"
+        <b-form
+          class="auth-login-form mt-2"
+          @submit.prevent
         >
-          <b-form
-            class="auth-login-form mt-2"
-            @submit.prevent
+
+          <!-- rut -->
+          <b-form-group
+            label="Rut"
+            label-for="rut"
           >
-
-            <!-- email -->
-            <!-- <b-form-group
-              label-for="email"
-              label="Email"
+            <b-form-input
+              id="rut"
+              v-model="form.rut"
+              name="login-rut"
+              placeholder="Ingresa tu rut (XX.XXX.XXX-X)"
+              autofocus
+              :state="v$.form.rut.$error === true
+                ? false
+                : null"
+              @blur.native="v$.form.rut.$touch"
+              @keyup="form.rut = formatRut(form.rut)"
+            />
+            <b-form-invalid-feedback
+              v-if="v$.form.rut.$error"
+              id="rutInfo"
             >
-              <validation-provider
-                #default="{ errors }"
-                name="Email"
-                rules="required|email"
-              >
-                <b-form-input
-                  id="email"
-                  v-model="userEmail"
-                  name="login-email"
-                  :state="errors.length > 0 ? false:null"
-                  placeholder="john@example.com"
-                  autofocus
+              <p v-for="error of v$.form.rut.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+
+          <!-- contraseña -->
+          <b-form-group>
+            <div class="d-flex justify-content-between">
+              <label for="password">Contraseña</label>
+              <!-- <b-link :to="{name:'auth-forgot-password-v1'}">
+                <small>olvidó su contraseña?</small>
+              </b-link> -->
+            </div>
+            <b-input-group
+              class="input-group-merge"
+              :class="v$.form.password.$error === true ? 'is-invalid':null"
+            >
+              <b-form-input
+                id="password"
+                v-model="form.password"
+                :type="passwordFieldType"
+                class="form-control-merge"
+                name="login-password"
+                placeholder="Ingresa tu contraseña"
+                :state="v$.form.password.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.form.password.$touch"
+              />
+
+              <b-input-group-append is-text>
+                <feather-icon
+                  class="cursor-pointer"
+                  :icon="passwordToggleIcon"
+                  @click="togglePasswordVisibility"
                 />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group> -->
-
-            <!-- rut -->
-            <b-form-group
-              label-for="rut"
-              label="Rut"
+              </b-input-group-append>
+            </b-input-group>
+            <b-form-invalid-feedback
+              v-if="v$.form.password.$error"
+              id="passwordInfo"
             >
-              <validation-provider
-                #default="{ errors }"
-                name="Rut"
-                rules="required"
-              >
-                <b-form-input
-                  id="rut"
-                  v-model="userRut"
-                  name="login-rut"
-                  :state="errors.length > 0 ? false:null"
-                  placeholder="11.111.111-1"
-                  autofocus
-                />
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
+            <p v-for="error of v$.form.password.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
 
-            <!-- contraseña -->
-            <b-form-group>
-              <div class="d-flex justify-content-between">
-                <label for="contraseña">Contraseña</label>
-                <b-link :to="{name:'auth-forgot-password-v1'}">
-                  <small>olvidó su contraseña?</small>
-                </b-link>
-              </div>
-              <validation-provider
-                #default="{ errors }"
-                name="Contraseña"
-                rules="required"
-              >
-                <b-input-group
-                  class="input-group-merge"
-                  :class="errors.length > 0 ? 'is-invalid':null"
-                >
-                  <b-form-input
-                    id="contraseña"
-                    v-model="password"
-                    :type="passwordFieldType"
-                    class="form-control-merge"
-                    :state="errors.length > 0 ? false:null"
-                    name="login-password"
-                    placeholder="Password"
-                  />
-
-                  <b-input-group-append is-text>
-                    <feather-icon
-                      class="cursor-pointer"
-                      :icon="passwordToggleIcon"
-                      @click="togglePasswordVisibility"
-                    />
-                  </b-input-group-append>
-                </b-input-group>
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-
-            <!-- checkbox -->
-            <b-form-group>
-              <b-form-checkbox
-                id="remember-me"
-                v-model="status"
-                name="checkbox-1"
-              >
-                Recordarme
-              </b-form-checkbox>
-            </b-form-group>
-
-            <!-- submit button -->
-            <b-button
-              variant="primary"
-              type="submit"
-              block
-              :disabled="invalid"
+          <!-- checkbox -->
+          <b-form-group>
+            <b-form-checkbox
+              id="remember-me"
+              v-model="status"
+              name="checkbox-1"
             >
-              Iniciar Sesión
-            </b-button>
-          </b-form>
-        </validation-observer>
+              Recordarme
+            </b-form-checkbox>
+          </b-form-group>
 
-        <!-- <b-card-text class="text-center mt-2">
-          <span>New on our platform? </span>
-          <b-link :to="{name:'auth-register-v1'}">
-            <span>Create an account</span>
-          </b-link>
-        </b-card-text> -->
+          <!-- submit button -->
+          <b-button
+            variant="primary"
+            type="submit"
+            block
+            :disabled="v$.form.$error"
+          >
+            Iniciar Sesión
+          </b-button>
+        </b-form>
 
         <div class="divider mt-2">
           <div class="divider-text">
@@ -156,24 +131,6 @@
           >
             <feather-icon icon="FacebookIcon" />
           </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="twitter"
-          >
-            <feather-icon icon="TwitterIcon" />
-          </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="google"
-          >
-            <feather-icon icon="MailIcon" />
-          </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="github"
-          >
-            <feather-icon icon="GithubIcon" />
-          </b-button>
         </div> -->
       </b-card>
       <!-- /Login v1 -->
@@ -182,13 +139,19 @@
 </template>
 
 <script>
-import { ValidationProvider, ValidationObserver } from 'vee-validate'
+
+// ETIQUETAS
 import {
-  BButton, BForm, BFormInput, BFormGroup, BCard, BLink, BCardTitle, BCardText, BInputGroup, BInputGroupAppend, BFormCheckbox,
+  BButton, BForm, BFormInput, BFormGroup, BCard, BLink, BCardTitle, BCardText,
+  BInputGroup, BInputGroupAppend, BFormCheckbox, BFormInvalidFeedback
 } from 'bootstrap-vue'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
-import { required } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
+import { rut } from '@core/mixins/ui/rut'
+
+// VALIDACIONES
+import useVuelidate from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
 
 export default {
   components: {
@@ -205,19 +168,37 @@ export default {
     BInputGroup,
     BInputGroupAppend,
     BFormCheckbox,
-    ValidationProvider,
-    ValidationObserver,
+    BFormInvalidFeedback,
   },
-  mixins: [togglePasswordVisibility],
+  mixins: [togglePasswordVisibility, rut],
   data() {
     return {
       // userEmail: '',
-      userRut: '',
+      form: [],
+      rut: '',
       password: '',
       status: '',
       // validation rules
-      required,
-      email,
+      // email,
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate(),
+    }
+  },
+  validations() {
+    return {
+      form: {
+        rut: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+        password: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+      }
     }
   },
   computed: {

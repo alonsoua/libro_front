@@ -44,6 +44,19 @@
       <span>Mi Perfil</span>
     </b-dropdown-item>
 
+    <!-- PERFIL -->
+    <b-dropdown-item
+      link-class="d-flex align-items-center"
+      :to="{ name: 'mi-horario'}"
+    >
+      <feather-icon
+        size="16"
+        icon="CalendarIcon"
+        class="mr-50"
+      />
+      <span>Mi Horario</span>
+    </b-dropdown-item>
+
     <!-- Mensajes -->
     <!-- :to="{ name: 'apps-email' }" -->
     <b-dropdown-item

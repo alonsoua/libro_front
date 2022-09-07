@@ -4,5 +4,7 @@ export default [
     title: 'Inicio',
     route: 'inicio',
     icon: 'HomeIcon',
+    // action: 'read',
+    // resource: 'home',
   },
 ]

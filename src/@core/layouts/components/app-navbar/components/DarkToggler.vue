@@ -3,6 +3,7 @@
     <feather-icon
       size="21"
       :icon="`${isDark ? 'Sun' : 'Moon'}Icon`"
+      style="color: white;"
     />
   </b-nav-item>
 </template>

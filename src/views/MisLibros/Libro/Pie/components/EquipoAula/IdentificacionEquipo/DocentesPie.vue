@@ -4,18 +4,37 @@
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
   >
+    <b-row>
+      <b-col md="8">
+        <b-card-title
+          style="margin-top: 8px;"
+          class="mb-2"
+        >
+          Profesores especializados
+        </b-card-title>
+      </b-col>
+      <b-col md="4">
+        <b-button
+          v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+          variant="outline-primary float-right"
+          @click="repeateAgain"
+          class="mb-2 pr-1 pl-1"
+        >
+          <feather-icon
+            icon="PlusIcon"
+            class="mr-25"
+          />
+          <span>Agregar docente PIE</span>
+        </b-button>
+      </b-col>
+    </b-row>
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-2"
+      class="repeater-form mb-0 mt-0 overflow-auto border-light"
+      style="min-height: 456px !important; max-height: 456px !important; margin: 0px -17px 0px 0px; padding: 20px 18px 0px 18px;"
       @submit.prevent="repeateAgain"
     >
-      <b-card-text
-        style="margin-top: 8px;"
-        class="mb-2 text-primary h4"
-      >
-        Profesores especializados:
-      </b-card-text>
       <!-- Row Loop -->
       <b-row
         v-for="(item, index) in items"
@@ -25,7 +44,7 @@
       >
 
         <!-- NOMBRE -->
-        <b-col md="5">
+        <b-col md="4">
           <b-form-group
             label="Nombre"
             label-for="nombre"
@@ -40,7 +59,7 @@
         </b-col>
 
         <!-- ESPECIALIDAD -->
-        <b-col md="6">
+        <b-col md="5">
           <b-form-group
             label="Especialidad"
             label-for="especialidad"
@@ -54,6 +73,20 @@
           </b-form-group>
         </b-col>
 
+        <!-- FIRMAS -->
+        <b-col md="2">
+          <b-form-group
+            label="Firma"
+            label-for="firma"
+            class="text-center"
+          >
+            <firmas
+                :data.sync="item"
+                text="Firmar identificación de equipo de aula como docente PIE"
+              />
+          </b-form-group>
+        </b-col>
+
         <!-- Remove Button -->
         <b-col
           lg="1"
@@ -63,43 +96,40 @@
           <b-button
             v-ripple.400="'rgba(234, 84, 85, 0.15)'"
             variant="outline-danger"
-            class="mt-0 mt-md-2"
+            class="mt-0 mt-md-2 pr-1 pl-1"
             @click="removeItem(index)"
           >
             <feather-icon
               icon="TrashIcon"
-              class="mr-25"
             />
             <span></span>
           </b-button>
         </b-col>
         <b-col cols="12">
-          <hr>
+          <hr class="mt-0">
         </b-col>
       </b-row>
-      <b-button
-        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-        variant="outline-primary"
-        @click="repeateAgain"
-      >
-        <feather-icon
-          icon="PlusIcon"
-          class="mr-25"
-        />
-        <span>Agregar docente PIE</span>
-      </b-button>
-
-      <!-- Action Buttons -->
-
     </b-form>
+    <b-button
+      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+      variant="outline-primary float-right"
+      @click="repeateAgain"
+      class="mb-2 mt-25 pr-1 pl-1"
+    >
+      <feather-icon
+        icon="PlusIcon"
+        class="mr-25"
+      />
+      <span>Agregar docente PIE</span>
+    </b-button>
   </b-overlay>
 </template>
 
 <script>
 
-// Etiquetas //
+// ETIQUETAS
 import {
-  BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardText,
+  BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardTitle,
 } from 'bootstrap-vue'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
@@ -109,8 +139,9 @@ import Cleave from 'vue-cleave-component'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'cleave.js/dist/addons/cleave-phone.us'
 
-// Componentes //
+// CCOMPONENTES RECICLADOS
 import colLinea from '../../../../../../components/Form/colLinea.vue'
+import firmas from '../../../../../../components/firmas.vue'
 
 export default {
   components: {
@@ -121,9 +152,11 @@ export default {
     BButton,
     BFormGroup,
     BFormInput,
-    BCardText,
+    BCardTitle,
 
+    // CCOMPONENTES RECICLADOS
     colLinea,
+    firmas,
   },
   directives: {
     Ripple,
@@ -137,7 +170,7 @@ export default {
         {
           id: 1,
           nombre: 'Natalia Barrera García',
-          especialidad: 'Prof Ed Física',
+          especialidad: 'Profesor de Educación Diferencial',
           telefono: '5697899879',
           correo: 'naty@gmail.com',
         },

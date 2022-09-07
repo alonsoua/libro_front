@@ -44,7 +44,7 @@
           >
             <b-form-textarea
               id="profesores"
-              placeholder="Ingresa los apoyos entre profesores"
+              placeholder="Ingresa las acciones entre profesores"
               v-model="acciones.profesores"
               rows="4"
             />
@@ -59,7 +59,7 @@
           >
             <b-form-textarea
               id="profesoresasistentes"
-              placeholder="Ingresa los apoyos entre profesores y asistentes"
+              placeholder="Ingresa las acciones entre profesores y asistentes de la educación"
               v-model="acciones.profesoresasistentes"
               rows="4"
             />
@@ -74,7 +74,7 @@
           >
             <b-form-textarea
               id="estudiantes"
-              placeholder="Ingresa los apoyos entre estudiantes"
+              placeholder="Ingresa las acciones entre estudiantes"
               v-model="acciones.estudiantes"
               rows="4"
             />
@@ -89,7 +89,7 @@
           >
             <b-form-textarea
               id="familia"
-              placeholder="Ingresa los apoyos con la familia"
+              placeholder="Ingresa las acciones con la familia y entre familia"
               v-model="acciones.familia"
               rows="4"
             />
@@ -104,7 +104,7 @@
           >
             <b-form-textarea
               id="comunidad"
-              placeholder="Ingresa los apoyos con la comunidad"
+              placeholder="Ingresa las acciones con la comunidad"
               v-model="acciones.comunidad"
               rows="4"
             />

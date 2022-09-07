@@ -7,7 +7,6 @@
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-2"
       @submit.prevent="repeateAgain"
     >
       <!-- Row Loop -->
@@ -32,7 +31,7 @@
             <div
               v-else
             >
-              <b>Otras acciones</b>
+              <b>Otra estrategia</b>
             </div>
           </b-form-group>
         </b-col>
@@ -47,7 +46,7 @@
               v-model="item.descripcion"
               id="descripcion"
               type="text"
-              placeholder="Ingresa la descripción"
+              placeholder="Ingresa una descripción"
               row="2"
             />
           </b-form-group>
@@ -87,7 +86,7 @@
 
         <!-- Remove Button -->
         <b-col
-          v-if="index > 3"
+          v-if="index > 2"
           lg="1"
           md="1"
           class=""
@@ -95,7 +94,7 @@
           <b-button
             v-ripple.400="'rgba(234, 84, 85, 0.15)'"
             variant="outline-danger"
-            class="mt-0 mt-md-4 float-right"
+            class="mt-0 mt-md-3 float-left btn btn-sm"
             @click="removeItem(index)"
           >
             <feather-icon
@@ -117,7 +116,7 @@
           icon="PlusIcon"
           class="mr-25"
         />
-        <span>Agregar otra acción</span>
+        <span>Agregar estrategia</span>
       </b-button>
 
       <!-- OBSERVACIONES -->
@@ -234,13 +233,6 @@ export default {
           seguimiento: '',
           evaluación: '',
         },
-        {
-          id: 4,
-          estrategia: 'Otras Acciones',
-          descripcion: '',
-          seguimiento: '',
-          evaluación: '',
-        },
       ],
       observacion: '',
       phone: {
@@ -262,7 +254,7 @@ export default {
   props: {
     btnSubmit: {
       type: String, // Texto del boton
-      default: 'Actualizar Estrategia',
+      default: 'Actualizar Estrategias',
     },
   },
   methods: {

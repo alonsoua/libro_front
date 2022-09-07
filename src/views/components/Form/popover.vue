@@ -1,5 +1,5 @@
 <template>
-  <aside style="white-space: nowrap;">
+  <aside style="white-space: nowrap;" class="ml-0">
     <b-button
       v-if="direccion === 'top'"
       :id="`popover-button-info-${id}`"

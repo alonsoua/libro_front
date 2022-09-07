@@ -12,11 +12,11 @@
         class="my-1"
       >
         <!-- BOTON MOSTRAR -->
-        <btnMostrar
+        <!-- <btnMostrar
           :pageOptions.sync="pageOptions"
           :perPage.sync="perPage"
           :total.sync="items.length"
-        />
+        /> -->
       </b-col>
       <b-col
         lg="6"
@@ -32,8 +32,9 @@
         <!-- CREAR -->
         <plan-apoyo-create
           submitTitle="Guardar Plan"
-          title="Crear plan de apoyo individual"
+          title="Registrar plan de apoyo individual"
         />
+
         <!-- editar debe enviar id y si cambia  -->
 
       </b-col>
@@ -58,113 +59,220 @@
             variant="primary"
             class="btn-md"
           >
-            Crear Plan
+            Registrar Plan
           </b-button>
         </div>
       </b-col>
 
-      <b-col cols="12">
-        <b-table
+      <b-col cols="12" style="min-height: 490px !important;">
+        <b-table-simple
+          bordered
           striped
-          small
           hover
-          noCollapse
-          class="mt-1"
+          small
+          caption-top
           responsive
           :per-page="perPage"
           :current-page="currentPage"
-          :items="items"
-          :fields="fields"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          :busy="cargando"
-          :filter="filter"
-          :filter-included-fields="filterOn"
-          @filtered="onFiltered"
         >
+          <b-thead head-variant="light">
 
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
+            <!-- FILAS -->
+            <b-tr>
+              <b-th
+                v-for="(field, key) in fields"
+                :key="key"
+                :class="field.class"
+                :style="field.style"
+              >
+                {{ field.label }}
+              </b-th>
+            </b-tr>
+          </b-thead>
 
-          <!-- Cargando -->
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
+          <b-tbody
+            v-for="(item, key) in items"
+            :key="key"
+          >
+            <b-tr>
 
-          <!-- Header: Check -->
-          <!-- <template #head(colCheck)="data">
+              <!-- ALUMNOS -->
+              <b-td
+                :rowspan="item.apoyos.length + 1"
+                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
+              >
+                <div
+                  v-for="(alumno, key) in item.alumnos"
+                  :key="key"
+                  class=""
+                >
+                  {{ alumno.nombre }}
+                </div>
+              </b-td>
+              <b-td class="pl-0 pr-0 pt-0 pb-0"></b-td>
+              <b-td class="pl-0 pr-0 pt-0 pb-0"></b-td>
 
-            <b-form-checkbox
-              :id="data.label"
-              v-model="chkTodo"
-            />
+              <!-- FECHA INICIO -->
+              <b-td
+                class="pl-25 pr-25 text-center"
 
-          </template>
+                :rowspan="item.apoyos.length + 1"
+              >
+                {{ item.fechaInicio }}
+              </b-td>
 
-          <!-- Column: Check
-          <template #cell(colCheck)="data">
+              <!-- FECHA TERMINO -->
+              <b-td
+                class="pl-25 pr-25 text-center"
+                :rowspan="item.apoyos.length + 1"
+              >
+                {{ item.fechaTermino }}
+              </b-td>
 
-            <b-form-checkbox
-              :id="`chk-${data.item.id}`"
-              v-model="data.item.chkSelected"
-            />
+              <!-- ACCIONES -->
+              <b-td
+                class="pl-25 pr-25 text-center"
+                :rowspan="item.apoyos.length + 2"
+                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
+              >
+                <colAccionesBtnes
+                  modulo="test"
+                  :data="item"
+                />
+                <!-- :modal="`modal-lg-${data.item.id}`" -->
+                    <!-- @processGoToConfig="goToConfig"
+                    @processGoToUpdate="goToUpdate"
+                    @processGoToClone="goToClone"
+                    @processRemove="remove(data.item)" -->
+              </b-td>
+            </b-tr>
 
-          </template> -->
-
-          <!-- Column: asistentes -->
-          <template #cell(asistentes)="data">
-            <div
-              v-for="(asistente, key) in data.item.asistentes"
-              :key="key"
+            <template
+              v-for="(apoyo, key2) in item.apoyos"
             >
-              - {{ asistente.nombre }}
-            </div>
-          </template>
 
+              <!-- EDUC. DIFERENCIAL -->
+              <b-tr
+                v-if="apoyo.cargo === 'Educ. Diferencial'"
+              >
+                <b-td>
+                  <b>Educ. Diferencial:</b><br>
+                  {{ apoyo.cargo === 'Educ. Diferencial' ? apoyo.nombre : '' }}
+                </b-td>
+                <b-td>
+                  <b-row
+                    v-for="(horario, key) in apoyo.horarios"
+                    :key="key"
+                  >
+                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
+                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
+                  </b-row>
+                </b-td>
+              </b-tr>
 
-          <!-- COLUMNA ESTADO -->
-          <template #cell(estado)="data">
-            <colEstado
-              :data="data"
-              modulo="reunionesCoordinaciones"
-              @processUpdateEstado="updateEstado"
-            />
-          </template>
+              <!-- PSICOPEDAGOGO -->
+              <b-tr
+                v-if="apoyo.cargo === 'Psicopedagogo/a'"
+              >
+                <b-td>
+                  <b>Psicopedagogo/a</b><br>
+                  {{ apoyo.cargo === 'Psicopedagogo/a' ? apoyo.nombre : '' }}
+                </b-td>
+                <b-td>
+                  <b-row
+                    v-for="(horario, key) in apoyo.horarios"
+                    :key="key"
+                  >
+                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
+                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
+                  </b-row>
+                </b-td>
+              </b-tr>
 
-          <!-- Column: Action -->
-          <template #cell(acciones)="data">
-            <colAccionesBtnes
-              modulo="reunionesCoordinaciones"
-              :modal="`modal-lg-${data.item.id}`"
-              :data="data"
-              @processGoToConfig="goToConfig"
-              @processGoToUpdate="goToUpdate"
-              @processGoToClone="goToClone"
-              @processRemove="remove(data.item)"
-            />
-          </template>
-        </b-table>
+              <!-- FONOAUDIOLOGO -->
+              <b-tr
+                v-if="apoyo.cargo === 'Fonoaudiólogo/a'"
+              >
+                <b-td>
+                  <b>Fonoaudiólogo/a</b><br>
+                  {{ apoyo.cargo === 'Fonoaudiólogo/a' ? apoyo.nombre : '' }}
+                </b-td>
+                <b-td>
+                  <b-row
+                    v-for="(horario, key) in apoyo.horarios"
+                    :key="key"
+                  >
+                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
+                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
+                  </b-row>
+                </b-td>
+              </b-tr>
+
+              <!-- PSICOLOGO -->
+              <b-tr
+                v-if="apoyo.cargo === 'Psicólogo/a'"
+              >
+                <b-td>
+                  <b>Psicólogo/a</b><br>
+                  {{ apoyo.cargo === 'Psicólogo/a' ? apoyo.nombre : '' }}
+                </b-td>
+                <b-td>
+                  <b-row
+                    v-for="(horario, key) in apoyo.horarios"
+                    :key="key"
+                  >
+                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
+                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
+                  </b-row>
+                </b-td>
+              </b-tr>
+
+              <!-- OTRO -->
+              <b-tr
+                v-if="apoyo.cargo === 'Otro'"
+              >
+                <b-td>
+                  <b>Otro</b><br>
+                  {{ apoyo.cargo === 'Otro' ? apoyo.nombre : '' }}
+                </b-td>
+                <b-td>
+                  <b-row
+                    v-for="(horario, key) in apoyo.horarios"
+                    :key="key"
+                  >
+                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
+                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
+                  </b-row>
+                </b-td>
+              </b-tr>
+            </template>
+
+            <!-- OBSERVACIONES -->
+            <b-tr>
+              <b-td
+                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
+                class="text-left pb-1 pt-1"
+                colspan="5"
+              >
+                <b>Observaciones</b>
+                <div class="text-justify pt-25 pr-3">
+                  {{ item.observaciones }}
+                </div>
+              </b-td>
+            </b-tr>
+          </b-tbody>
+        </b-table-simple>
+        <b-alert
+          v-if="items.length === 0"
+          variant="primary"
+          show
+          class="text-center pt-25 pb-25"
+        >
+          <div class="alert-body">
+            <span>No existen planes registrados.</span>
+          </div>
+        </b-alert>
       </b-col>
-
-      <b-col
-        cols="12"
-      >
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          align="center"
-          size="sm"
-          class="my-0"
-        />
-      </b-col>
-
     </b-row>
   </b-overlay>
 </template>
@@ -173,27 +281,31 @@
 
 // ETIQUETAS
 import {
-  BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
-  BButton, VBModal
+  BTableSimple, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
+  BButton, VBModal, BListGroup, BListGroupItem, BTd, BTr, BTfoot, BTh, BTbody,
+  BThead, BAlert,
 } from 'bootstrap-vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
-// COMPONENTES
-import planApoyoCreate from './PlanApoyo/PlanApoyoCreate.vue'
-
+// COMPONENTES RECICLADOS
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
 // import btnCrear from '../../../../../components/List/btnCrear.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
-import colAccionesBtnes from '../../../../../components/List/colAccionesBtnes.vue'
 import colPeriodo from '../../../../../components/List/colPeriodo.vue'
 import colEstado from '../../../../../components/List/colEstado.vue'
 import spinner from '../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../components/List/colNombreImg.vue'
+import { length } from '@validations';
+import colAccionesBtnes from '../components/colAccionesBtnes.vue'
+
+// COMPONENTES HIJOS
+import planApoyoCreate from './PlanApoyo/PlanApoyoCreate.vue'
 
 export default {
   components: {
-    BTable,
+    // ETIQUETAS
+    BTableSimple,
     BRow,
     BCol,
     BPagination,
@@ -202,17 +314,28 @@ export default {
     BCardText,
     BButton,
     VBModal,
+    BListGroup,
+    BListGroupItem,
+    BAlert,
+    BTd,
+    BTr,
+    BTfoot,
+    BTh,
+    BTbody,
+    BThead,
 
-    // COMPONENTES
-    planApoyoCreate,
-    colAccionesBtnes,
+    // COMPONENTES RECICLADOS
     // btnCrear,
     // inputFiltro,
+    colAccionesBtnes,
     btnMostrar,
     colPeriodo,
     colEstado,
     spinner,
     colNombreImg,
+
+    // COMPONENTES HIJOS
+    planApoyoCreate,
   },
   directives: {
     'b-modal': VBModal,
@@ -224,95 +347,326 @@ export default {
       spinner: false,
       // chk
       items: [
-        // {
-        //   alumnos: [
-        //     {
-        //       nombre: 'Catalina Gaete',
-        //     },
-        //     {
-        //       nombre: 'Martín Lopez',
-        //     }
-        //   ],
-        //   apoyoEspecializado: [
-        //     { nombre: 'Paula Leiva', cargo: 'Terapeuta ocupacional' },
-        //     { nombre: 'Daniela Vega', cargo: 'Psícologa' },
-        //     { nombre: 'Polet Rodriguez', cargo: 'Profesora diferencial del curso' },
-        //     { nombre: 'Scarlet Ramirez', cargo: 'Profesora diferencial del alumno' },
-        //     { nombre: 'Renata Inoztroza', cargo: 'Profesora de aula' },
-        //   ],
-        //   acuerdos: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-        //   estado: 'Desarrollada',
-        // },
-        // {
-        //   alumnos: [
-        //     {
-        //       nombre: 'Paola Calderón',
-        //     },
-        //     {
-        //       nombre: 'Alondra Fernandez',
-        //     },
-        //     {
-        //       nombre: 'Pilar Hidalgo',
-        //     },
-        //   ],
-        //   apoyoEspecializado: [
-        //     { nombre: 'Paula Leiva', cargo: 'Terapeuta ocupacional' },
-        //     { nombre: 'Daniela Vega', cargo: 'Psícologa' },
-        //     { nombre: 'Polet Rodriguez', cargo: 'Profesora diferencial del curso' },
-        //     { nombre: 'Scarlet Ramirez', cargo: 'Profesora diferencial del alumno' },
-        //     { nombre: 'Renata Inoztroza', cargo: 'Profesora de aula' },
-        //   ],
-        //   acuerdos: 'Retroalimentación casos PIE Reporte psicosocial Organización apoyos',
-        //   estado: 'Desarrollada',
-        // },
-        // {
-        //   alumnos: [
-        //     {
-        //       nombre: 'Samanta',
-        //     },
-        //   ],
-        //   apoyoEspecializado: [
-        //     { nombre: 'Paula Leiva', cargo: 'Terapeuta ocupacional' },
-        //     { nombre: 'Daniela Vega', cargo: 'Psícologa' },
-        //     { nombre: 'Polet Rodriguez', cargo: 'Profesora diferencial del curso' },
-        //     { nombre: 'Scarlet Ramirez', cargo: 'Profesora diferencial del alumno' },
-        //     { nombre: 'Renata Inoztroza', cargo: 'Profesora de aula' },
-        //   ],
-        //   acuerdos: 'Reflexión fin de trimestre 2021 Evaluación por alumno Organización de los diversos apoyos',
-        //   estado: 'Desarrollada',
-        // },
-        // {
-        //   alumnos: [
-        //     {
-        //       nombre: 'Amaro',
-        //     },
-        //   ],
-        //   apoyoEspecializado: [
-        //     { nombre: 'Paula Leiva', cargo: 'Terapeuta ocupacional' },
-        //     { nombre: 'Daniela Vega', cargo: 'Psícologa' },
-        //     { nombre: 'Polet Rodriguez', cargo: 'Profesora diferencial del curso' },
-        //     { nombre: 'Scarlet Ramirez', cargo: 'Profesora diferencial del alumno' },
-        //     { nombre: 'Renata Inoztroza', cargo: 'Profesora de aula' },
-        //   ],
-        //   acuerdos: '',
-        //   estado: 'Agendada',
-        // }
-        // {
-        //   alumnos: [
-        //     {
-        //       nombre: 'Thomás Torres',
-        //     },
-        //   ],
-        //   apoyoEspecializado: [
-        //     { nombre: 'Paula Leiva', cargo: 'Terapeuta ocupacional' },
-        //     { nombre: 'Daniela Vega', cargo: 'Psícologa' },
-        //     { nombre: 'Polet Rodriguez', cargo: 'Profesora diferencial del curso' },
-        //     { nombre: 'Scarlet Ramirez', cargo: 'Profesora diferencial del alumno' },
-        //     { nombre: 'Renata Inoztroza', cargo: 'Profesora de aula' },
-        //   ],
-        //   acuerdos: '',
-        //   estado: 'Agendada',
-        // }
+        {
+          alumnos: [
+            {
+              nombre: 'Catalina Andrea Gaete Jeria',
+            },
+            {
+              nombre: 'Martín Alejandro Lopez Perez',
+            }
+          ],
+          apoyos: [
+            {
+              nombre: 'Paula Mercedes Leiva Alvarez',
+              cargo: 'Fonoaudiólogo/a',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Daniela Carmen Jeria Cisternas',
+              cargo: 'Psicopedagogo/a',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '18:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Daniela Ignacia Vega Oyanedel',
+              cargo: 'Educ. Diferencial',
+              horarios: [
+                {
+                  dia: 'Miércoles',
+                  hora: '14:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '11:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Polet Macarena Rodriguez Gonzalez',
+              cargo: 'Psicólogo/a',
+              horarios: [
+                {
+                  dia: 'Martes',
+                  hora: '11:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '14:00',
+                },
+              ],
+            },
+          ],
+          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
+          fechaInicio: '22-04-2022',
+          fechaTermino: '22-07-2022',
+          estado: 'Desarrollada',
+        },
+        {
+          alumnos: [
+            {
+              nombre: 'Gabriel Andres Cortez Acevedo',
+            },
+          ],
+          apoyos: [
+            {
+              nombre: 'Polet Rodriguez',
+              cargo: 'Psicólogo/a',
+              horarios: [
+                {
+                  dia: 'Martes',
+                  hora: '11:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '14:00',
+                },
+              ],
+            },
+          ],
+          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
+          estado: 'Desarrollada',
+        },
+        {
+          alumnos: [
+            {
+              nombre: 'Gabriel Andres Cortez Acevedo',
+            },
+            {
+              nombre: 'Rodrigo Luis Centeno Marino',
+            },
+            {
+              nombre: 'Manuel Lindorgo Diaz Riquelme',
+            }
+          ],
+          apoyos: [
+            {
+              nombre: 'Kineciologo - Paul Bastian Paredes Ramirez',
+              cargo: 'Otro',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Paula Mercedes Leiva Alvarez',
+              cargo: 'Fonoaudiólogo/a',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Psicologo - Pedro Ismael Fernandez Oyarzun',
+              cargo: 'Otro',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Kine - Paulo Pedro Perez Londra',
+              cargo: 'Otro',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Daniela Vega',
+              cargo: 'Educ. Diferencial',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '14:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '11:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Polet Rodriguez',
+              cargo: 'Psicólogo/a',
+              horarios: [
+                {
+                  dia: 'Martes',
+                  hora: '11:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '14:00',
+                },
+              ],
+            },
+          ],
+          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
+          fechaInicio: '22-04-2022',
+          fechaTermino: '22-07-2022',
+          estado: 'Desarrollada',
+        },
+        {
+          alumnos: [
+            {
+              nombre: 'Catalina Andrea Gaete Jeria',
+            },
+            {
+              nombre: 'Martín Alejandro Lopez Perez',
+            }
+          ],
+          apoyos: [
+            {
+              nombre: 'Paula Mercedes Leiva Alvarez',
+              cargo: 'Fonoaudiólogo/a',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Daniela Vega',
+              cargo: 'Educ. Diferencial',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '14:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '11:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Polet Rodriguez',
+              cargo: 'Psicólogo/a',
+              horarios: [
+                {
+                  dia: 'Martes',
+                  hora: '11:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '14:00',
+                },
+              ],
+            },
+          ],
+          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
+          fechaInicio: '22-04-2022',
+          fechaTermino: '22-07-2022',
+          estado: 'Desarrollada',
+        },
+        {
+          alumnos: [
+            {
+              nombre: 'Catalina Andrea Gaete Jeria',
+            },
+            {
+              nombre: 'Martín Alejandro Lopez Perez',
+            }
+          ],
+          apoyos: [
+            {
+              nombre: 'Paula Mercedes Leiva Alvarez',
+              cargo: 'Fonoaudiólogo/a',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '12:00',
+                },
+                {
+                  dia: 'Martes',
+                  hora: '14:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Daniela Vega',
+              cargo: 'Educ. Diferencial',
+              horarios: [
+                {
+                  dia: 'Lunes',
+                  hora: '14:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '11:00',
+                },
+              ],
+            },
+            {
+              nombre: 'Polet Rodriguez',
+              cargo: 'Psicólogo/a',
+              horarios: [
+                {
+                  dia: 'Martes',
+                  hora: '11:00',
+                },
+                {
+                  dia: 'Viernes',
+                  hora: '14:00',
+                },
+              ],
+            },
+          ],
+          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
+          fechaInicio: '22-04-2022',
+          fechaTermino: '22-07-2022',
+          estado: 'Desarrollada',
+        },
       ],
       selectedchk: [],
       chkTodo: null,
@@ -347,6 +701,7 @@ export default {
           key: 'alumnos',
           label: 'Nombre del/los estudiante(s)',
           sortable: true,
+          style: 'display: table-cell; vertical-align: middle; width: 24%;',
           thStyle: {
             width: '100px !important',
             display: 'table-cell',
@@ -354,9 +709,10 @@ export default {
           },
         },
         {
-          key: 'apoyoEspecializado',
+          key: 'apoyos',
           label: 'Apoyo especializado requerido',
           sortable: true,
+          style: 'display: table-cell; vertical-align: middle; width: 35%;',
           thStyle: {
             width: '150px !important',
             display: 'table-cell',
@@ -364,9 +720,12 @@ export default {
           },
         },
         {
-          key: 'horario',
+          key: 'horarios',
           label: 'Horario día/hora',
+          style: 'width: 160px !important',
+          class: 'text-center',
           sortable: true,
+          style: 'display: table-cell; vertical-align: middle; width: 16%;',
           thStyle: {
             width: '60px !important',
             display: 'table-cell',
@@ -375,8 +734,10 @@ export default {
         },
         {
           key: 'fechaInicio',
-          label: 'Fecha de inicio',
+          label: 'Fecha inicio',
           sortable: true,
+          class: 'text-center',
+          style: 'display: table-cell; vertical-align: middle; width: 10%;',
           thStyle: {
             width: '60px !important',
             display: 'table-cell',
@@ -385,8 +746,10 @@ export default {
         },
         {
           key: 'fechaTermino',
-          label: 'Fecha de término',
+          label: 'Fecha término',
           sortable: true,
+          class: 'text-center',
+          style: 'display: table-cell; vertical-align: middle; width: 10%;',
           thStyle: {
             width: '60px !important',
             display: 'table-cell',
@@ -394,11 +757,13 @@ export default {
           },
         },
         {
-          key: 'observaciones',
-          label: 'Observaciones',
-          sortable: true,
+          key: 'acciones',
+          label: 'acciones',
+          class: 'text-center',
+          style: 'display: table-cell; vertical-align: middle; width: 2% !important;',
           thStyle: {
-            width: '200px !important',
+            width: '80px !important',
+            'text-align': 'center',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -416,19 +781,19 @@ export default {
         //   },
         // },
       ],
-      fieldAcciones: [
-        {
-          key: 'acciones',
-          label: 'acciones',
-          tdClass: 'text-center',
-          thStyle: {
-            width: '80px !important',
-            'text-align': 'center',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
-      ],
+      // fieldAcciones: [
+      //   {
+      //     key: 'acciones',
+      //     label: 'acciones',
+      //     class: 'text-center',
+      //     thStyle: {
+      //       width: '80px !important',
+      //       'text-align': 'center',
+      //       display: 'table-cell',
+      //       'vertical-align': 'middle',
+      //     },
+      //   },
+      // ],
     }
   },
   computed: {
@@ -456,7 +821,7 @@ export default {
   },
   mounted() {
     this.cargarReunionesCoordinacions()
-    this.setTableList()
+    // this.setTableList()
   },
   methods: {
     // ...mapActions({

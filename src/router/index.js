@@ -4,6 +4,9 @@ import VueRouter from 'vue-router'
 // import { canNavigate } from '@/libs/acl/routeProtection'
 // import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 
+// Menu Desplegable
+import miPerfil from './menuDesplegable/miPerfil'
+import miHorario from './menuDesplegable/miHorario'
 // Menu
 import inicio from './inicio/inicio'
 import home from './inicio/home'
@@ -28,6 +31,9 @@ const router = new VueRouter({
     return { x: 0, y: 0 }
   },
   routes: [
+    // Menu Desplegable
+    ...miPerfil,
+    ...miHorario,
     // Menu
     ...inicio,
     ...home,

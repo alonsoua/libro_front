@@ -4,7 +4,9 @@
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
   >
-    <b-row>
+    <b-row
+      class="mb-3"
+    >
       <b-col
         lg="2"
         md="3"
@@ -32,7 +34,7 @@
         <!-- CREAR y EDITAR -->
         <apoyosCreate
           submitTitle="Guardar Apoyo"
-          title="Crear nuevo apoyo"
+          title="Registrar apoyo"
         />
         <!-- editar debe enviar id y si cambia  -->
 
@@ -58,12 +60,12 @@
             variant="primary"
             class="btn-md"
           >
-            Crear Apoyo
+            Registrar Apoyo
           </b-button>
         </div>
       </b-col>
 
-      <b-col cols="12">
+      <b-col cols="12" style="min-height: 490px !important;">
         <b-table
           striped
           small
@@ -150,6 +152,16 @@
             />
           </template>
         </b-table>
+        <b-alert
+          v-if="items.length === 0"
+          variant="primary"
+          show
+          class="text-center pt-25 pb-25"
+        >
+          <div class="alert-body">
+            <span>No existen apoyos registrados.</span>
+          </div>
+        </b-alert>
       </b-col>
 
       <b-col
@@ -170,6 +182,14 @@
 </template>
 
 <script>
+// ETIQUETAS
+import {
+  BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
+  BButton, VBModal, BAlert
+} from 'bootstrap-vue'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import Ripple from 'vue-ripple-directive'
+
 // COMPONENTES RECICLADOS
 import btnMostrar from '../../../../../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../../../../../components/List/colAccionesBtnes.vue'
@@ -178,15 +198,7 @@ import colEstado from '../../../../../../components/List/colEstado.vue'
 import spinner from '../../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../../components/List/colNombreImg.vue'
 
-// ETIQUETAS
-import {
-  BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
-  BButton, VBModal
-} from 'bootstrap-vue'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
-import Ripple from 'vue-ripple-directive'
-
-// COMPONENTES
+// HIJOS
 import apoyosCreate from './Apoyos/ApoyosCreate.vue'
 
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
@@ -204,17 +216,20 @@ export default {
     BCardText,
     BButton,
     VBModal,
+    BAlert,
 
-    // COMPONENTES
-    apoyosCreate,
-    colAccionesBtnes,
+    // COMPONENTES RECICLADOS
     // btnCrear,
     // inputFiltro,
+    colAccionesBtnes,
     btnMostrar,
     colPeriodo,
     colEstado,
     spinner,
     colNombreImg,
+
+    // HIJOS
+    apoyosCreate,
   },
   directives: {
     'b-modal': VBModal,
@@ -231,6 +246,12 @@ export default {
           horasAula: '5',
           horasFuera: '3',
           tiposApoyo: 'FONOAUDIÓLOGA PROFESORA DIFERENCIAL ASISTENTE DE AULA PSICÓLOGA TERAPEUTA OCUPACIONAL',
+        },
+        {
+          tipoAprendizaje: 'Lenguaje',
+          horasAula: '5',
+          horasFuera: '3',
+          tiposApoyo: 'FONOAUDIÓLOGA PROFESORA DIFERENCIAL ASISTENTE DE AULA PSICÓLOGA TERAPEUTA OCUPACIONAL TRABAJADORA SOCIAL',
         },
         {
           tipoAprendizaje: 'Lenguaje',

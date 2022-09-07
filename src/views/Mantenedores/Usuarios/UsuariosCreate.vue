@@ -2,7 +2,7 @@
   <usuarioForm
     btnSubmit="Crear Usuario"
     :usuario="data"
-    @processForm="agregar"
+    @processForm="agregar2"
   />
 </template>
 
@@ -21,20 +21,54 @@ export default {
   data() {
     return {
       data: {
-        rbd: '',
-        nombre: '',
-        insignia: '',
-        correo: '',
+        imagenPerfil: '',
+        rut: '',
+        nombres: '',
+        primerApellido: '',
+        segundoApellido: '',
         telefono: '',
+        correo: '',
         direccion: '',
-        dependencia: '',
-        idPeriodoActivo: '',
+        idEstablecimiento: null,
+        idRol: null,
         estado: null,
       },
     }
   },
   methods: {
     ...mapActions({ createUsuario: 'usuarios/addUsuarios' }),
+    agregar2(usuario) {
+      // this.$bvToast.toast('Toast body content', {
+
+      //   title: `Variant`,
+      //   variant: 'success',
+      //   solid: true,
+      // })
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Usuario creado 👍',
+          text: `El usuario "${usuario.nombres} ${usuario.primerApellido}
+            ${usuario.segundoApellido}" fue creado con éxito!`,
+          icon: 'CheckIcon',
+          variant: 'success',
+          solid: true,
+        },
+      },
+      {
+        position: 'top-right',
+        timeout: 4000,
+      })
+      // this.$swal({
+      //   title: 'Error!',
+      //   text: 'Ingreso de datos fraudulento!',
+      //   icon: 'error',
+      //   customClass: {
+      //     confirmButton: 'btn btn-primary',
+      //   },
+      //   buttonsStyling: false,
+      // })
+    },
     agregar(usuario) {
       this.createUsuario(usuario).then(() => {
         const errorUsuarios = store.state.usuarios

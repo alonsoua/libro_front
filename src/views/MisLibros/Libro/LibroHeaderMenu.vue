@@ -4,12 +4,13 @@
     <b-card
       aria-hidden="true"
       class="mt-1"
+
       style="margin-bottom: 12px; "
     >
       <!-- Menu Info: Input Fields -->
       <b-tabs
+        style="margin: -10px -10px -26px -10px!important;"
         v-model="tabIndex"
-        style="margin: -10px 0px -26px 0px!important;"
         justified
         pills
       >
@@ -39,14 +40,15 @@
         </b-tab>
 
         <!-- Tab: Libro Pie -->
+        <!-- v-if="@can('PIE')" -->
         <b-tab active lazy>
           <template #title>
             <feather-icon
-              icon="FeatherIcon"
+              icon="FileTextIcon"
               size="18"
               class="mr-0 mr-sm-50"
             />
-            <span class="d-none d-sm-inline">Registro PIE</span>
+            <span class="d-none d-sm-inline">PIE</span>
           </template>
         </b-tab>
 
@@ -90,6 +92,7 @@
     >
       <notas/>
     </b-card>
+
     <b-card
       v-if="tabIndex === 2"
     >

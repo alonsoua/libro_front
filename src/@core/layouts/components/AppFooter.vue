@@ -1,22 +1,22 @@
 <template>
   <p class="clearfix mb-0">
-    <span class="float-md-left d-block d-md-inline-block mt-25">
-      COPYRIGHT  © {{ new Date().getFullYear() }}
+    <span class="float-right d-block d-md-inline-block">
+      COPYRIGHT  © {{ new Date().getFullYear() }} |
+      Desarrollado por
       <b-link
-        class="ml-25"
-        href="https://1.envato.market/pixinvent_portfolio"
+        class=""
+        href="https://softinnova.cl"
         target="_blank"
-      >Pixinvent</b-link>
-      <span class="d-none d-sm-inline-block">, All rights Reserved</span>
+      >Softinnova</b-link> |
+      <span class="d-none d-sm-inline-block">Todos los derechos reservados</span>
     </span>
 
-    <span class="float-md-right d-none d-md-block">Hand-crafted &amp; Made with
+    <!-- <span class="float-md-right d-none d-md-block">Hecho a mano &amp; Hecho con
       <feather-icon
         icon="HeartIcon"
         size="21"
-        class="text-danger stroke-current"
       />
-    </span>
+    </span> -->
   </p>
 </template>
 

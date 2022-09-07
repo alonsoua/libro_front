@@ -9,29 +9,29 @@ export const $themeBreakpoints = {}
 // APP CONFIG
 export const $themeConfig = {
   app: {
-    appName: 'Sie', // Will update name in navigation menu (Branding)
+    appName: 'Sie Digital ', // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
     appLogoImage: require('@/assets/images/logo/logo.svg'), // Will update logo in navigation menu (Branding)
   },
   layout: {
     isRTL: false,
-    skin: 'dark', // light, dark, bordered, semi-dark
-    routerTransition: 'zoom-fade', // zoom-fade, slide-fade, fade-bottom, fade, zoom-out, none
-    type: 'horizontal', // vertical, horizontal
+    skin: 'semi-dark', // light, dark, bordered, semi-dark
+    routerTransition: 'fade-bottom', // zoom-fade, slide-fade, fade-bottom, fade, zoom-out, none
+    type: 'vertical', // vertical, horizontal
     contentWidth: 'full', // full, boxed
     menu: {
       hidden: false,
-      isCollapsed: false,
+      isCollapsed: true,
     },
     navbar: {
       // ? For horizontal menu, navbar type will work for navMenu type
-      type: 'sticky', // static , sticky , floating, hidden
-      backgroundColor: '', // BS color options [primary, success, etc]
+      type: 'static', // static , sticky , floating, hidden
+      backgroundColor: 'primary', // BS color options [primary, success, etc]
     },
     footer: {
       type: 'hidden', // static, sticky, hidden
     },
-    customizer: false,
+    customizer: true,
     enableScrollToTop: true,
   },
 }

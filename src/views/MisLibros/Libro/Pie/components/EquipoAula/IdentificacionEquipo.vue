@@ -3,7 +3,7 @@
     class="mt-2"
     vertical
     nav-wrapper-class="nav-vertical"
-    active-tab-class="font-weight-bold text-primary"
+    active-tab-class="font-weight-bold"
     fill
   >
     <b-tab

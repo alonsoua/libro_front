@@ -2,7 +2,7 @@
   <!-- Menu Info: Input Fields -->
   <!-- justified -->
   <b-tabs
-    style="margin: -12px 0px -30px !important;"
+    style="margin: -12px -21px -30px -21px!important;"
     align="center"
     fill
     v-model="tabIndex"
@@ -15,30 +15,41 @@
 
       <b-tab lazy :active="menu.active">
         <template #title>
-          <span class="d-none d-sm-inline">
+          <span
+            class="d-none d-inline mb-25"
+          >
             {{ menu.index }}.
             {{ menu.abreviatura }}
           </span>
         </template>
 
         <colLinea
-          style="margin-top: -14px; margin-bottom: 20px;"
+          style="margin-top: -15px; margin-bottom: 24px;"
         />
 
         <!-- ENCABEZADO -->
-        <div class="meetup-header d-flex align-items-center">
+        <div class="meetup-header d-flex align-items-center mt-2">
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-1">
+            <b-card-text
+              v-if="menu.index !== 'V'"
+              class="mb-0 ml-2"
+            >
               {{ menu.index }}
-            </h4>
+            </b-card-text>
+            <b-card-title
+              v-if="menu.index === 'V'"
+              class="mb-0 ml-2"
+            >
+              {{ menu.index }}
+            </b-card-title>
           </div>
           <div class="ml-1">
 
             <!-- TÍTULO -->
-            <b-card-title
-              v-if="menu.titulo !== ''"
+            <b-card-text
+              v-if="menu.titulo !== '' && menu.index !== 'V'"
               class="mb-25"
               style="margin-top: 4px;"
             >
@@ -53,6 +64,14 @@
                 direccion="right"
                 style="margin-left: -6px; margin-top: -15px; margin-bottom: -10px;"
               />
+            </b-card-text>
+
+            <b-card-title
+              v-if="menu.titulo !== '' && menu.index === 'V'"
+              class="mb-25"
+              style="margin-top: 4px;"
+            >
+              {{ menu.titulo}}
             </b-card-title>
 
             <!-- TEXTO -->
@@ -118,6 +137,8 @@ import planificacionEducativa from './components/PlanificacionEducativa.vue'
 import implementacionEvaluacion from './components/ImplementacionEvaluacion.vue'
 import actividades from './components/Actividades.vue'
 import reuniones from './components/Reuniones.vue'
+import FormLayoutDatalistHelperVue from '../../../../../../vuexy-full-version/src/views/forms/form-layout/FormLayoutDatalistHelper.vue'
+import TourVue from '../../../../../../vuexy-full-version/src/views/extensions/tour/Tour.vue'
 
 
 export default {
@@ -151,7 +172,7 @@ export default {
       tabIndex: 1,
       menus: [
         {
-          active: true,
+          active: false,
           index: 'I',
           abreviatura: 'Equipo',
           titulo: 'Equipo de aula',
@@ -159,7 +180,7 @@ export default {
           informacion: 'El Equipo de Aula es aquel grupo de profesionales conformado por el o los profesores de aula respectivo, el profesor especialista, profesor especializado o psicopedagoga, y otros profesionales asistentes de la educación, asistentes de aula, intérpretes en lengua de señas chilena, etc., cuya finalidad común es el mejoramiento de la calidad de la enseñanza en un marco de valorización de la diversidad y de respeto por las diferencias individuales.',
           submenus: [
             {
-              active: false,
+              active: true,
               index: '1',
               abreviatura: 'Identificación del equipo de aula',
               titulo: 'Identificación del equipo de aula',
@@ -187,7 +208,7 @@ export default {
           informacion: '',
           submenus: [
             {
-              active: true,
+              active: false,
               index: '1',
               abreviatura: 'Estrategias diversificadas',
               titulo: 'Estrategias diversificadas',
@@ -195,7 +216,7 @@ export default {
               informacion: '',
               submenus: [
                 {
-                  active: true,
+                  active: false,
                   index: 'a',
                   abreviatura: 'Panorama',
                   titulo: 'Panorama del curso (de todos los estudiantes)',
@@ -249,35 +270,35 @@ export default {
                 {
                   active: true,
                   index: 'a',
-                  abreviatura: 'Estudiantes',
-                  titulo: 'Estrategias que se utilizarán para dar respuesta a la diversidad de estudiantes, en el aula común.',
+                  abreviatura: 'Diversidad',
+                  titulo: 'Estrategias que se utilizarán para dar respuesta a la diversidad de estudiantes, en el aula común',
                   texto: '',
                   informacion: '',
                 },
                 {
                   active: false,
                   index: 'b',
-                  abreviatura: 'Adecuaciones',
-                  titulo: 'Estrategias que se utilizarán para adecuar o flexibilizar el currículum, según corresponda.',
-                  texto: '',
+                  abreviatura: 'Adecuación',
+                  titulo: 'Estrategias que se utilizarán para adecuar o flexibilizar el currículum, según corresponda',
+                  texto: 'El detalle de las estrategias y procedimientos de las adecuaciones curriculares debe encontrarse en el Plan de Adecuación Curricular Individual (PACI).',
                   informacion: '',
                 },
                 {
                   active: false,
                   index: 'c',
-                  abreviatura: 'Evaluaciones',
-                  titulo: 'Estrategias y procedimientos de evaluación de aprendizaje con foco en la diversidad y en las necesidades educativas especiales.',
+                  abreviatura: 'Evaluación',
+                  titulo: 'Estrategias y procedimientos de evaluación de aprendizaje con foco en la diversidad y en las necesidades educativas especiales',
                   texto: '',
                   informacion: '',
                 },
               ]
             },
             {
-              active: false,
+              active: true,
               index: '4',
               abreviatura: 'Plan de apoyo individual',
-              titulo: 'Plan de apoyo individual (incluye los ajustes o adecuaciones curriculares)',
-              texto: '',
+              titulo: 'Plan de apoyo individual',
+              texto: 'Incluye los ajustes o adecuaciones curriculares.',
               informacion: 'El Plan de Apoyo Individual (PAI), se define como la planificación del proceso de enseñanza aprendizaje para responder a las NEE que presenta el estudiante, después de un proceso de evaluación integral e interdisciplinaria, que incluye la organización, los profesionales responsables de los apoyos especializados y el tipo de ajuste o adecuaciones curriculares que el estudiante requiere o no, para progresar y participar en los aprendizajes del currículo nacional (incluye el punto 3 Respuesta a la Diversidad y Adecuaciones Curriculares).',
               submenus: [],
             },
@@ -293,7 +314,7 @@ export default {
           ]
         },
         {
-          active: false,
+          active: true,
           index: 'III',
           abreviatura: 'Implementación y evaluación educativa',
           titulo: 'Registro de la implementación y evaluación del proceso educativo',
@@ -301,7 +322,7 @@ export default {
           informacion: '',
           submenus: [
             {
-              active: true,
+              active: false,
               index: '1',
               abreviatura: 'Aplicación y evaluación',
               titulo: 'Aplicación y evaluación de las estrategias diversificadas y trabajo colaborativo',
@@ -312,7 +333,7 @@ export default {
                   active: true,
                   index: 'a',
                   abreviatura: 'Acciones de aplicación',
-                  titulo: 'Indicar las acciones de aplicación de las estrategias diversificadas planificadas, en los períodos estipulados previamente (Item II, 1.b).',
+                  titulo: 'Indicar las acciones de aplicación de las estrategias diversificadas planificadas, en los períodos estipulados previamente (Item II, 1 .b)',
                   texto: '',
                   informacion: '',
                 },
@@ -320,7 +341,7 @@ export default {
                   active: false,
                   index: 'b',
                   abreviatura: 'Acciones realizadas',
-                  titulo: 'Registro de acciones realizadas por el profesor o profesora de aula ya sea para la planificación conjunta de la respuesta educativa diversificada o para el seguimiento y evaluación del trabajo colaborativo, entre otras actividades.',
+                  titulo: 'Registro de acciones realizadas por el profesor o profesora de aula ya sea para la planificación conjunta de la respuesta educativa diversificada o para el seguimiento y evaluación del trabajo colaborativo, entre otras actividades',
                   texto: '',
                   informacion: '',
                 },
@@ -335,7 +356,7 @@ export default {
               informacion: '',
             },
             {
-              active: false,
+              active: true,
               index: '3',
               abreviatura: 'Logros de aprendizaje',
               titulo: 'Registro de logros de aprendizaje',

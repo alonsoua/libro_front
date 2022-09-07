@@ -26,7 +26,7 @@
             <b-form-datepicker
               v-model="reunion.fecha"
               id="fecha"
-              placeholder="Seleccione una fecha"
+              placeholder="Selecciona una fecha"
               hide-header
               :date-format-options="{
                 year: 'numeric',
@@ -67,7 +67,7 @@
             <b-form-timepicker
               v-model='reunion.hora'
               aria-controls='hora'
-              placeholder="Seleccione una hora"
+              placeholder="Selecciona una hora"
               hide-header
               locale='es-CL'
               no-close-button

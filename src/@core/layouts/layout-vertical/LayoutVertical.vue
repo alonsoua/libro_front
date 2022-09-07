@@ -11,17 +11,16 @@
       class="header-navbar navbar navbar-shadow align-items-center"
       :class="[navbarTypeClass]"
     >
-      <slot
+      <app-navbar-vertical-layout :toggle-vertical-menu-active="toggleVerticalMenuActive" />
+      <!-- <slot
         name="navbar"
         :toggleVerticalMenuActive="toggleVerticalMenuActive"
         :navbarBackgroundColor="navbarBackgroundColor"
         :navbarTypeClass="[...navbarTypeClass, 'header-navbar navbar navbar-shadow align-items-center']"
       >
-        <app-navbar-vertical-layout :toggle-vertical-menu-active="toggleVerticalMenuActive" />
-      </slot>
+      </slot> -->
     </b-navbar>
     <!--/ Navbar -->
-
     <!-- Vertical Nav Menu -->
     <vertical-nav-menu
       v-if="!isNavMenuHidden"

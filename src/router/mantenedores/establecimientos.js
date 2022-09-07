@@ -18,7 +18,7 @@ export default [
     name: 'establecimientos-create',
     component: () => import('@/views/Mantenedores/Establecimientos/EstablecimientosCreate.vue'),
     meta: {
-      pageTitle: 'Crear establecimiento',
+      pageTitle: 'Crear Establecimiento',
       breadcrumb: [
         {
           text: 'Establecimientos',

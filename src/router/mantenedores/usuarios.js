@@ -13,4 +13,22 @@ export default [
       ],
     },
   },
+  {
+    path: '/usuarios-create',
+    name: 'usuarios-create',
+    component: () => import('@/views/Mantenedores/Usuarios/UsuariosCreate.vue'),
+    meta: {
+      pageTitle: 'Crear Usuario',
+      breadcrumb: [
+        {
+          text: 'Usuarios',
+          to: '/usuarios',
+        },
+        {
+          text: 'Crear Usuario',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

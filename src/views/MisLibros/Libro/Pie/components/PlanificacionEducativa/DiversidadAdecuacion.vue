@@ -20,7 +20,7 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 text-primary">
+            <h4 class="mb-0">
               {{ menu.index.toUpperCase() }}
             </h4>
           </div>
@@ -29,7 +29,7 @@
             <!-- TÍTULO -->
             <b-card-title
               v-if="menu.titulo !== ''"
-              class="mb-25 text-primary h4"
+              class="mb-25 h4"
               style="margin-top: 4px;"
             >
               {{ menu.titulo }}
@@ -55,22 +55,22 @@
           </div>
         </div>
 
-        <estudiantes
+        <diversidad
           v-if="menu.index === 'a'"
           class="mt-2"
-          btnSubmit="Actualizar Estrategia"
+          btnSubmit="Actualizar Estrategias"
         />
 
-        <adecuaciones
+        <adecuacion
           v-if="menu.index === 'b'"
           class="mt-2"
-          btnSubmit="Actualizar Estrategia"
+          btnSubmit="Actualizar Estrategias"
         />
 
-        <evaluaciones
+        <evaluacion
           v-if="menu.index === 'c'"
           class="mt-2"
-          btnSubmit="Actualizar Estrategia"
+          btnSubmit="Actualizar Estrategias"
         />
       </b-tab>
     </div>
@@ -83,9 +83,9 @@ import {
   BTabs, BTab, BCardText, BCard, BCardTitle,
 } from 'bootstrap-vue'
 
-import estudiantes from './DiversidadAdecuacion/Estudiantes.vue'
-import adecuaciones from './DiversidadAdecuacion/Adecuaciones.vue'
-import evaluaciones from './DiversidadAdecuacion/Evaluaciones.vue'
+import diversidad from './DiversidadAdecuacion/Diversidad.vue'
+import adecuacion from './DiversidadAdecuacion/Adecuacion.vue'
+import evaluacion from './DiversidadAdecuacion/Evaluacion.vue'
 // import especialistas from '../EquipoAula/IdentificacionEquipo/Especialistas.vue'
 // import docentesPie from '../EquipoAula/IdentificacionEquipo/DocentesPie.vue'
 // import coordinacion from '../EquipoAula/IdentificacionEquipo/Coordinacion.vue'
@@ -100,9 +100,9 @@ export default {
     BCardTitle,
 
     // componentes
-    estudiantes,
-    adecuaciones,
-    evaluaciones,
+    diversidad,
+    adecuacion,
+    evaluacion,
     // especialistas,
     // docentesPie,
     // coordinacion,

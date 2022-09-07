@@ -2,6 +2,7 @@
   <b-tabs
     align="center"
     fill
+
   >
     <div
       v-for="(menu, key) in submenus"
@@ -15,7 +16,7 @@
         <!-- MENU TAB -->
         <template #title>
           <span
-            class="d-none d-sm-inline"
+            class="d-none d-inline mb-25"
           >
             {{ menu.index }}.
             {{ menu.abreviatura }}
@@ -23,7 +24,7 @@
         </template>
 
         <colLinea
-          style="margin-top: -14px; margin-bottom: 20px;"
+          style="margin-top: -15px; margin-bottom: 24px;"
         />
 
         <!-- ENCABEZADO -->
@@ -31,7 +32,7 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-1">
+            <h4 class="mb-0 ml-2">
               {{ menu.index }}
             </h4>
           </div>
@@ -75,7 +76,25 @@
           class="mt-2"
         />
 
-        <!-- COMPONENTS -->
+        <!-- HIJOS -->
+
+        <aplicacion-evaluacion
+          v-if="menu.index === '1'"
+          class="mt-2 mb-3 ml-25 mr-2"
+          :submenus="menu.submenus"
+        />
+
+        <apoyos-estudiantes
+          v-if="menu.index === '2'"
+          class="mt-1 mb-3 ml-2 mr-2"
+          :submenus="menu.submenus"
+        />
+
+        <logros-aprendizaje
+          v-if="menu.index === '3'"
+          class="mt-1 mb-3 ml-2 mr-2"
+          :submenus="menu.submenus"
+        />
 
       </b-tab>
     </div>
@@ -84,25 +103,24 @@
 </template>
 <script>
 
-// Etiquetas //
+// ETIQUETAS
 import {
   BRow, BCol, BFormGroup, BFormInput, BFormInvalidFeedback,
   BMedia, BButton, BAvatar, BTab, BTabs, BCardText, BCardTitle
 } from 'bootstrap-vue'
 
-// Componentes //
+// RECICLADOS
 import colLinea from '../../../../components/Form/colLinea.vue'
 import popover from '../../../../components/Form/popover.vue'
-// import lista from './Lista/Lista.vue'
-// import notas from './Notas/Notas.vue'
-// import asistencias from './Asistencias/Asistencias.vue'
-// import anotaciones from './Anotaciones/Anotaciones.vue'
 
-// import libroMenuAsistencia from './LibroMenuAsistencia.vue'
+// HIJOS
+import AplicacionEvaluacion from './ImplementacionEvaluacion/AplicacionEvaluacion.vue'
+import ApoyosEstudiantes from './ImplementacionEvaluacion/ApoyosEstudiantes.vue'
+import LogrosAprendizaje from './ImplementacionEvaluacion/LogrosAprendizaje.vue'
 
 export default {
   components: {
-    // Etiquetas
+    // ETIQUETAS
     BRow,
     BCol,
     BFormGroup,
@@ -116,14 +134,14 @@ export default {
     BCardText,
     BCardTitle,
 
-    // Components
+    // RECICLADOS
     colLinea,
     popover,
-    // lista,
-    // notas,
-    // libroPie,
-    // asistencias,
-    // anotaciones,
+
+    // HIJOS
+    AplicacionEvaluacion,
+    ApoyosEstudiantes,
+    LogrosAprendizaje,
   },
   data() {
     return {}
@@ -133,8 +151,6 @@ export default {
       type: Array,
       required: true,
     }
-  },
-  methods: {
   },
 }
 </script>

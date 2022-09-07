@@ -3,6 +3,6 @@ export default [
     header: 'Mis Libros',
     title: 'Mis Libros',
     route: 'mis-libros',
-    icon: 'BookIcon',
+    icon: 'BookOpenIcon',
   },
 ]

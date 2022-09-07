@@ -8,188 +8,299 @@
       aria-hidden="true"
       class="mb-0"
     >
-      <b-form>
-        <!-- Establecimiento Info: Input Fields -->
-        <b-row>
+      <!-- Form: USUARIO -->
+      <b-row>
 
-          <!-- Field: Imagen -->
-          <b-col
-            cols="12"
-            md="12"
+        <!-- RBD -->
+        <b-col
+          cols="12"
+          md="2"
+        >
+          <b-form-group
+            label="Rut *"
+            label-for="rut"
           >
-            <b-form-group
-              label="Insignia"
-              label-for="insignia"
+            <b-form-input
+              id="rut"
+              v-model="usuario.rut"
+              placeholder="Ingresa el rut"
+              :state="v$.usuario.rut.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.rut.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.rut.$error"
+              id="rutInfo"
             >
-              <!-- Media -->
-              <b-media class="mb-2">
-                <template #aside>
-                  <b-avatar
-                    ref="previewEl"
-                    :src="establecimiento.insignia"
-                    :text="establecimiento.nombre == ''
-                      ? 'E'
-                      : avatarText(establecimiento.nombre)"
-                    size="90px"
-                    rounded
-                    variant="light-success"
-                    :title="establecimiento.nombre == ''
-                      ? 'E'
-                      : avatarText(establecimiento.nombre)"
-                  />
-                </template>
-                <div class="d-flex flex-wrap">
-                  <b-button
-                    variant="primary"
-                    size="sm"
-                    @click="$refs.refInputEl.click()"
-                  >
-                    <input
-                      :id="establecimiento.insignia"
-                      ref="refInputEl"
-                      type="file"
-                      class="d-none"
-                      accept="image/png,image/jpeg,image/jpg"
-                      @input="inputImageRenderer"
-                      @change="onFileSelected"
-                    >
-                    <span class="d-none d-sm-inline">
-                      Seleccionar insignia
-                    </span>
-                    <feather-icon
-                      icon="UploadIcon"
-                      class="d-inline d-sm-none"
-                    />
-                  </b-button>
-                  <b-button
-                    variant="outline-secondary"
-                    class="ml-1"
-                    size="sm"
-                    @click="establecimiento.insignia = ''"
-                  >
-                    <span class="d-none d-sm-inline">Eliminar</span>
-                    <feather-icon
-                      icon="TrashIcon"
-                      class="d-inline d-sm-none"
-                    />
-                  </b-button>
-                </div>
-                <div class="mt-2 d-inline-block">
-                  <h4 class="mb-1">
-                    <span v-if="establecimiento.rbd">
-                      {{ establecimiento.rbd }}
-                    </span>
-                    <span v-if="establecimiento.rbd && establecimiento.nombre">
-                      <feather-icon
-                        icon="ChevronsRightIcon"
-                      />
-                    </span>
-                    <span v-if="establecimiento.nombre">
-                      {{ establecimiento.nombre }}
-                    </span>
-                  </h4>
-                </div>
-              </b-media>
-            </b-form-group>
-          </b-col>
+              <p v-for="error of v$.usuario.rut.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
-          <!-- Field: RBD -->
-          <b-col
-            cols="12"
-            md="2"
+        <!-- NOMBRES -->
+        <b-col
+          cols="12"
+          md="4"
+        >
+          <b-form-group
+            label="Nombre(s) *"
+            label-for="nombres"
           >
-            <b-form-group
-              label="RBD"
-              label-for="rbd"
+            <b-form-input
+              id="nombres"
+              v-model="usuario.nombres"
+              placeholder="Ingresa el primer y/o segundo nombre"
+              :state="v$.usuario.nombres.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.nombres.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.nombres.$error"
+              id="nombresInfo"
             >
-              <b-form-input
-                id="rbd"
-                v-model="establecimiento.rbd"
-                placeholder="Ingresa el rbd"
-                :state="v$.establecimiento.rbd.$error === true
-                ? false
-                : null"
-                @blur.native="v$.establecimiento.rbd.$touch"
-              />
-              <!-- Mensajes Error Validación -->
-              <b-form-invalid-feedback
-                v-if="v$.establecimiento.rbd.$error"
-                id="rbdInfo"
-              >
-                <p v-for="error of v$.establecimiento.rbd.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </p>
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
+              <p v-for="error of v$.usuario.nombres.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
-          <!-- Field: Nombre -->
-          <b-col
-            cols="12"
-            md="4"
+        <!-- PRIMER APELLIDO -->
+        <b-col
+          cols="12"
+          md="3"
+        >
+          <b-form-group
+            label="Primer Apellido *"
+            label-for="primerApellido"
           >
-            <b-form-group
-              label="Nombre"
-              label-for="nombre"
+            <b-form-input
+              id="primerApellido"
+              v-model="usuario.primerApellido"
+              placeholder="Ingresa el primer apellido"
+              :state="v$.usuario.primerApellido.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.primerApellido.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.primerApellido.$error"
+              id="primerApellidoInfo"
             >
-              <b-form-input
-                id="nombre"
-                v-model="establecimiento.nombre"
-                placeholder="Ingresa el nombre"
-                :state="v$.establecimiento.nombre.$error === true
-                ? false
-                : null"
-                @blur.native="v$.establecimiento.nombre.$touch"
-              />
-              <!-- Mensajes Error Validación -->
-              <b-form-invalid-feedback
-                v-if="v$.establecimiento.nombre.$error"
-                id="nombreInfo"
-              >
-                <p v-for="error of v$.establecimiento.nombre.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </p>
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
+              <p v-for="error of v$.usuario.primerApellido.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
-        </b-row>
+        <!-- SEGUNDO APELLIDO -->
+        <b-col
+          cols="12"
+          md="3"
+        >
+          <b-form-group
+            label="Segundo Apellido *"
+            label-for="segundoApellido"
+          >
+            <b-form-input
+              id="segundoApellido"
+              v-model="usuario.segundoApellido"
+              placeholder="Ingresa el segundo apellido"
+              :state="v$.usuario.segundoApellido.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.segundoApellido.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.segundoApellido.$error"
+              id="segundoApellidoInfo"
+            >
+              <p v-for="error of v$.usuario.segundoApellido.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
-        <colLinea />
+        <!-- Teléfono -->
+        <b-col
+          cols="12"
+          md="2"
+        >
+          <b-form-group
+            label="Celular"
+            label-for="celular"
+          >
+            <b-form-input
+              id="celular"
+              v-model="usuario.celular"
+              placeholder="Ingresa el celular"
+              :state="v$.usuario.celular.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.celular.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.celular.$error"
+              id="celularInfo"
+            >
+              <p v-for="error of v$.usuario.celular.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
-        <!-- Action Buttons -->
-        <btnSubmit
-          v-if="cargando"
-          variant="primary"
-          :btnText="btnSubmit"
-          @processBtn="submitOption"
-        />
-      </b-form>
+        <!-- CORREO -->
+        <b-col
+          cols="12"
+          md="4"
+        >
+          <b-form-group
+            label="Correo *"
+            label-for="correo"
+          >
+            <b-form-input
+              id="correo"
+              v-model="usuario.correo"
+              placeholder="Ingresa el correo"
+              :state="v$.usuario.correo.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.correo.$touch"
+            />
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.correo.$error"
+              id="correoInfo"
+            >
+              <p v-for="error of v$.usuario.correo.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
+
+        <!-- ESTABLECIMIENTO -->
+        <b-col
+          cols="12"
+          md="3"
+        >
+          <b-form-group
+            label="Establecimiento *"
+            label-for="establecimiento"
+          >
+            <b-form-select
+              v-model="usuario.idEstablecimiento"
+              :options="establecimientoOption"
+              :state="v$.usuario.idEstablecimiento.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.idEstablecimiento.$touch"
+              @change="changeRol"
+            />
+
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.idEstablecimiento.$error"
+              id="correoInfo"
+            >
+              <p v-for="error of v$.usuario.idEstablecimiento.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
+
+        <!-- ROL -->
+        <b-col
+          cols="12"
+          md="3"
+        >
+          <b-form-group
+            label="Rol *"
+            label-for="rol"
+          >
+            <!-- <v-select
+              v-model="usuario.idRol"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              label="title"
+              :options="rolesOption"
+            /> -->
+            <b-form-select
+              v-model="usuario.idRol"
+              :options="rolesOption"
+              :state="v$.usuario.idRol.$error === true
+              ? false
+              : null"
+              @blur.native="v$.usuario.idRol.$touch"
+              @change="changeRol"
+            />
+
+            <!-- Validaciones -->
+            <b-form-invalid-feedback
+              v-if="v$.usuario.idRol.$error"
+              id="correoInfo"
+            >
+              <p v-for="error of v$.usuario.idRol.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
+
+      </b-row>
+
+      <colLinea />
+
+      <!-- COMPONENTS -->
+      <form-docente v-if="rolSelected === 5"/>
+      <form-profesional-especializado v-if="rolSelected === 7"/>
+
+      <!-- Action Buttons -->
+      <btnSubmit
+        v-if="cargando"
+        variant="primary"
+        :btnText="btnSubmit"
+        @processBtn="submitOption"
+      />
     </b-card>
   </b-overlay>
 </template>
 
 <script>
-
-// Etiquetas //
+// ETIQUETAS //
 import {
   BRow, BCol, BFormGroup, BFormInput, BForm, BFormInvalidFeedback,
-  BMedia, BButton, BAvatar, BOverlay, BCard,
+  BMedia, BButton, BAvatar, BOverlay, BCard, BFormSelect,
 } from 'bootstrap-vue'
-import vSelect from 'vue-select'
+// import vSelect from 'vue-select'
 
-// Imágen //
+// IMÁGEN //
 import { avatarText } from '@core/utils/filter'
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils'
 import { ref } from '@vue/composition-api'
 
-// Validaciones //
+// VALIDACIONES //
 import useVuelidate from '@vuelidate/core'
-import { required, maxLength, helpers } from '@vuelidate/validators'
+import { required, maxLength, helpers, email } from '@vuelidate/validators'
 
-// Componentes //
+// COMPONENTS //
 import btnSubmit from '../../../components/Form/btnSubmit.vue'
 import colLinea from '../../../components/Form/colLinea.vue'
+
+import formDocente from './Form/FormDocente.vue'
+import formProfesionalEspecializado from './Form/FormProfesionalEspecializado.vue'
 
 export default {
   components: {
@@ -202,12 +313,16 @@ export default {
     BMedia,
     BButton,
     BAvatar,
-    vSelect,
+    // vSelect,
     BOverlay,
     BCard,
+    BFormSelect,
 
     btnSubmit,
     colLinea,
+
+    formDocente,
+    formProfesionalEspecializado,
   },
   setup(props) {
     // ? Demo Purpose => Update image on click of update
@@ -216,7 +331,7 @@ export default {
 
     const { inputImageRenderer } = useInputImageRenderer(refInputEl, base64 => {
       // eslint-disable-next-line no-param-reassign
-      props.establecimiento.insignia = base64
+      props.usuario.insignia = base64
     })
 
     return {
@@ -230,64 +345,93 @@ export default {
   data() {
     return {
       cargando: true,
+      rolSelected: null,
       // required,
       // email,
-      // dependenciasOption: [
-      //   { value: 'Municipal', text: 'Municipal' },
-      //   { value: 'Paricular', text: 'Paricular' },
-      //   { value: 'Particular Subvencionado', text: 'Particular Subvencionado' },
-      // ],
+      rolesOption: [
+        { value: null, text: 'Selecciona el rol...' },
+        { value: 1, text: 'Super Admin' },
+        { value: 2, text: 'Administrador Servicio Local' },
+        { value: 3, text: 'Director' },
+        { value: 4, text: 'Jefe UTP' },
+        { value: 5, text: 'Docente' },
+        { value: 6, text: 'Profesor Especializado' },
+        { value: 7, text: 'Profesional Especializado' },
+        { value: 8, text: 'Administrativo Matriculas' },
+      ],
+      establecimientoOption: [
+        { value: null, text: 'Selecciona el establecimiento...' },
+        { value: 1, text: 'Escuela Básica La Laguna' },
+        { value: 2, text: 'Escuela Básica El Rincón' },
+        { value: 2, text: 'Escuela Básica La Chocota' },
+      ],
     }
   },
   props: {
-    establecimiento: {
+    usuario: {
       type: Object,
       required: true,
     },
     btnSubmit: {
       type: String, // Texto del boton
-      default: 'Guardar Establecimiento',
+      default: 'Guardar Usuario',
     },
   },
   validations() {
     return {
-      establecimiento: {
-        nombre: {
+      usuario: {
+        rut: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: maxLength(250),
+          maxLength: helpers.withMessage('Debe tener máximo 9 caracteres.', maxLength(9)),
         },
-        rbd: {
+        nombres: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: maxLength(10),
+          maxLength: helpers.withMessage('Debe tener máximo 150 caracteres.', maxLength(150)),
+        },
+        primerApellido: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener máximo 100 caracteres.', maxLength(100)),
+        },
+        segundoApellido: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener máximo 100 caracteres.', maxLength(100)),
+        },
+        correo: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener máximo 100 caracteres.', maxLength(100)),
+
+          email: helpers.withMessage('Debe ser un correo valido.', email),
+        },
+        celular: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener máximo 11 caracteres.', maxLength(11)),
+        },
+        idRol: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+        idEstablecimiento: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
         },
       }
     }
   },
-        // correo: {
-        //   required,
-        //   email,
-        //   maxLength: maxLength(80),
-        // },
-        // telefono: {
-        //   required,
-        //   maxLength: maxLength(25),
-        // },
-        // direccion: {
-        //   required,
-        //   maxLength: maxLength(250),
-        // },
-        // dependencia: {
-        //   required,
-        // },
-        // estado: {},
   methods: {
+    changeRol() {
+      this.rolSelected = this.usuario.idRol
+    },
     submitOption() {
-      console.log('this.v$ :', this.v$.establecimiento)
-      this.v$.establecimiento.$touch()
-      // if (!this.v$.establecimiento.$invalid) {
-      //   this.$emit('processForm', this.establecimiento)
+      console.log('this.v$ :', this.v$.usuario)
+      this.v$.usuario.$touch()
+      this.$emit('processForm', this.usuario)
+      // if (!this.v$.usuario.$invalid) {
       // }
     },
     onFileSelected(e) {
@@ -300,7 +444,7 @@ export default {
       const reader = new FileReader()
       reader.readAsDataURL(file)
       reader.onload = e => {
-        this.establecimiento.insignia = e.target.result
+        this.usuario.insignia = e.target.result
       }
     },
   },

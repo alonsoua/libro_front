@@ -15,7 +15,7 @@
         <!-- MENU TAB -->
         <template #title>
           <span
-            class="d-none d-sm-inline"
+            class="d-none d-inline mb-25"
           >
             {{ menu.index }}.
             {{ menu.abreviatura }}
@@ -23,7 +23,7 @@
         </template>
 
         <colLinea
-          style="margin-top: -14px; margin-bottom: 20px;"
+          style="margin-top: -15px; margin-bottom: 24px;"
         />
 
         <!-- ENCABEZADO -->
@@ -31,7 +31,7 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 :class="{ 'mb-0 ml-1' : true, 'text-primary': menu.index === '4' ||  menu.index === '5' }">
+            <h4 class="mb-0 ml-2">
               {{ menu.index }}
             </h4>
           </div>
@@ -44,7 +44,6 @@
               style="margin-top: 4px;"
             >
               <div
-                :class="{ 'text-primary': menu.index === '4' ||  menu.index === '5' }"
               >
                 {{ menu.titulo }}
 
@@ -65,6 +64,7 @@
             <b-card-text
               v-if="menu.texto !== ''"
               class="mr-4 mb-0 text-secondary"
+              style="margin-bottom: 1px;"
             >
               {{ menu.texto }}
             </b-card-text>
@@ -72,7 +72,6 @@
         </div>
 
         <colLinea
-          v-if="menu.index !== '4' && menu.index !== '5'"
           ancho="100%"
           align="center"
           class="mt-2"
@@ -81,28 +80,28 @@
         <!-- COMPONENTS -->
         <estrategias-diversificadas
           v-if="menu.index === '1'"
-          class="mt-3 mb-3"
+          class="mt-2 mb-25 ml-25 mr-25"
           :submenus="menu.submenus"
         />
         <trabajo-colaborativo
           v-if="menu.index === '2'"
-          class="mt-3 mb-3"
+          class="mt-2 mb-25 ml-25 mr-25"
           :submenus="menu.submenus"
         />
         <diversidad-adecuacion
           v-if="menu.index === '3'"
-          class="mt-3 mb-3"
+          class="mt-2 mb-25 ml-25 mr-25"
           :submenus="menu.submenus"
         />
         <plan-apoyo
           v-if="menu.index === '4'"
-          class="mt-1 mb-3"
+          class="mt-1 mb-3 ml-2 mr-2"
           :submenus="menu.submenus"
         />
 
         <estrategias-trabajo
           v-if="menu.index === '5'"
-          class="mt-3 mb-3"
+          class="mt-3 mb-2 ml-3 mr-3"
           :submenus="menu.submenus"
         />
       </b-tab>

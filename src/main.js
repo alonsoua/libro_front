@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
 
+// import i18n from '@/libs/i18n'
 import router from './router'
 import store from './store'
 import App from './App.vue'
@@ -13,6 +14,11 @@ import './global-components'
 import '@/libs/portal-vue'
 import '@/libs/vue-select'
 import '@/libs/toastification'
+
+import '@/@fake-db/db'
+
+
+// axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1'
 
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
@@ -38,3 +44,11 @@ new Vue({
   store,
   render: h => h(App),
 }).$mount('#app')
+
+// store.dispatch('auth/attempt', localStorage.getItem('token')).then(() => {
+//   new Vue({
+//     router,
+//     store,
+//     render: h => h(App),
+//   }).$mount('#app')
+// })

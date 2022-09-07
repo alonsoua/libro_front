@@ -4,7 +4,7 @@
     vertical
     fill
     nav-wrapper-class="nav-vertical"
-    active-tab-class="font-weight-bold text-primary"
+    active-tab-class="font-weight-bold"
   >
     <div
       v-for="(menu, key) in submenus"
@@ -20,7 +20,7 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 text-primary">
+            <h4 class="mb-0">
               {{ menu.index.toUpperCase() }}
             </h4>
           </div>
@@ -29,7 +29,7 @@
             <!-- TÍTULO -->
             <b-card-title
               v-if="menu.titulo !== ''"
-              class="mb-25 text-primary h4"
+              class="mb-25 h4"
               style="margin-top: 4px;"
             >
               {{ menu.titulo }}

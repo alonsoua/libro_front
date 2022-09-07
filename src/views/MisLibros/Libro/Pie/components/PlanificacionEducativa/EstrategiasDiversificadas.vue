@@ -20,7 +20,7 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 text-primary">
+            <h4 class="mb-0">
               {{ menu.index.toUpperCase() }}
             </h4>
           </div>
@@ -29,12 +29,12 @@
             <!-- TÍTULO -->
             <b-card-title
               v-if="menu.titulo !== ''"
-              class="mb-25 text-primary h4"
+              class="mb-25 h4"
               style="margin-top: 4px; "
             >
               {{ menu.titulo }}
               <!-- INFORMATIVO -->
-              <popover
+              <!-- <popover
                 v-if="menu.informacion !== ''"
                 class="float-right"
                 id="0"
@@ -42,7 +42,7 @@
                 :texto="menu.informacion"
                 direccion="right"
                 style="margin-left: -6px; margin-top: -15px; margin-bottom: -10px;"
-              />
+              /> -->
             </b-card-title>
 
             <!-- TEXTO -->

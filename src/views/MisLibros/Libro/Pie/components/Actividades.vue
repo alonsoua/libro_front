@@ -15,7 +15,7 @@
         <!-- MENU TAB -->
         <template #title>
           <span
-            class="d-none d-sm-inline"
+            class="d-none d-inline mb-25"
           >
             {{ menu.index }}.
             {{ menu.abreviatura }}
@@ -23,15 +23,15 @@
         </template>
 
         <colLinea
-          style="margin-top: -14px; margin-bottom: 20px;"
+          style="margin-top: -15px; margin-bottom: 24px;"
         />
 
         <!-- ENCABEZADO -->
-        <div class="meetup-header d-flex align-items-center">
+        <div class="meetup-header d-flex align-items-center mt-2">
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-1">
+            <h4 class="mb-0 ml-2">
               {{ menu.index }}
             </h4>
           </div>
@@ -75,7 +75,17 @@
           class="mt-2"
         />
 
-        <!-- COMPONENTS -->
+        <!-- HIJOS -->
+        <trabajo-familia
+          v-if="menu.index === '1'"
+          class="mb-3 ml-2 mr-2"
+        />
+
+        <trabajo-comunidad
+          v-if="menu.index === '2'"
+          class="mb-3 ml-2 mr-2"
+        />
+
       </b-tab>
     </div>
 
@@ -83,25 +93,23 @@
 </template>
 <script>
 
-// Etiquetas //
+// ETIQUETAS
 import {
   BRow, BCol, BFormGroup, BFormInput, BFormInvalidFeedback,
   BMedia, BButton, BAvatar, BTab, BTabs, BCardText, BCardTitle
 } from 'bootstrap-vue'
 
-// Componentes //
+// COMPONENTS
 import colLinea from '../../../../components/Form/colLinea.vue'
 import popover from '../../../../components/Form/popover.vue'
-// import lista from './Lista/Lista.vue'
-// import notas from './Notas/Notas.vue'
-// import asistencias from './Asistencias/Asistencias.vue'
-// import anotaciones from './Anotaciones/Anotaciones.vue'
 
-// import libroMenuAsistencia from './LibroMenuAsistencia.vue'
+// HIJOS
+import trabajoFamilia from './Actividades/TrabajoFamilia.vue'
+import trabajoComunidad from './Actividades/TrabajoComunidad.vue'
 
 export default {
   components: {
-    // Etiquetas
+    // ETIQUETAS
     BRow,
     BCol,
     BFormGroup,
@@ -115,14 +123,13 @@ export default {
     BCardText,
     BCardTitle,
 
-    // Components
+    // COMPONENTS
     colLinea,
     popover,
-    // lista,
-    // notas,
-    // libroPie,
-    // asistencias,
-    // anotaciones,
+
+    // HIJOS
+    trabajoFamilia,
+    trabajoComunidad,
   },
   data() {
     return {}

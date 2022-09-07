@@ -5,28 +5,45 @@
     :variant="$store.state.appConfig.layout.skin"
   >
     <b-form>
-      <!-- Reunión Info: Input Fields -->
+      <!-- PLAN: FORM -->
       <b-row>
 
-        <!-- Field: FECHA -->
+        <!-- Field: ALUMNO (S) -->
         <b-col
           cols="6"
           md="6"
+          sm="12"
         >
           <b-form-group
-            label="Fecha *"
-            label-for="fecha"
+            label="Estudiante(s) *"
+            label-for="alumnos"
           >
-            <!-- <b-form-input
-              id="fecha"
-              v-model="reunion.fecha"
-              placeholder="Ingresa el fecha"
-            /> -->
+            <v-select
+              v-model="plan.alumnos"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              multiple
+              label="title"
+              :options="optionsAlumnos"
+              placeholder="Seleccione el/la estudiante"
+            />
 
+          </b-form-group>
+        </b-col>
+
+        <!-- Field: FECHA TERMINO (S) -->
+        <b-col
+          cols="3"
+          md="3"
+          sm="12"
+        >
+          <b-form-group
+            label="Fecha inicio(s) *"
+            label-for="fechaInicio"
+          >
             <b-form-datepicker
-              v-model="reunion.fecha"
-              id="fecha"
-              placeholder="Seleccione una fecha"
+              v-model="plan.fechaInicio"
+              id="fechaInicio"
+              placeholder="Selecciona una fecha"
               hide-header
               :date-format-options="{
                 year: 'numeric',
@@ -39,139 +56,93 @@
               :date-disabled-fn="dateDisabled"
               label-help=""
             />
-                  <!-- :state="v$.reunion.fecha.$error === true
-              ? false
-              : null"
-              @blur.native="v$.reunion.fecha.$touch" -->
-            <!-- Mensajes Error Validación -->
-            <!-- <b-form-invalid-feedback
-              v-if="v$.reunion.fecha.$error"
-              id="fechaInfo"
-            >
-              <p v-for="error of v$.reunion.fecha.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback> -->
+
           </b-form-group>
         </b-col>
 
-        <!-- Field: HORA -->
+        <!-- Field: FECHA TERMINO (S) -->
         <b-col
-          cols="6"
-          md="6"
+          cols="3"
+          md="3"
+          sm="12"
         >
           <b-form-group
-            label="Hora *"
-            label-for="hora"
+            label="Fecha termino(s) *"
+            label-for="fechaTermino"
           >
-            <b-form-timepicker
-              v-model='reunion.hora'
-              aria-controls='hora'
-              placeholder="Seleccione una hora"
+            <b-form-datepicker
+              v-model="plan.fechaTermino"
+              id="fechaTermino"
+              placeholder="Selecciona una fecha"
               hide-header
-              locale='es-CL'
-              no-close-button
-              hour12
+              :date-format-options="{
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                weekday: 'short'
+              }"
+              start-weekday="1"
+              locale="es-CL"
+              :date-disabled-fn="dateDisabled"
+              label-help=""
             />
-            <!-- :state="v$.reunion.fecha.$error === true
-              ? false
-              : null"
-              @blur.native="v$.reunion.fecha.$touch" -->
-            <!-- Mensajes Error Validación -->
-            <!-- <b-form-invalid-feedback
-              v-if="v$.reunion.fecha.$error"
-              id="fechaInfo"
-            >
-              <p v-for="error of v$.reunion.fecha.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback> -->
+
           </b-form-group>
         </b-col>
 
-        <!-- Field: Asistentes -->
+        <!-- Field: OBSERVACIONES -->
         <b-col
           cols="12"
           md="12"
+          sm="12"
         >
           <b-form-group
-            label="Asistentes *"
-            label-for="asistentes"
-          >
-            <b-form-input
-              id="asistentes"
-              v-model="reunion.asistentes"
-              placeholder="Ingresa los asistentes"
-            />
-              <!-- :state="v$.reunion.asistentes.$error === true
-              ? false
-              : null"
-              @blur.native="v$.reunion.asistentes.$touch" -->
-            <!-- <b-form-invalid-feedback
-              v-if="v$.reunion.asistentes.$error"
-              id="asistentesInfo"
-            >
-              <p v-for="error of v$.reunion.asistentes.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback> -->
-          </b-form-group>
-        </b-col>
-
-        <!-- Field: Acuerdos -->
-        <b-col
-          cols="12"
-          md="12"
-        >
-          <b-form-group
-            label="Acuerdos *"
-            label-for="acuerdos"
+            label="Observaciones *"
+            label-for="observaciones"
           >
             <b-form-textarea
-              id="acuerdos"
-              placeholder="Ingresa los acuerdos"
-              v-model="reunion.acuerdos"
-              rows="4"
+              id="observaciones"
+              placeholder="Ingresa las observaciones"
+              v-model="plan.observaciones"
+              rows="2"
             />
-              <!-- :state="v$.reunion.acuerdos.$error === true
-              ? false
-              : null"
-              @blur.native="v$.reunion.acuerdos.$touch" -->
-            <!-- <b-form-invalid-feedback
-              v-if="v$.reunion.acuerdos.$error"
-              id="acuerdosInfo"
-            >
-              <p v-for="error of v$.reunion.acuerdos.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback> -->
           </b-form-group>
         </b-col>
 
       </b-row>
 
+      <!-- CALENDARIO -->
+      <b-form-group
+        label="Selecciona los días y horas"
+        class="mb-25 mt-1 h6"
+      />
+      <calendario />
     </b-form>
   </b-overlay>
 </template>
 
 <script>
 
-// Etiquetas //
-import vSelect from 'vue-select'
+// ETIQUETAS
 import {
   BRow, BCol, BFormGroup, BFormInput, BForm, BFormInvalidFeedback,
   BMedia, BButton, BAvatar, BOverlay, BFormDatepicker, BFormTimepicker,
   BFormTextarea
 } from 'bootstrap-vue'
 
-// Validaciones //
+// VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
 
+// COMPONENTES
+import vSelect from 'vue-select'
+
+// HIJOS
+import Calendario from './Calendario/Calendario.vue'
+
 export default {
   components: {
-    vSelect,
-
+    // ETIQUETAS
     BRow,
     BCol,
     BFormGroup,
@@ -185,6 +156,12 @@ export default {
     BFormDatepicker,
     BFormTimepicker,
     BFormTextarea,
+
+    // COMPONENTES
+    vSelect,
+
+    // HIJOS
+    Calendario
   },
   setup() {
     return {
@@ -196,22 +173,31 @@ export default {
       cargando: true,
       // required,
       // email,
-      // dependenciasOption: [
-      //   { value: 'Municipal', text: 'Municipal' },
-      //   { value: 'Paricular', text: 'Paricular' },
-      //   { value: 'Particular Subvencionado', text: 'Particular Subvencionado' },
-      // ],
+      optionsAlumnos: [
+        {
+          value: 1,
+          title: 'Catalina Gaete',
+        },
+        {
+          value: 2,
+          title: 'Thomas Torres',
+        },
+        {
+          value: 3,
+          title: 'Felipe López',
+        },
+      ],
     }
   },
   props: {
-    reunion: {
+    plan: {
       type: Object,
       required: true,
     },
   },
   validations() {
     return {
-      reunion: {
+      plan: {
         rbd: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
@@ -246,10 +232,10 @@ export default {
       return weekday === 0 || weekday === 6
     },
     // submitOption() {
-    //   console.log('this.v$ :', this.v$.reunion)
-    //   this.v$.reunion.$touch()
-    //   // if (!this.v$.reunion.$invalid) {
-    //   //   this.$emit('processForm', this.reunion)
+    //   console.log('this.v$ :', this.v$.plan)
+    //   this.v$.plan.$touch()
+    //   // if (!this.v$.plan.$invalid) {
+    //   //   this.$emit('processForm', this.plan)
     //   // }
     // },
   },
@@ -258,4 +244,5 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-flatpicker.scss';
+@import '@core/scss/vue/libs/vue-select.scss';
 </style>

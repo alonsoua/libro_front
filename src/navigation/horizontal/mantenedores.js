@@ -6,7 +6,7 @@ export default [
       {
         title: 'Periodos',
         route: 'periodos',
-        icon: 'WatchIcon',
+        icon: 'ClockIcon',
       },
       {
         title: 'Sostenedores',
@@ -35,23 +35,13 @@ export default [
       },
       {
         title: 'Cuentas de Apoderados',
-        route: 'cuentas-apoderados',
+        route: 'apoderados',
         icon: 'UserIcon',
       },
       {
         title: 'Cuentas de Usuarios',
-        route: 'cuentas-usuarios',
+        route: 'usuarios',
         icon: 'UserIcon',
-      },
-      {
-        title: 'Configurar Cursos y Asignaturas',
-        route: 'cursos',
-        icon: 'ToolIcon',
-      },
-      {
-        title: 'Configurar Promedios',
-        route: 'promedios',
-        icon: 'ToolIcon',
       },
     ],
   },

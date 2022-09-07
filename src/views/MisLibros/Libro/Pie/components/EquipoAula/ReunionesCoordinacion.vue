@@ -6,12 +6,12 @@
   >
     <b-row>
       <b-col cols="12">
-        <b-card-text
+        <b-card-title
           style="margin-top: 8px; "
-          class="mb-2 text-primary h4"
+          class="mb-2"
         >
-          Calendarización de Reuniones de coordinación:
-        </b-card-text>
+          Calendarización de Reuniones de coordinación
+        </b-card-title>
       </b-col>
       <b-col
         lg="2"
@@ -71,7 +71,7 @@
         </div>
       </b-col>
 
-      <b-col cols="12">
+      <b-col cols="12" style="min-height: 490px !important;">
         <b-table
           striped
           small
@@ -158,6 +158,16 @@
             />
           </template>
         </b-table>
+        <b-alert
+          v-if="items.length === 0"
+          variant="primary"
+          show
+          class="text-center pt-25 pb-25"
+        >
+          <div class="alert-body">
+            <span>No existen reuniones registradas.</span>
+          </div>
+        </b-alert>
       </b-col>
 
       <b-col
@@ -181,15 +191,13 @@
 
 // ETIQUETAS
 import {
-  BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
-  BButton, VBModal
+  BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardTitle,
+  BButton, VBModal, BAlert
 } from 'bootstrap-vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
 // COMPONENTES
-import reunionesCreate from './ReunionesCoordinacion/ReunionesCreate.vue'
-
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
 // import btnCrear from '../../../../../components/List/btnCrear.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
@@ -199,28 +207,35 @@ import colEstado from '../../../../../components/List/colEstado.vue'
 import spinner from '../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../components/List/colNombreImg.vue'
 
+// HIJOS
+import reunionesCreate from './ReunionesCoordinacion/ReunionesCreate.vue'
+
 export default {
   components: {
+    // ETIQUETAS
     BTable,
     BRow,
     BCol,
     BPagination,
     BFormCheckbox,
     BOverlay,
-    BCardText,
+    BCardTitle,
     BButton,
     VBModal,
+    BAlert,
 
     // COMPONENTES
-    reunionesCreate,
-    colAccionesBtnes,
     // btnCrear,
     // inputFiltro,
+    colAccionesBtnes,
     btnMostrar,
     colPeriodo,
     colEstado,
     spinner,
     colNombreImg,
+
+    // HIJOS
+    reunionesCreate,
   },
   directives: {
     'b-modal': VBModal,

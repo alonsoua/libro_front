@@ -1,20 +1,26 @@
 <template>
-
+  <div>
   <b-modal
     id="modal-create"
     :title="title"
     :ok-title="submitTitle"
     cancel-title="Cancelar"
     cancel-variant="outline-secondary"
-    size="lg"
+    size="xl"
     centered
+    no-close-on-backdrop
     @ok="agregar"
   >
     <plan-apoyo-form
-      :reunion.sync="data"
+      :plan.sync="data"
       @processForm="agregar"
     />
   </b-modal>
+  <!-- <plan-apoyo-form
+    :plan.sync="data"
+    @processForm="agregar"
+  /> -->
+  </div>
 </template>
 
 <script>
@@ -44,10 +50,11 @@ export default {
   data() {
     return {
       data: {
-        fecha: '',
-        asistentes: '',
-        acuerdos: '',
-        estado: null,
+        alumnos: [],
+        observaciones: '',
+        fechaInicio: '',
+        fechaTermino: '',
+        horario: [],
       },
     }
   },

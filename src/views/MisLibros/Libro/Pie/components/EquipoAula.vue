@@ -12,22 +12,22 @@
         :active="menu.active"
       >
         <template #title>
-          <span class="d-none d-sm-inline">
+          <span class="d-none d-inline mb-25">
             {{ menu.index }}.
             {{ menu.abreviatura }}
           </span>
         </template>
 
         <colLinea
-          style="margin-top: -14px; margin-bottom: 20px;"
+          style="margin-top: -15px;"
         />
 
         <!-- ENCABEZADO -->
-        <div class="meetup-header d-flex align-items-center">
+        <div class="meetup-header d-flex align-items-center mt-2">
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-1">
+            <h4 class="mb-0 ml-2">
               {{ menu.index }}
             </h4>
           </div>
@@ -36,7 +36,7 @@
             <!-- TÍTULO -->
             <b-card-title
               v-if="menu.titulo !== ''"
-              class="mb-25 h5"
+              class="mb-25"
               style="margin-top: 4px;"
             >
               <div class="d-flex">
@@ -45,7 +45,6 @@
                 <!-- INFORMATIVO -->
                 <popover
                   v-if="menu.informacion !== ''"
-                  class=""
                   id="0"
                   btnVariant="flat-secondary"
                   :texto="menu.informacion"
@@ -59,6 +58,7 @@
             <b-card-text
               v-if="menu.texto !== ''"
               class="mr-4 text-secondary"
+              style="margin-bottom: 1px;"
             >
               {{ menu.texto }}
             </b-card-text>
@@ -74,12 +74,12 @@
         <!-- COMPONENTS -->
         <identificacion-equipo
           v-if="menu.index === '1'"
-          class="mt-3 mb-3"
+          class="mt-2 mb-0 ml-25 mr-25"
         />
 
         <reuniones-coordinacion
           v-if="menu.index === '2'"
-          class="mt-0 mb-3"
+          class="mb-3 ml-2 mr-2"
         />
 
       </b-tab>

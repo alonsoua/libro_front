@@ -7,7 +7,7 @@
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-2"
+      class="repeater-form mb-3"
       @submit.prevent="repeateAgain"
     >
       <!-- Action Buttons -->

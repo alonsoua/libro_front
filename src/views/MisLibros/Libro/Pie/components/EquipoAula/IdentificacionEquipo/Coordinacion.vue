@@ -8,21 +8,23 @@
       ref="form"
       :style="{height: trHeight}"
       class="repeater-form mb-2"
+      style="min-height: 552px !important; max-height: 552px !important; margin: 0px -17px 0px 0px; padding: 0px 14px 0px 0px;"
       @submit.prevent="repeateAgain"
+
     >
-      <b-card-text
+      <b-card-title
         style="margin-top: 8px;"
-        class="mb-2 text-primary h4"
+        class="mb-2"
       >
-        Coordinación del Programa:
-      </b-card-text>
+        Coordinación del Programa
+      </b-card-title>
       <!-- Row Loop -->
       <b-row
         ref="row"
       >
 
-        <!-- NOMBRE -->
-        <b-col md="12">
+        <!-- EN EL ESTABLECIMIENTO -->
+        <b-col md="10">
           <b-form-group
             label="En el establecimiento"
             label-for="establecimiento"
@@ -36,8 +38,22 @@
           </b-form-group>
         </b-col>
 
-        <!-- NOMBRE -->
-        <b-col md="12">
+        <!-- FIRMA EN EL ESTABLECIMIENTO -->
+        <b-col md="2">
+          <b-form-group
+            label="Firma"
+            label-for="firma"
+            class="text-center"
+          >
+            <firmas
+              :data.sync="item"
+              text="Firmar identificación de equipo de aula como coordinador en el establecimiento"
+            />
+          </b-form-group>
+        </b-col>
+
+        <!-- EN EL DAEM -->
+        <b-col md="10">
           <b-form-group
             label="En el DAEM (si el PIE es comunal)"
             label-for="daem"
@@ -46,13 +62,28 @@
               v-model="coordinacion.daem"
               id="daem"
               type="text"
-              placeholder="Ingresa el coordinador en el DAEM"
+              placeholder="Ingresa el coordinador en DAEM"
             />
           </b-form-group>
         </b-col>
 
-        <!-- NOMBRE -->
-        <b-col md="12">
+        <!-- FIRMA EN EL DAEM -->
+        <b-col md="2">
+          <b-form-group
+            label="Firma"
+            label-for="firma"
+            class="text-center"
+          >
+            <firmas
+              :data.sync="item"
+              text="Firmar identificación de equipo de aula como coordinador en el DAEM"
+            />
+          </b-form-group>
+        </b-col>
+
+
+        <!-- CON REDES DE APOYO -->
+        <b-col md="10">
           <b-form-group
             label="Con redes de apoyo"
             label-for="redes"
@@ -61,7 +92,21 @@
               v-model="coordinacion.redes"
               id="redes"
               type="text"
-              placeholder="Ingresa el coordinador de red de apoyo"
+              placeholder="Ingresa el coordinador de redes de apoyo"
+            />
+          </b-form-group>
+        </b-col>
+
+        <!-- FIRMA CON REDES DE APOYO -->
+        <b-col md="2">
+          <b-form-group
+            label="Firma"
+            label-for="firma"
+            class="text-center"
+          >
+            <firmas
+              :data.sync="item"
+              text="Firmar identificación de equipo de aula como red de apoyo"
             />
           </b-form-group>
         </b-col>
@@ -93,24 +138,25 @@
 
 <script>
 
-// Etiquetas //
+// ETIQUETAS
 import {
-  BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardText,
+  BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardTitle,
 } from 'bootstrap-vue'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
-
 import Cleave from 'vue-cleave-component'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'cleave.js/dist/addons/cleave-phone.us'
 
-// Componentes //
+// COMPONENTES RECICLADOS
 import colLinea from '../../../../../../components/Form/colLinea.vue'
 import btnSubmit from '../../../../../../components/Form/btnSubmit.vue'
+import firmas from '../../../../../../components/firmas.vue'
 
 export default {
   components: {
+    // ETIQUETAS
     BOverlay,
     BForm,
     BRow,
@@ -118,9 +164,12 @@ export default {
     BButton,
     BFormGroup,
     BFormInput,
-    BCardText,
+    BCardTitle,
+
+    // COMPONENTES RECICLADOS
     colLinea,
     btnSubmit,
+    firmas,
   },
   directives: {
     Ripple,
@@ -130,7 +179,11 @@ export default {
     return {
 
       cargando: true,
-      coordinacion: [],
+      coordinacion: {
+        daem: 'Natalia Barrera Garcia',
+        establecimiento: 'Paola Frez Ojeda',
+        redes: 'Carmen Tapia Pradenas',
+      },
       nextTodoId: 2,
     }
   },

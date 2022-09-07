@@ -2,6 +2,8 @@ import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
 
+import axios from 'axios'
+// import VueAxios from 'vue-axios'
 // import i18n from '@/libs/i18n'
 import router from './router'
 import store from './store'
@@ -17,8 +19,10 @@ import '@/libs/toastification'
 
 import '@/@fake-db/db'
 
+// MANTENER SESION
+require('@/store/:auth/subscriber')
 
-// axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1'
+axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1/'
 
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
@@ -39,16 +43,15 @@ require('@/assets/scss/style.scss')
 
 Vue.config.productionTip = false
 
-new Vue({
-  router,
-  store,
-  render: h => h(App),
-}).$mount('#app')
-
-// store.dispatch('auth/attempt', localStorage.getItem('token')).then(() => {
-//   new Vue({
-//     router,
-//     store,
-//     render: h => h(App),
-//   }).$mount('#app')
-// })
+// new Vue({
+//   router,
+//   store,
+//   render: h => h(App),
+// }).$mount('#app')
+store.dispatch('auth/attempt', localStorage.getItem('userData')).then(() => {
+  new Vue({
+    router,
+    store,
+    render: h => h(App),
+  }).$mount('#app')
+})

@@ -7,7 +7,7 @@
     <template #button-content>
       <div class="d-sm-flex d-none user-nav">
         <p class="user-name font-weight-bolder mb-0">
-          Alonso Ugarte
+          {{ user.nombre }} - {{ user.username }}
           <!-- {{ userData.fullName || userData.username }} -->
         </p>
         <span class="user-status">
@@ -112,7 +112,7 @@
     </b-dropdown-item>
     <b-dropdown-item
       link-class="d-flex align-items-center"
-      @click="logout"
+      @click="signOut"
     >
       <feather-icon
         size="16"
@@ -131,6 +131,10 @@ import { initialAbility } from '@/libs/acl/config'
 import useJwt from '@/auth/jwt/useJwt'
 import { avatarText } from '@core/utils/filter'
 
+// VUEX
+import { mapGetters, mapActions } from 'vuex'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+
 export default {
   components: {
     BNavItemDropdown,
@@ -138,6 +142,12 @@ export default {
     BDropdownDivider,
     BAvatar,
   },
+  computed: {
+    ...mapGetters({
+      user: 'auth/user',
+    }),
+  },
+
   data() {
     return {
       userData: JSON.parse(localStorage.getItem('userData')),
@@ -145,6 +155,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      signOutAction: 'auth/signOut',
+    }),
     logout() {
       // Remove userData from localStorage
       // ? You just removed token from localStorage. If you like, you can also make API call to backend to blacklist used token
@@ -159,6 +172,30 @@ export default {
 
       // Redirect to login page
       this.$router.push({ name: 'auth-login' })
+    },
+    signOut() {
+      this.$toast({
+        component: ToastificationContent,
+        position: 'top-center',
+        props: {
+          title: 'Cerrando Sesión...',
+          icon: 'RefreshCcwIcon',
+          variant: 'primary',
+          text: `Hasta pronto ${this.user.nombre}! 👋 `,
+        },
+      },
+      {
+        timeout: 3000,
+      })
+
+      // Remove userData from localStorage
+      localStorage.removeItem('userData')
+
+      this.signOutAction().then(() => {
+        this.$router.replace({
+          name: 'login',
+        })
+      })
     },
   },
 }

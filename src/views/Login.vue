@@ -22,7 +22,7 @@
         <!-- form -->
         <b-form
           class="auth-login-form mt-2"
-          @submit.prevent
+          @submit.prevent="submit"
         >
 
           <!-- rut -->
@@ -113,6 +113,12 @@
             block
             :disabled="v$.form.$error"
           >
+            <b-spinner
+              v-if="cargando"
+              label="Iniciando Sesión"
+              small
+            >
+            </b-spinner>
             Iniciar Sesión
           </b-button>
         </b-form>
@@ -143,15 +149,24 @@
 // ETIQUETAS
 import {
   BButton, BForm, BFormInput, BFormGroup, BCard, BLink, BCardTitle, BCardText,
-  BInputGroup, BInputGroupAppend, BFormCheckbox, BFormInvalidFeedback
+  BInputGroup, BInputGroupAppend, BFormCheckbox, BFormInvalidFeedback, BSpinner,
 } from 'bootstrap-vue'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
+
+// STORE
+import store from '@/store/index'
+// VUEX
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+
+// MIXINS
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import { rut } from '@core/mixins/ui/rut'
 
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
+
 
 export default {
   components: {
@@ -169,11 +184,13 @@ export default {
     BInputGroupAppend,
     BFormCheckbox,
     BFormInvalidFeedback,
+    BSpinner,
   },
   mixins: [togglePasswordVisibility, rut],
   data() {
     return {
       // userEmail: '',
+      cargando: false,
       form: [],
       rut: '',
       password: '',
@@ -204,6 +221,79 @@ export default {
   computed: {
     passwordToggleIcon() {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+    },
+    ...mapGetters({
+      authenticated: 'auth/authenticated',
+      user: 'auth/user',
+      authErrorMessage: 'auth/authErrorMessage',
+    }),
+    passwordToggleIcon() {
+      return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+    },
+    imgUrl() {
+      if (store.state.appConfig.layout.skin === 'dark') {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.sideImg = require('@/assets/images/pages/login-v2-dark.svg')
+        return this.sideImg
+      }
+      return this.sideImg
+    },
+  },
+  methods: {
+    ...mapActions({
+      signIn: 'auth/signIn',
+    }),
+    ...mapMutations('auth', ['SET_ERROR']),
+    submit() {
+      this.spinner = true
+      this.v$.form.$touch()
+      if (!this.v$.form.$invalid) {
+        // Envía el form a la action signIn
+        const rut = this.form.rut.replace('-', '').replace('.', '').replace('.', '')
+        const form = {
+          rut,
+          password: this.form.password
+        }
+        this.signIn(form).then(response => {
+          if (response === undefined && this.authErrorMessage === null) {
+            localStorage.setItem('userData', JSON.stringify(this.user))
+            // this.$ability.update(this.user.permisos)
+
+            this.$toast({
+              component: ToastificationContent,
+              position: 'top-right',
+              props: {
+                title: `Bienvenido ${this.user.nombre}`,
+                icon: 'CoffeeIcon',
+                variant: 'primary',
+                text: `Has iniciado sesión correctamente
+                  como ${this.user.rolActivo}.
+                Ahora puedes comenzar a explorar! 👋`,
+              },
+            },
+            {
+              timeout: 4000,
+            })
+            this.$router.replace({
+              name: 'home',
+            })
+          }
+          // else if (response === 'email&pass') {
+          //   this.alert = true
+          //   this.alertErrorMessage = 'El correo electrónico o la contraseña, son incorrectos!'
+          // }
+          // if (this.authErrorMessage === 'Usuario Inactivo') {
+          //   this.alert = true
+          //   this.alertErrorMessage = 'El usuario asociado al correo electrónico ingresado, se encuentra Inactivo!'
+          //   store.commit('auth/SET_ERROR', null)
+          // }
+          this.spinner = false
+        }).catch(() => {
+          this.alert = false
+          this.alertErrorMessage = ''
+          store.auth.commit('SET_ERROR', null)
+        })
+      }
     },
   },
 }

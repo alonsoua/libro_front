@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import store from '@/store'
 // import { canNavigate } from '@/libs/acl/routeProtection'
 // import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 
@@ -31,6 +31,9 @@ const router = new VueRouter({
     return { x: 0, y: 0 }
   },
   routes: [
+    // Acceso
+    ...login,
+    ...error,
     // Menu Desplegable
     ...miPerfil,
     ...miHorario,
@@ -45,9 +48,6 @@ const router = new VueRouter({
     ...periodos,
     ...horarios,
     ...usuarios,
-    // Acceso
-    ...login,
-    ...error,
     {
       path: '*',
       redirect: 'error-404',
@@ -76,7 +76,17 @@ const router = new VueRouter({
 // })
 // ? For splash screen
 // Remove afterEach hook if you are not using splash screen
+// router.afterEach(() => {
+//   localStorage.setItem('userData', JSON.stringify(store.getters['auth/user']))
+//   // Remove initial loading
+//   const appLoading = document.getElementById('loading-bg')
+//   if (appLoading) {
+//     appLoading.style.display = 'none'
+//   }
+// })
+
 router.afterEach(() => {
+  localStorage.setItem('userData', JSON.stringify(store.getters['auth/user']))
   // Remove initial loading
   const appLoading = document.getElementById('loading-bg')
   if (appLoading) {

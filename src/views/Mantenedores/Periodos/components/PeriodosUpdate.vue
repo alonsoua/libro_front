@@ -1,51 +1,55 @@
 <template>
-  <establecimientoForm
-    btnSubmit="Crear Establecimiento"
-    :establecimiento="data"
-    @processForm="agregar"
-  />
+  <div v-if="selectedPeriodo">
+    <b-overlay
+      :show="spinner"
+      spinner-variant="primary"
+      :variant="$store.state.appConfig.layout.skin"
+    >
+      <periodosForm
+        btnSubmit="Editar Periodo"
+        :periodo="selectedPeriodo"
+        @processForm="editar"
+      />
+    </b-overlay>
+  </div>
 </template>
 
 <script>
 
-import { mapActions } from 'vuex'
+import { BOverlay } from 'bootstrap-vue'
+import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import establecimientoForm from './components/EstablecimientosForm.vue'
+import periodosForm from './PeriodosForm.vue'
 
 export default {
   components: {
-    establecimientoForm,
+    periodosForm,
+    BOverlay,
   },
   data() {
     return {
-      data: {
-        rbd: '',
-        nombre: '',
-        insignia: '',
-        correo: '',
-        telefono: '',
-        direccion: '',
-        dependencia: '',
-        idPeriodoActivo: '',
-        estado: null,
-      },
+      spinner: false,
     }
   },
+  computed: {
+    ...mapState('periodos', ['selectedPeriodo']),
+  },
   methods: {
-    ...mapActions({ createEstablecimiento: 'establecimientos/addEstablecimientos' }),
-    agregar(establecimiento) {
-      this.createEstablecimiento(establecimiento).then(() => {
-        const errorEstablecimientos = store.state.establecimientos
-        const errorMessage = errorEstablecimientos.errorMessage.errors
-        if (!errorEstablecimientos.error) {
+    ...mapActions({ updatePeriodo: 'periodos/updatePeriodo' }),
+    editar(periodo) {
+      this.spinner = true
+      this.updatePeriodo(periodo).then(() => {
+        const errorPeriodos = store.state.periodos
+        const errorMessage = errorPeriodos.errorMessage.errors
+        if (!errorPeriodos.error) {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Establecimiento creado 👍',
+              title: 'Periodo editado 👍',
+              text: `El periodo "${periodo.nombre}" fue editado con éxito!`,
               icon: 'CheckIcon',
-              text: `El establecimiento "${establecimiento.nombre}" fue creado con éxito!`,
               variant: 'success',
             },
           },
@@ -54,7 +58,7 @@ export default {
             timeout: 4000,
           })
           this.$router.replace({
-            name: 'establecimientos',
+            name: 'periodos',
           })
         } else if (errorMessage.nombre) {
           this.$swal({
@@ -66,7 +70,7 @@ export default {
             },
             buttonsStyling: false,
           })
-        } else {
+        } else if (errorPeriodos.error) {
           this.$swal({
             title: 'Error!',
             text: 'Ingreso de datos fraudulento!',
@@ -77,6 +81,7 @@ export default {
             buttonsStyling: false,
           })
         }
+        this.spinner = false
       })
     },
   },

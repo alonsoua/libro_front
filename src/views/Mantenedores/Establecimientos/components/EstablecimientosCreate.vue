@@ -1,7 +1,7 @@
 <template>
-  <periodoForm
-    btnSubmit="Crear Periodo"
-    :periodo="data"
+  <establecimientoForm
+    btnSubmit="Crear Establecimiento"
+    :establecimiento="data"
     @processForm="agregar"
   />
 </template>
@@ -12,43 +12,49 @@ import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import periodoForm from './components/PeriodosForm.vue'
+import establecimientoForm from './EstablecimientosForm.vue'
 
 export default {
   components: {
-    periodoForm,
+    establecimientoForm,
   },
   data() {
     return {
       data: {
-        periodo: '',
-        estado: null,
+        insignia: '',
+        rbd: '',
+        nombre: '',
+        abreviatura: '',
+        correo: '',
+        celular: '',
+        nombre_calle: '',
+        numero_calle: '',
       },
     }
   },
   methods: {
-    ...mapActions({ createPeriodo: 'periodos/addPeriodos' }),
-    agregar(periodo) {
-      this.createPeriodo(periodo).then(() => {
-        const errorPeriodos = store.state.periodos
-        const errorMessage = errorPeriodos.errorMessage.errors
-        if (!errorPeriodos.error) {
+    ...mapActions({ addEstablecimiento: 'establecimientos/addEstablecimiento' }),
+    agregar(establecimiento) {
+      this.addEstablecimiento(establecimiento).then(() => {
+        const errorEstablecimientos = store.state.establecimientos
+        const errorMessage = errorEstablecimientos.errorMessage.errors
+        if (!errorEstablecimientos.error) {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Periodo creado 👍',
+              title: 'Establecimiento creado 👍',
               icon: 'CheckIcon',
-              text: `El periodo "${periodo.nombre}" fue creado con éxito!`,
+              text: `El establecimiento "${establecimiento.nombre}" fue guardado con éxito!`,
               variant: 'success',
             },
           },
           {
-            position: 'bottom-right',
-            timeout: 4000,
+            position: 'top-center',
+            timeout: 3000,
           })
-          this.$router.replace({
-            name: 'periodos',
-          })
+          // this.$router.replace({
+          //   name: 'establecimientos',
+          // })
         } else if (errorMessage.nombre) {
           this.$swal({
             title: 'Error!',

@@ -1,8 +1,18 @@
+import store from '@/store'
+
 export default [
   {
     path: '/horarios',
     name: 'horarios',
     component: () => import('@/views/Mantenedores/Horarios/Horarios.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
     meta: {
       pageTitle: 'Horarios',
       breadcrumb: [
@@ -17,6 +27,14 @@ export default [
     path: '/horarios-create',
     name: 'horarios-create',
     component: () => import('@/views/Mantenedores/Horarios/HorariosCreate.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
     meta: {
       pageTitle: 'Crear horario',
       breadcrumb: [

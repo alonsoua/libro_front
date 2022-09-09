@@ -261,7 +261,6 @@ export default {
 
             this.$toast({
               component: ToastificationContent,
-              position: 'top-right',
               props: {
                 title: `Bienvenido ${this.user.nombre}`,
                 icon: 'CoffeeIcon',
@@ -272,7 +271,8 @@ export default {
               },
             },
             {
-              timeout: 4000,
+              position: 'top-center',
+              timeout: 3000,
             })
             this.$router.replace({
               name: 'home',

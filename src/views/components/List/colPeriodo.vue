@@ -5,8 +5,9 @@
       size="small"
     />
     <!-- v-if= -->
+      <!-- v-else-if="$can('update', modulo)" -->
     <b-form-select
-      v-else-if="$can('update', modulo)"
+      v-else-if="false"
       v-model="data.idPeriodoActivo"
       placeholder="Selecciona el periodo"
       :options="periodosOption"
@@ -19,8 +20,8 @@
       class="mt-1 mb-1"
       @change="$emit('processUpdatePeriodo', data)"
     />
+      <!-- v-else -->
     <b-badge
-      v-else
       :variant="nombrePeriodoActivo === null
         ? 'light-danger'
         : 'light-success'"
@@ -81,6 +82,15 @@ export default {
   mounted() {
     this.fetchPeriodos()
     this.attempt()
+    if (typeof this.data.idPeriodoActivo === 'undefined') {
+      this.data.idPeriodoActivo = 2
+      const periodos = [
+        { id: 1, nombre: '2021' },
+        { id: 2, nombre: '2022' },
+      ]
+      this.setPeriodosOptions(periodos)
+      this.setPeriodosActivo(periodos)
+    }
   },
   methods: {
     ...mapActions({

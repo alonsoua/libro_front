@@ -8,6 +8,7 @@
       aria-hidden="true"
       class="mb-0"
     >
+      <!-- {{establecimiento}} -->
       <b-form>
         <!-- Establecimiento Info: Input Fields -->
         <b-row>
@@ -213,7 +214,114 @@
             </b-form-group>
           </b-col>
 
+          <!-- Field: Celular -->
+          <b-col
+            cols="12"
+            md="4"
+          >
+            <b-form-group
+              label="Celular *"
+              label-for="celular"
+            >
+              <b-input-group
+                class="input-group-merge"
+                :class="v$.establecimiento.celular.$error === true ? 'is-invalid' : ''"
+              >
+                <b-input-group-prepend is-text
+                  :state="v$.establecimiento.celular.$error === true
+                  ? false
+                  : null"
+                >
+                  +56
+                </b-input-group-prepend>
+                <b-form-input
+                  id="celular"
+                  v-model="establecimiento.celular"
+                  placeholder="Ingresa el celular"
+                  :state="v$.establecimiento.celular.$error === true
+                  ? false
+                  : null"
+                  @blur.native="v$.establecimiento.celular.$touch"
+                />
+              </b-input-group>
+              <!-- Mensajes Error Validación -->
+              <b-form-invalid-feedback
+                v-if="v$.establecimiento.celular.$error"
+                id="correoInfo"
+              >
+                <p v-for="error of v$.establecimiento.celular.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
+
+          <!-- Field: Calle -->
+          <b-col
+            cols="12"
+            md="4"
+          >
+            <b-form-group
+              label="Nombre calle *"
+              label-for="nombre_calle"
+            >
+              <b-form-input
+                id="nombre_calle"
+                v-model="establecimiento.nombre_calle"
+                placeholder="Ingresa el nombre de la calle"
+                :state="v$.establecimiento.nombre_calle.$error === true
+                ? false
+                : null"
+                @blur.native="v$.establecimiento.nombre_calle.$touch"
+              />
+              <!-- Mensajes Error Validación -->
+              <b-form-invalid-feedback
+                v-if="v$.establecimiento.nombre_calle.$error"
+                id="correoInfo"
+              >
+                <p v-for="error of v$.establecimiento.nombre_calle.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
+
+          <!-- Field: Numero calle -->
+          <b-col
+            cols="12"
+            md="4"
+          >
+            <b-form-group
+              label="Nº calle *"
+              label-for="numero_calle"
+            >
+              <b-form-input
+                id="numero_calle"
+                v-model="establecimiento.numero_calle"
+                placeholder="Ingresa el numero_calle"
+                :state="v$.establecimiento.numero_calle.$error === true
+                ? false
+                : null"
+                @blur.native="v$.establecimiento.numero_calle.$touch"
+              />
+              <!-- Mensajes Error Validación -->
+              <b-form-invalid-feedback
+                v-if="v$.establecimiento.numero_calle.$error"
+                id="correoInfo"
+              >
+                <p v-for="error of v$.establecimiento.numero_calle.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
+
         </b-row>
+
+        <!-- departamento: '',
+        direccion: '',
+        idPeriodoActivo: '',
+        estado: null, -->
 
         <colLinea />
 
@@ -234,7 +342,7 @@
 // Etiquetas //
 import {
   BRow, BCol, BFormGroup, BFormInput, BForm, BFormInvalidFeedback,
-  BMedia, BButton, BAvatar, BOverlay, BCard,
+  BMedia, BButton, BAvatar, BOverlay, BCard, BInputGroup, BInputGroupPrepend
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
@@ -245,7 +353,8 @@ import { ref } from '@vue/composition-api'
 
 // Validaciones //
 import useVuelidate from '@vuelidate/core'
-import { required, maxLength, email, helpers } from '@vuelidate/validators'
+import { required
+  , maxLength, email, helpers } from '@vuelidate/validators'
 
 // Componentes //
 import btnSubmit from '../../../components/Form/btnSubmit.vue'
@@ -256,6 +365,8 @@ export default {
     BRow,
     BCol,
     BFormGroup,
+    BInputGroup,
+    BInputGroupPrepend,
     BFormInput,
     BForm,
     BFormInvalidFeedback,
@@ -309,28 +420,48 @@ export default {
       default: 'Guardar Establecimiento',
     },
   },
+
   validations() {
     return {
       establecimiento: {
         rbd: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.', maxLength(8)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.'
+            , maxLength(8)),
         },
         nombre: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.'
+            , maxLength(250)),
         },
         abreviatura: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.', maxLength(10)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.'
+            , maxLength(10)),
         },
         correo: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
           email: helpers.withMessage('Debe ser un correo valido.', email),
+        },
+        celular: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.'
+            , maxLength(10)),
+        },
+        nombre_calle: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener un máximo de 150 caracteres.'
+            , maxLength(150)),
+        },
+        numero_calle: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
         },
       }
     }
@@ -354,11 +485,10 @@ export default {
         // estado: {},
   methods: {
     submitOption() {
-      console.log('this.v$ :', this.v$.establecimiento)
       this.v$.establecimiento.$touch()
-      // if (!this.v$.establecimiento.$invalid) {
-      //   this.$emit('processForm', this.establecimiento)
-      // }
+      if (!this.v$.establecimiento.$invalid) {
+        this.$emit('processForm', this.establecimiento)
+      }
     },
     onFileSelected(e) {
       // Obtiene primera Imagen

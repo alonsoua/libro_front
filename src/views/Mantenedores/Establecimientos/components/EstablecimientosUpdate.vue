@@ -1,13 +1,13 @@
 <template>
-  <div v-if="selectedPeriodo">
+  <div v-if="selectedEstablecimiento">
     <b-overlay
       :show="spinner"
       spinner-variant="primary"
       :variant="$store.state.appConfig.layout.skin"
     >
-      <periodosForm
-        btnSubmit="Editar Periodo"
-        :periodo="selectedPeriodo"
+      <establecimientosForm
+        btnSubmit="Editar Establecimiento"
+        :establecimiento="selectedEstablecimiento"
         @processForm="editar"
       />
     </b-overlay>
@@ -21,11 +21,11 @@ import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import periodosForm from './components/PeriodosForm.vue'
+import establecimientosForm from './EstablecimientosForm.vue'
 
 export default {
   components: {
-    periodosForm,
+    establecimientosForm,
     BOverlay,
   },
   data() {
@@ -34,32 +34,32 @@ export default {
     }
   },
   computed: {
-    ...mapState('periodos', ['selectedPeriodo']),
+    ...mapState('establecimientos', ['selectedEstablecimiento']),
   },
   methods: {
-    ...mapActions({ updatePeriodo: 'periodos/updatePeriodo' }),
-    editar(periodo) {
+    ...mapActions({ updateEstablecimiento: 'establecimientos/updateEstablecimiento' }),
+    editar(establecimiento) {
       this.spinner = true
-      this.updatePeriodo(periodo).then(() => {
-        const errorPeriodos = store.state.periodos
-        const errorMessage = errorPeriodos.errorMessage.errors
-        if (!errorPeriodos.error) {
+      this.updateEstablecimiento(establecimiento).then(() => {
+        const errorEstablecimientos = store.state.establecimientos
+        const errorMessage = errorEstablecimientos.errorMessage.errors
+        if (!errorEstablecimientos.error) {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Periodo editado 👍',
-              text: `El periodo "${periodo.nombre}" fue editado con éxito!`,
+              title: 'Establecimiento editado 👍',
+              text: `El establecimiento "${establecimiento.nombre}" fue actualizado con éxito!`,
               icon: 'CheckIcon',
               variant: 'success',
             },
           },
           {
-            position: 'bottom-right',
-            timeout: 4000,
+            position: 'top-center',
+            timeout: 2000,
           })
-          this.$router.replace({
-            name: 'periodos',
-          })
+          // this.$router.replace({
+          //   name: 'establecimientos',
+          // })
         } else if (errorMessage.nombre) {
           this.$swal({
             title: 'Error!',
@@ -70,7 +70,7 @@ export default {
             },
             buttonsStyling: false,
           })
-        } else if (errorPeriodos.error) {
+        } else if (errorEstablecimientos.error) {
           this.$swal({
             title: 'Error!',
             text: 'Ingreso de datos fraudulento!',

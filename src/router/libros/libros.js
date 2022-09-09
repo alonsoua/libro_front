@@ -1,8 +1,18 @@
+import store from '@/store'
+
 export default [
   {
     path: '/mis-libros',
     name: 'mis-libros',
     component: () => import('@/views/MisLibros/MisLibros.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
     meta: {
       pageTitle: 'Mis Libros',
       breadcrumb: [
@@ -19,6 +29,14 @@ export default [
     path: '/mis-libros/libro-abierto',
     name: 'libro-abierto',
     component: () => import('@/views/MisLibros/Libro.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
     meta: {
       pageTitle: '',
       configs: false,

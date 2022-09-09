@@ -7,7 +7,7 @@
         : 'light-secondary'"
       @click="$emit('processUpdateEstado', data.item)"
     >
-      {{ data.item.estado }}
+      {{ data.item.estado ? data.item.estado : 'Sin Estado' }}
     </b-badge>
 
   </div>

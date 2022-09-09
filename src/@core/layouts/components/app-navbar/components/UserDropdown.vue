@@ -176,7 +176,6 @@ export default {
     signOut() {
       this.$toast({
         component: ToastificationContent,
-        position: 'top-center',
         props: {
           title: 'Cerrando Sesión...',
           icon: 'RefreshCcwIcon',
@@ -185,7 +184,8 @@ export default {
         },
       },
       {
-        timeout: 3000,
+        position: 'top-center',
+        timeout: 2000,
       })
 
       // Remove userData from localStorage

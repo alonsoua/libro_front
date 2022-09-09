@@ -1,40 +1,40 @@
 <template>
   <b-button-group>
 
-    <b-button
+    <!-- <b-button
       v-if="modulo === 'establecimientos'"
-      variant="secondary"
-      class="btn-sm btn-icon"
-      title="Configuraciones"
+      variant="flat-secondary"
+      class="btn-sm btn-icon mr-25 rounded"
+      :title="'Configuraciones del establecimiento'"
       @click="$emit('processGoToConfig', data.item)"
     >
       <feather-icon
         icon="SettingsIcon"
       />
-    </b-button>
+    </b-button> -->
 
     <!-- v-if="$can('update', modulo)" -->
     <b-button
-      variant="secondary"
-      class="btn-sm btn-icon"
-      title="Editar"
+      variant="flat-success"
+      class="btn-sm btn-icon mr-25 rounded"
+      :title="'Editar'"
       @click="$emit('processGoToUpdate', data.item)"
     >
       <feather-icon
-        icon="Edit2Icon"
+        icon="Edit3Icon"
       />
     </b-button>
 
     <!-- v-if="$can('delete', modulo)" -->
     <b-button
-      variant="danger"
-      class="btn-sm btn-icon"
+      variant="flat-danger"
+      class="btn-sm btn-icon rounded"
       @click="!estado ? '' : $emit('processRemove', data.item.id)"
       :title="!estado ? moduloCreado + ': ' + cantidad : 'Eliminar' "
       :disabled="!estado"
     >
       <feather-icon
-        icon="TrashIcon"
+        icon="Trash2Icon"
       />
     </b-button>
 

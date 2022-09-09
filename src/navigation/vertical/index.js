@@ -32,8 +32,8 @@ import configuraciones from './configuraciones'
 // Array of sections
 export default [
   ...inicio,
-  ...mantenedores,
   ...libros,
   ...matriculas,
+  ...mantenedores,
   // ...configuraciones,
 ]

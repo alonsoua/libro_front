@@ -55,6 +55,16 @@ const router = new VueRouter({
   ],
 })
 
+console.log('router :', router)
+// router.beforeEnter ((to, from, next) => {
+//   console.log('store.getters[auth/authenticated] :', store.getters['auth/authenticated'])
+//   if (!store.getters['auth/authenticated']) {
+//     return next({
+//       name: 'login',
+//     })
+//   }
+//   return next()
+// })
 // router.beforeEach((to, _, next) => {
 //   const isLoggedIn = isUserLoggedIn()
 

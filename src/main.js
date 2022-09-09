@@ -22,7 +22,10 @@ import '@/@fake-db/db'
 // MANTENER SESION
 require('@/store/:auth/subscriber')
 
-axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1/'
+axios.defaults.baseURL = 'http://localhost:8000/v1/'
+// axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1/'
+
+
 
 // BSV Plugin Registration
 Vue.use(ToastPlugin)

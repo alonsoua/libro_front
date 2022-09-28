@@ -1,4 +1,15 @@
 <template>
+  <b-modal
+    :id="nombreModal"
+    :title="title"
+    centered
+    size="xl"
+    cancel-title="Cancelar"
+    cancel-variant="outline-secondary"
+    :ok-disabled="this.v$.planApoyo.$errors.length > 0"
+    :ok-title="submitTitle"
+    @ok.prevent="submitOption"
+  >
   <b-overlay
     :show="!cargando"
     spinner-variant="primary"
@@ -7,6 +18,38 @@
     <b-form>
       <!-- PLAN: FORM -->
       <b-row>
+
+        <!-- Field: DESCRIPCION -->
+        <b-col
+          cols="12"
+          md="12"
+          sm="12"
+        >
+          <b-form-group
+            label="Descripción *"
+            label-for="descripcion"
+          >
+            <b-form-input
+              id="descripcion"
+              placeholder="Ingresa una descripción para el plan de apoyo"
+              v-model="planApoyo.descripcion"
+              rows="2"
+              :state="v$.planApoyo.descripcion.$error === true
+                ? false
+                : null"
+              @blur.native="v$.planApoyo.descripcion.$touch"
+            />
+            <b-form-invalid-feedback
+              v-if="v$.planApoyo.descripcion.$error"
+              id="observacionesInfo"
+              class="text-right"
+            >
+              <p v-for="error of v$.planApoyo.descripcion.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
 
         <!-- Field: ALUMNO (S) -->
         <b-col
@@ -19,13 +62,27 @@
             label-for="alumnos"
           >
             <v-select
-              v-model="plan.alumnos"
+              v-model="planApoyo.alumnos"
               :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
               multiple
               label="title"
               :options="optionsAlumnos"
               placeholder="Seleccione el/la estudiante"
-            />
+              :class="v$.planApoyo.alumnos.$error === true
+                  ? 'border-danger rounded'
+                  : ''"
+              />
+              <!-- Mensajes Error Validación -->
+              <div
+                v-if="v$.planApoyo.alumnos.$error"
+                id="alumnosInfo"
+                class="text-danger text-right"
+                style="font-size: 0.857rem;"
+              >
+                <p v-for="error of v$.planApoyo.alumnos.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </div>
 
           </b-form-group>
         </b-col>
@@ -41,7 +98,7 @@
             label-for="fechaInicio"
           >
             <b-form-datepicker
-              v-model="plan.fechaInicio"
+              v-model="planApoyo.fechaInicio"
               id="fechaInicio"
               placeholder="Selecciona una fecha"
               hide-header
@@ -55,7 +112,20 @@
               locale="es-CL"
               :date-disabled-fn="dateDisabled"
               label-help=""
+              :state="v$.planApoyo.fechaInicio.$error === true
+                ? false
+                : null"
+              @blur.native="v$.planApoyo.fechaInicio.$touch"
             />
+            <b-form-invalid-feedback
+              v-if="v$.planApoyo.fechaInicio.$error"
+              id="fechaInicioInfo"
+              class="text-right"
+            >
+              <p v-for="error of v$.planApoyo.fechaInicio.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
 
           </b-form-group>
         </b-col>
@@ -71,7 +141,7 @@
             label-for="fechaTermino"
           >
             <b-form-datepicker
-              v-model="plan.fechaTermino"
+              v-model="planApoyo.fechaTermino"
               id="fechaTermino"
               placeholder="Selecciona una fecha"
               hide-header
@@ -85,7 +155,20 @@
               locale="es-CL"
               :date-disabled-fn="dateDisabled"
               label-help=""
+              :state="v$.planApoyo.fechaTermino.$error === true
+                ? false
+                : null"
+              @blur.native="v$.planApoyo.fechaTermino.$touch"
             />
+            <b-form-invalid-feedback
+              v-if="v$.planApoyo.fechaTermino.$error"
+              id="fechaTerminoInfo"
+              class="text-right"
+            >
+              <p v-for="error of v$.planApoyo.fechaTermino.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
 
           </b-form-group>
         </b-col>
@@ -103,9 +186,22 @@
             <b-form-textarea
               id="observaciones"
               placeholder="Ingresa las observaciones"
-              v-model="plan.observaciones"
+              v-model="planApoyo.observaciones"
               rows="2"
+              :state="v$.planApoyo.observaciones.$error === true
+                ? false
+                : null"
+              @blur.native="v$.planApoyo.observaciones.$touch"
             />
+            <b-form-invalid-feedback
+              v-if="v$.planApoyo.observaciones.$error"
+              id="observacionesInfo"
+              class="text-right"
+            >
+              <p v-for="error of v$.planApoyo.observaciones.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
 
@@ -119,6 +215,7 @@
       <calendario />
     </b-form>
   </b-overlay>
+  </b-modal>
 </template>
 
 <script>
@@ -127,17 +224,17 @@
 import {
   BRow, BCol, BFormGroup, BFormInput, BForm, BFormInvalidFeedback,
   BMedia, BButton, BAvatar, BOverlay, BFormDatepicker, BFormTimepicker,
-  BFormTextarea
+  BFormTextarea, BModal, VBModal
 } from 'bootstrap-vue'
+
+import vSelect from 'vue-select'
+import Ripple from 'vue-ripple-directive'
 
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
 
-// COMPONENTES
-import vSelect from 'vue-select'
-
-// HIJOS
+// COMPONENTES HIJOS
 import Calendario from './Calendario/Calendario.vue'
 
 export default {
@@ -156,17 +253,16 @@ export default {
     BFormDatepicker,
     BFormTimepicker,
     BFormTextarea,
-
-    // COMPONENTES
+    BModal,
+    VBModal,
     vSelect,
 
-    // HIJOS
+    // COMPONENTES HIJOS
     Calendario
   },
-  setup() {
-    return {
-      v$: useVuelidate(),
-    }
+  directives: {
+    'b-modal': VBModal,
+    Ripple,
   },
   data() {
     return {
@@ -190,38 +286,61 @@ export default {
     }
   },
   props: {
-    plan: {
+    nombreModal: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    submitTitle: {
+      type: String,
+      required: true,
+    },
+    planApoyo: {
       type: Object,
       required: true,
     },
   },
   validations() {
     return {
-      plan: {
-        rbd: {
+      planApoyo: {
+        alumnos: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.', maxLength(8)),
         },
-        nombre: {
+        observaciones: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 550 caracteres.', maxLength(550)),
         },
-        abreviatura: {
+        descripcion: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.', maxLength(10)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 150 caracteres.', maxLength(150)),
         },
-        correo: {
+        fechaInicio: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          email: helpers.withMessage('Debe ser un correo valido.', email),
+        },
+        fechaTermino: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
         },
       }
     }
   },
   methods: {
+    submitOption() {
+      console.log('this.planApoyo :', this.planApoyo)
+      this.v$.planApoyo.$touch()
+      // if (!this.v$.planApoyo.$invalid) {
+      //   this.cargando = true
+      //   this.$emit('processForm', this.planApoyo)
+      //   this.cargando = false
+      // }
+    },
     dateDisabled(ymd, date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
       // disable days that fall on the 13th of the month
@@ -231,13 +350,11 @@ export default {
       // return weekday === 0 || weekday === 6 || day === 1
       return weekday === 0 || weekday === 6
     },
-    // submitOption() {
-    //   console.log('this.v$ :', this.v$.plan)
-    //   this.v$.plan.$touch()
-    //   // if (!this.v$.plan.$invalid) {
-    //   //   this.$emit('processForm', this.plan)
-    //   // }
-    // },
+  },
+  setup() {
+    return {
+      v$: useVuelidate(),
+    }
   },
 }
 </script>

@@ -4,8 +4,8 @@
     <b-card
       aria-hidden="true"
       class="mt-1"
-
       style="margin-bottom: 12px; "
+
     >
       <!-- Menu Info: Input Fields -->
       <b-tabs
@@ -13,6 +13,7 @@
         v-model="tabIndex"
         justified
         pills
+         class="success"
       >
         <!-- Tab: Lista -->
         <b-tab lazy>

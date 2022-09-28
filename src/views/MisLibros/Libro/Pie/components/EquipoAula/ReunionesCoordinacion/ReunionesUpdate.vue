@@ -1,17 +1,16 @@
 <template>
-  <div v-if="selectedEstablecimiento">
-    <b-overlay
-      :show="spinner"
-      spinner-variant="primary"
-      :variant="$store.state.appConfig.layout.skin"
-    >
-      <establecimientosForm
-        btnSubmit="Editar Establecimiento"
-        :establecimiento="selectedEstablecimiento"
-        @processForm="editar"
-      />
-    </b-overlay>
-  </div>
+  <b-overlay
+    :show="spinner"
+    spinner-variant="primary"
+    :variant="$store.state.appConfig.layout.skin"
+  >
+    <reunionesForm
+      :nombreModal="modal"
+      title="Editar reunión"
+      :reunion.sync="data.item"
+      @processForm="editar"
+    />
+  </b-overlay>
 </template>
 
 <script>
@@ -21,11 +20,11 @@ import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import establecimientosForm from './components/EstablecimientosForm.vue'
+import reunionesForm from './ReunionesForm.vue'
 
 export default {
   components: {
-    establecimientosForm,
+    reunionesForm,
     BOverlay,
   },
   data() {
@@ -33,23 +32,45 @@ export default {
       spinner: false,
     }
   },
-  computed: {
-    ...mapState('establecimientos', ['selectedEstablecimiento']),
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+    idCurso: {
+      type: Number,
+      required: true,
+    },
+    modal: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions({ updateEstablecimiento: 'establecimientos/updateEstablecimiento' }),
-    editar(establecimiento) {
-      this.spinner = true
-      this.updateEstablecimiento(establecimiento).then(() => {
-        const errorEstablecimientos = store.state.establecimientos
-        const errorMessage = errorEstablecimientos.errorMessage.errors
-        if (!errorEstablecimientos.error) {
+    ...mapActions({
+      updateReunion: 'I_2_reuniones/updateReunion',
+      fetchReuniones: 'I_2_reuniones/fetchReuniones',
+    }),
+    editar(reunion) {
+       const data = {
+        id: reunion.id,
+        fecha: reunion.fecha,
+        horario: reunion.horario,
+        acuerdos: reunion.acuerdos,
+        personas: reunion.asistentes,
+        id_cursos: this.idCurso,
+        id_periodo: 1,
+      }
+      this.updateReunion(data).then(() => {
+        const statusReuniones = store.state.I_2_reuniones.status
+        if (statusReuniones === 'success') {
+          this.fetchReuniones(this.idCurso)
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Establecimiento editado 👍',
-              text: `El establecimiento "${establecimiento.nombre}" fue editado con éxito!`,
+              title: 'Reunión guardada 👍',
               icon: 'CheckIcon',
+              text: 'La reunión fue editada con éxito!',
               variant: 'success',
             },
           },
@@ -57,23 +78,12 @@ export default {
             position: 'bottom-right',
             timeout: 4000,
           })
-          this.$router.replace({
-            name: 'establecimientos',
-          })
-        } else if (errorMessage.nombre) {
+          this.$bvModal.hide(this.modal)
+        }
+        else {
           this.$swal({
             title: 'Error!',
-            text: `${errorMessage.nombre[0]}!`,
-            icon: 'error',
-            customClass: {
-              confirmButton: 'btn btn-primary',
-            },
-            buttonsStyling: false,
-          })
-        } else if (errorEstablecimientos.error) {
-          this.$swal({
-            title: 'Error!',
-            text: 'Ingreso de datos fraudulento!',
+            text: 'Error',
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',
@@ -81,7 +91,6 @@ export default {
             buttonsStyling: false,
           })
         }
-        this.spinner = false
       })
     },
   },

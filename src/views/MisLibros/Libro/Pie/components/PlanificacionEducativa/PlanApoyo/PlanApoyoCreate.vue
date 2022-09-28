@@ -1,6 +1,6 @@
 <template>
   <div>
-  <b-modal
+  <!-- <b-modal
     id="modal-create"
     :title="title"
     :ok-title="submitTitle"
@@ -10,12 +10,16 @@
     centered
     no-close-on-backdrop
     @ok="agregar"
-  >
+  > -->
     <plan-apoyo-form
-      :plan.sync="data"
+      nombreModal="modal-create"
+      :title="title"
+      :planApoyo.sync="data"
+      :submitTitle="submitTitle"
+      btnSubmit="Guardar Estrategia"
       @processForm="agregar"
     />
-  </b-modal>
+  <!-- </b-modal> -->
   <!-- <plan-apoyo-form
     :plan.sync="data"
     @processForm="agregar"
@@ -24,9 +28,6 @@
 </template>
 
 <script>
-import {
-  BModal, VBModal
-} from 'bootstrap-vue'
 import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -36,21 +37,14 @@ import planApoyoForm from './PlanApoyoForm.vue'
 
 export default {
   components: {
-    // ETIQUETAS
-    BModal,
-    VBModal,
-
     // COMPONENTES
     planApoyoForm,
-  },
-  directives: {
-    'b-modal': VBModal,
-    Ripple,
   },
   data() {
     return {
       data: {
         alumnos: [],
+        descripcion: '',
         observaciones: '',
         fechaInicio: '',
         fechaTermino: '',

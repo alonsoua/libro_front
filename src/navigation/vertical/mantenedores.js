@@ -23,20 +23,13 @@ export default [
     // resource: 'establecimientos',
     // action: 'read',
   },
-  // {
-  //   title: 'Calendarios',
-  //   route: 'calendarios',
-  //   icon: 'CalendarIcon',
-  //   // resource: 'calendarios',
-  //   // action: 'read',
-  // },
-  // {
-  //   title: 'Carga Horaria',
-  //   route: 'horarios',
-  //   icon: 'CalendarIcon',
-  //   // resource: 'horarios',
-  //   // action: 'read',
-  // },
+  {
+    title: 'Calendario Escolar',
+    route: 'calendarios',
+    icon: 'CalendarIcon',
+    // resource: 'calendarios',
+    // action: 'read',
+  },
   {
     title: 'Cuentas',
     icon: 'UsersIcon',

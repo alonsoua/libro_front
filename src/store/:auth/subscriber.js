@@ -14,18 +14,18 @@ store.subscribe(mutation => {
         localStorage.removeItem('token')
       }
       break
-    case 'auth/SET_USER':
-
-      if (mutation.payload) {
-        // Agrega el token cuando está logueado
-        // axios.defaults.headers.common.Authorization = `Bearer ${mutation.payload}`
-        localStorage.setItem('userData', mutation.payload)
-      } else {
-        // Elimina el token cuando está logueado
-        // axios.defaults.headers.common.Authorization = null
-        localStorage.removeItem('userData')
-      }
-      break
+    // case 'auth/SET_USER':
+    //   console.log('store :', store)
+    //   if (mutation.payload) {
+    //     // Agrega el token cuando está logueado
+    //     // axios.defaults.headers.common.Authorization = `Bearer ${mutation.payload.access_token}`
+    //     // localStorage.setItem('userData', mutation.payload)
+    //   } else {
+    //     // Elimina el token cuando está logueado
+    //     // axios.defaults.headers.common.Authorization = null
+    //     // localStorage.removeItem('userData')
+    //   }
+    //   break
     default:
       break
   }

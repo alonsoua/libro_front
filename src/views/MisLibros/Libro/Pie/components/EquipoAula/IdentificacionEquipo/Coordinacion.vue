@@ -12,14 +12,15 @@
       @submit.prevent="repeateAgain"
 
     >
-      <b-card-title
+      <b-card-text
         style="margin-top: 8px;"
-        class="mb-2"
+        class="h5"
       >
         Coordinación del Programa
-      </b-card-title>
+      </b-card-text>
       <!-- Row Loop -->
       <b-row
+        class="mt-2"
         ref="row"
       >
 
@@ -141,6 +142,7 @@
 // ETIQUETAS
 import {
   BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardTitle,
+  BCardText,
 } from 'bootstrap-vue'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
@@ -165,6 +167,7 @@ export default {
     BFormGroup,
     BFormInput,
     BCardTitle,
+    BCardText,
 
     // COMPONENTES RECICLADOS
     colLinea,

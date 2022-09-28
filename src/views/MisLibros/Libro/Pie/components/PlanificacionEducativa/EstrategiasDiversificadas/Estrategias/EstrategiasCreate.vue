@@ -1,60 +1,53 @@
 <template>
-
-  <b-modal
-    id="modal-create"
+  <estrategiasForm
+    nombreModal="modal-create"
     :title="title"
-    :ok-title="submitTitle"
-    cancel-title="Cancelar"
-    cancel-variant="outline-secondary"
-    centered
-    size="lg"
-    @ok="agregar"
-  >
-    <estrategiasForm
-      :estrategia.sync="data"
-      @processForm="agregar"
-    />
-  </b-modal>
+    :estrategia.sync="data"
+    btnSubmit="Guardar Estrategia"
+    @processForm="agregar"
+  />
 </template>
 
 <script>
-import {
-  BModal, VBModal
-} from 'bootstrap-vue'
+// ETIQUETAS
 import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import Ripple from 'vue-ripple-directive'
 
+// COMPONENTES HIJO
 import estrategiasForm from './EstrategiasForm.vue'
 
 export default {
   components: {
-    // ETIQUETAS
-    BModal,
-    VBModal,
-
     // COMPONENTES
     estrategiasForm,
   },
   directives: {
-    'b-modal': VBModal,
     Ripple,
+  },
+  computed: {
+    // ...mapGetters({
+    //   getLibroSelected: 'libros/getLibroSelected'
+    // }),
   },
   data() {
     return {
       data: {
         estrategia: '',
-        ambitoasignatura: '',
-        periodo: '',
-        criterios: null,
+        id_asignatura: null,
+        id_periodo: null,
+        criterios: '',
       },
     }
   },
   props: {
-
     title: {
       type: String,
+      required: true,
+    },
+    idCurso: {
+      type: Number,
       required: true,
     },
     submitTitle: {
@@ -63,51 +56,44 @@ export default {
     },
   },
   methods: {
-    // ...mapActions({ createEstablecimiento: 'establecimientos/addEstablecimientos' }),
-    agregar() {
-      console.log('estrategia :', this.data)
-      // this.createEstablecimiento(establecimiento).then(() => {
-      //   const errorEstablecimientos = store.state.establecimientos
-      //   const errorMessage = errorEstablecimientos.errorMessage.errors
-      //   if (!errorEstablecimientos.error) {
-      //     this.$toast({
-      //       component: ToastificationContent,
-      //       props: {
-      //         title: 'Establecimiento creado 👍',
-      //         icon: 'CheckIcon',
-      //         text: `El establecimiento "${establecimiento.nombre}" fue creado con éxito!`,
-      //         variant: 'success',
-      //       },
-      //     },
-      //     {
-      //       position: 'bottom-right',
-      //       timeout: 4000,
-      //     })
-      //     this.$router.replace({
-      //       name: 'establecimientos',
-      //     })
-      //   } else if (errorMessage.nombre) {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: `${errorMessage.nombre[0]}!`,
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   } else {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: 'Ingreso de datos fraudulento!',
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   }
-      // })
+    ...mapActions({
+      createEstrategia: 'II_1_b_estrategias/addEstrategia',
+      fetchEstrategias: 'II_1_b_estrategias/fetchEstrategias',
+    }),
+    agregar(estrategia) {
+      this.createEstrategia(estrategia).then(() => {
+        const statusEstrategias = store.state.II_1_b_estrategias.status
+        if (statusEstrategias === 'success') {
+          this.fetchEstrategias(this.idCurso).then(() => {
+            this.cargando = false
+          })
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Estrategia registrada 👍',
+              icon: 'CheckIcon',
+              text: 'La estrategia fue guardada con éxito!',
+              variant: 'success',
+            },
+          },
+          {
+            position: 'bottom-right',
+            timeout: 4000,
+          })
+          this.$bvModal.hide('modal-create')
+        }
+        else {
+          this.$swal({
+            title: 'Error!',
+            text: 'Error',
+            icon: 'error',
+            customClass: {
+              confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+          })
+        }
+      })
     },
   },
 }

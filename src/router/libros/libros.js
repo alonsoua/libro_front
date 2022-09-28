@@ -6,7 +6,9 @@ export default [
     name: 'mis-libros',
     component: () => import('@/views/MisLibros/MisLibros.vue'),
     beforeEnter: (to, from, next) => {
+      console.log('store.getters[auth/authenticated] :', store.getters['auth/authenticated'])
       if (!store.getters['auth/authenticated']) {
+        console.log('1 :', 1)
         return next({
           name: 'login',
         })
@@ -26,8 +28,8 @@ export default [
 
   // Finalmente será como el update
   {
-    path: '/mis-libros/libro-abierto',
-    name: 'libro-abierto',
+    path: '/mis-libros/:id/libro',
+    name: 'libro',
     component: () => import('@/views/MisLibros/Libro.vue'),
     beforeEnter: (to, from, next) => {
       if (!store.getters['auth/authenticated']) {

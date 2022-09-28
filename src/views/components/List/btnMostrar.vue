@@ -8,7 +8,7 @@
       v-model="porPage"
       size="sm"
       :options="paginaOptions"
-      class="w-50 mr-1"
+      class="w-50 mr-50"
       @change="sendPage"
     />
     <label class="d-inline-block text-sm-left">de {{ total }}</label>
@@ -25,6 +25,7 @@ export default {
     BFormGroup,
     BFormSelect,
   },
+
   props: {
     perPage: {
       type: Number,

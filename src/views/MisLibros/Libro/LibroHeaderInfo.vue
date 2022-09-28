@@ -1,17 +1,18 @@
 <template>
   <b-overlay
-    :show="!cargando"
+    :show="cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
   >
     <b-card
       aria-hidden="true"
-      class="mb-0 pb-0"
-      :bg-variant="$store.state.appConfig.layout.skin === 'light'
+      class="mb-4"
+      :bg-variant="$store.state.appConfig.layout.skin === 'semi-dark'
         ? 'light-primary'
-        : ''"
+        : $store.state.appConfig.layout.skin === 'light'
+          ? 'light-primary'
+          : ''"
     >
-
 
       <b-form>
         <b-row>
@@ -43,53 +44,45 @@
                 Curso
             </b-card-title>
             <v-select
-              v-model="libro.idCurso"
+              v-model="idCurso"
               placeholder="Selecciona el Curso"
               :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
               label="title"
               :options="cursosOption"
-              :reduce="option => option.id"
+              :reduce="option => option.idCurso"
               input-id="idCurso"
               class="bg-light mb-2 mt-25"
               style="border-radius: 6px;"
+              @input="changeLibro(idCurso)"
             />
           </b-col>
 
         </b-row>
 
         <!-- DETALLE DEL CURSO -->
-        <b-tabs style="margin-left: -21px;" class="mt-1">
+        <b-tabs
+          v-if="panorama.estilo || panorama.fortaleza || panorama.necesidad"
+          class="mt-1"
+          style="margin-left: -21px;"
+        >
           <b-tab
+            v-if="panorama.estilo"
             active
             title="Estilos y modos de aprendizaje"
             class="ml-2"
           >
             <b-card-text class="text-secondary" style="margin-left: -4px;">
-              Es un curso combinado de 3° (10) y 4° básico (11), con diversos
-              estilos de aprendizaje, primando el kinestésico, a su vez posee
-              alumnos con diagnóstico asociado de TEL, DEA, DIL y TDAH recibiendo
-              apoyo de un equipo multidisciplinario Terapeuta ocupacional,
-              fonoaudióloga, profesora diferencias, psicóloga y trabajadora social.
-              Se trabaja de forma online, debido a situación pandemia, con
-              asignaturas a diario vía ZOOM.
+              {{ panorama.estilo }}
             </b-card-text>
           </b-tab>
-          <b-tab title="Fortalezas">
+          <b-tab v-if="panorama.fortaleza" title="Fortalezas">
             <b-card-text class="text-secondary mb-2" style="margin-left: 17px;">
-              Alumnos con motivación por aprender, trabajo articulado y colaborativo
-              entre los profesionales de la educación y a su vez con la familia,
-              buena asistencia a las clases online, con justificación las
-              inasistencias, entrega de tareas en plazos estipulados, responsabilidad
-              de los alumnos y sus familia en el desarrollo integral de sus pupilos.
+              {{ panorama.fortaleza }}
             </b-card-text>
           </b-tab>
-          <b-tab title="Necesidades de apoyo">
+          <b-tab v-if="panorama.necesidad" title="Necesidades de apoyo">
             <b-card-text class="text-secondary mb-2" style="margin-left: 17px;">
-              Debido a la situación sanitaria por el COVID19, el trabajo es de
-              forma online y con actividades asincrónicas, dificultando que los
-              y las alumnas lleguen a la adquisición del 100% de los aprendizajes
-              o apoyos necesarios, la conectividad y redes de internet deficientes
-              en ocasiones a nivel comunal.
+              {{ panorama.necesidad }}
             </b-card-text>
           </b-tab>
         </b-tabs>
@@ -112,6 +105,7 @@ import vSelect from 'vue-select'
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
+import { mapState, mapMutations, mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -141,14 +135,10 @@ export default {
   data() {
     return {
       collapseType: 'border',
-      cargando: true,
-      cursosOption: [
-        { id: 1, title: '1ero Básico A' },
-        { id: 2, title: '1ero Básico B' },
-        { id: 3, title: '2do Básico A' },
-        { id: 4, title: '2do Básico B' },
-        { id: 5, title: '3ero Básico A' },
-      ],
+      cargando: false,
+      idCurso: '',
+      cursosOption: [],
+      panorama:[],
     }
   },
   props: {
@@ -157,35 +147,69 @@ export default {
       required: true,
     },
   },
-  // validations() {
-  //   return {
-  //     libro: {
-  //       rbd: {
-  //         $autoDirty: true,
-  //         required: helpers.withMessage('El campo es requerido.', required),
-  //         maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.', maxLength(8)),
-  //       },
-  //       nombre: {
-  //         $autoDirty: true,
-  //         required: helpers.withMessage('El campo es requerido.', required),
-  //         maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
-  //       },
-  //       abreviatura: {
-  //         $autoDirty: true,
-  //         required: helpers.withMessage('El campo es requerido.', required),
-  //         maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.', maxLength(10)),
-  //       },
-  //       correo: {
-  //         $autoDirty: true,
-  //         required: helpers.withMessage('El campo es requerido.', required),
-  //         email: helpers.withMessage('Debe ser un correo valido.', email),
-  //       },
-  //     }
-  //   }
-  // },
+  computed: {
+    ...mapState('libros', ['libros']),
+    ...mapGetters({
+      getLibroSelected: 'libros/getLibroSelected',
+      getPanorama: 'II_1_a_panorama/getPanorama',
+    }),
+  },
+  watch: {
+    getPanorama(getPanorama) {
+      if (getPanorama.message !== 'Registro no existe') {
+        this.panorama = getPanorama
+      } else {
+        this.panorama = {
+          'estilo': false,
+          'fortaleza': false,
+          'necesidad': false,
+        }
+      }
+    }
+      // this.cargarPanorama(this.idCurso)
+  },
+  mounted() {
+    this.idCurso = this.getLibroSelected.id
+    this.cargarPanorama(this.idCurso)
+    this.setCursosOption(this.libros)
+  },
   methods: {
+    ...mapMutations('libros', ['setLibro']),
+    ...mapActions({
+      fetchPanorama: 'II_1_a_panorama/fetchPanorama',
+    }),
+    cargarPanorama(idCurso) {
+      this.cargando = true
+      this.fetchPanorama(this.idCurso).then(() => {
+        if (this.getPanorama.message !== 'Registro no existe') {
+          this.panorama = this.getPanorama
+        } else {
+          this.panorama = {
+            'estilo': false,
+            'fortaleza': false,
+            'necesidad': false,
+          }
+        }
+        this.cargando = false
+      })
+    },
+    changeLibro(id) {
+      const libroSelected = this.libros.find(l => l.id === id)
+      this.setLibro(libroSelected)
+      this.idCurso = this.getLibroSelected.id
+      this.cargarPanorama(this.idCurso)
+    },
+    setCursosOption(libros) {
+      this.cargando = true
+      libros.forEach(libro => {
+        this.cursosOption.push({
+          'idCurso': libro.id,
+          'title': '1ero Básico '+libro.letra,
+        })
+        this.cargando = false
+      })
+    },
     submitOption() {
-      console.log('this.v$ :', this.v$.libro)
       this.v$.libro.$touch()
       // if (!this.v$.libro.$invalid) {
       //   this.$emit('processForm', this.libro)

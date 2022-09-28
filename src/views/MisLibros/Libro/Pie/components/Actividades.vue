@@ -1,7 +1,6 @@
 <template>
   <b-tabs
-    justified
-    fill
+    align="left"
   >
     <div
       v-for="(menu, key) in submenus"
@@ -31,9 +30,9 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-2">
+            <b-card-title class="mb-0 ml-2">
               {{ menu.index }}
-            </h4>
+            </b-card-title>
           </div>
           <div class="my-auto ml-1">
 
@@ -41,7 +40,7 @@
             <b-card-title
               v-if="menu.titulo !== ''"
               class="mb-25"
-              style="margin-top: 4px;"
+              style="margin-top: 0px;"
             >
               <div class="d-flex">
                 {{ menu.titulo }}
@@ -72,7 +71,7 @@
         <colLinea
           ancho="100%"
           align="center"
-          class="mt-2"
+          class="mt-1"
         />
 
         <!-- HIJOS -->

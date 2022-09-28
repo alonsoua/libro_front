@@ -16,6 +16,7 @@ import './global-components'
 import '@/libs/portal-vue'
 import '@/libs/vue-select'
 import '@/libs/toastification'
+import '@/libs/sweet-alerts'
 
 import '@/@fake-db/db'
 

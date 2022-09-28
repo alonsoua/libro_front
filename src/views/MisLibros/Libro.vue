@@ -1,26 +1,28 @@
 <template>
-  <div>
-    <libroHeaderInfo
-      :libro="data"
+  <div v-if="selectedLibro">
+    <libro-header-info
+      :libro="selectedLibro"
     />
 
-    <libroHeaderMenu style="margin-top: 16px;"/>
+    <libro-header-menu
+      style="margin-top: 16px;"
+    />
 
   </div>
 </template>
 
 <script>
 
-import { mapActions } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import libroHeaderInfo from './Libro/LibroHeaderInfo.vue'
+import LibroHeaderInfo from './Libro/LibroHeaderInfo.vue'
 import LibroHeaderMenu from './Libro/LibroHeaderMenu.vue'
 
 export default {
   components: {
-    libroHeaderInfo,
+    LibroHeaderInfo,
     LibroHeaderMenu,
   },
   data() {
@@ -31,6 +33,21 @@ export default {
         estado: null,
       },
     }
+  },
+  computed: {
+    ...mapGetters({ getLibros: 'libros/getLibros' }),
+    ...mapState('libros', ['selectedLibro']),
+  },
+  watch: {
+    getLibros(val) {
+      this.totalRows = val.length
+      this.items = []
+      this.items = this.getLibros
+      console.log('this.items :', this.items)
+    },
+  },
+  mounted() {
+    console.log(this.selectedLibro);
   },
   methods: {
     ...mapActions({ createLibro: 'libros/addLibros' }),

@@ -154,10 +154,22 @@ export default {
       avatarText,
     }
   },
+  mounted() {
+    this.me(this.user)
+  },
   methods: {
     ...mapActions({
       signOutAction: 'auth/signOut',
+      attempt: 'auth/attempt',
     }),
+    me(user) {
+      if (user) {
+        // this.attempt(user).then((response) => {
+        //   console.log('user :', user)
+        //   console.log('response :', response)
+        // })
+      }
+    },
     logout() {
       // Remove userData from localStorage
       // ? You just removed token from localStorage. If you like, you can also make API call to backend to blacklist used token
@@ -190,6 +202,7 @@ export default {
 
       // Remove userData from localStorage
       localStorage.removeItem('userData')
+      localStorage.removeItem('token')
 
       this.signOutAction().then(() => {
         this.$router.replace({

@@ -4,7 +4,7 @@
       v-if="direccion === 'top'"
       :id="`popover-button-info-${id}`"
       v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-      :variant="btnVariant"
+      variant="flat-primary"
       class="btn-icon rounded-circle"
       v-b-popover.hover.top="texto"
       :title="titulo"
@@ -18,7 +18,7 @@
       v-if="direccion === 'bottom'"
       :id="`popover-button-info-${id}`"
       v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-      :variant="btnVariant"
+      variant="flat-primary"
       class="btn-icon rounded-circle"
       v-b-popover.hover.bottom="texto"
       :title="titulo"
@@ -32,7 +32,7 @@
       v-if="direccion === 'left'"
       :id="`popover-button-info-${id}`"
       v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-      :variant="btnVariant"
+      variant="flat-primary"
       class="btn-icon rounded-circle"
       v-b-popover.hover.left="texto"
       :title="titulo"
@@ -46,7 +46,7 @@
       v-if="direccion === 'right'"
       :id="`popover-button-info-${id}`"
       v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-      :variant="btnVariant"
+      variant="flat-primary"
       class="btn-icon rounded-circle"
       v-b-popover.hover.right="texto"
       :title="titulo"
@@ -82,7 +82,7 @@ export default {
     },
     btnVariant: {
       type: String,
-      default: 'flat-info',
+      default: 'flat-secundary',
     },
     icono: {
       type: String,

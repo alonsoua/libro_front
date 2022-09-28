@@ -1,7 +1,6 @@
 <template>
   <b-tabs
-    align="center"
-    fill
+    align="left"
 
   >
     <div
@@ -32,17 +31,46 @@
           <div class="meetup-day">
 
             <!-- INDEX -->
-            <h4 class="mb-0 ml-2">
+            <b-card-text
+              v-if="menu.index === '1'"
+              class="mb-0 ml-2"
+            >
               {{ menu.index }}
-            </h4>
+            </b-card-text>
+            <b-card-title
+              v-else
+              class="mb-0 ml-2"
+            >
+              {{ menu.index }}
+            </b-card-title>
           </div>
           <div class="my-auto ml-1">
 
             <!-- TÍTULO -->
-            <b-card-title
-              v-if="menu.titulo !== ''"
+            <b-card-text
+              v-if="menu.index === '1'"
               class="mb-25"
-              style="margin-top: 4px;"
+              style="margin-top: 0px;"
+            >
+              <div class="d-flex">
+                {{ menu.titulo }}
+
+                <!-- INFORMATIVO -->
+                <popover
+                  v-if="menu.informacion !== ''"
+                  class="float-right"
+                  id="0"
+                  btnVariant="flat-secondary"
+                  :texto="menu.informacion"
+                  direccion="right"
+                  style="margin-left: -6px; margin-top: -15px; margin-bottom: -10px;"
+                />
+              </div>
+            </b-card-text>
+            <b-card-title
+              v-else
+              class="mb-25"
+              style="margin-top: 0px;"
             >
               <div class="d-flex">
                 {{ menu.titulo }}
@@ -73,7 +101,7 @@
         <colLinea
           ancho="100%"
           align="center"
-          class="mt-2"
+          class="mt-1"
         />
 
         <!-- HIJOS -->

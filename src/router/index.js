@@ -15,6 +15,7 @@ import matriculas from './matriculas/matriculas'
 // Mantenedor
 import alumnos from './mantenedores/alumnos'
 import establecimientos from './mantenedores/establecimientos'
+import calendarios from './mantenedores/calendarios'
 import periodos from './mantenedores/periodos'
 import horarios from './mantenedores/horarios'
 import usuarios from './mantenedores/usuarios'
@@ -45,6 +46,7 @@ const router = new VueRouter({
     // Mantenedor
     ...alumnos,
     ...establecimientos,
+    ...calendarios,
     ...periodos,
     ...horarios,
     ...usuarios,
@@ -55,7 +57,7 @@ const router = new VueRouter({
   ],
 })
 
-console.log('router :', router)
+// console.log('router :', router)
 // router.beforeEnter ((to, from, next) => {
 //   console.log('store.getters[auth/authenticated] :', store.getters['auth/authenticated'])
 //   if (!store.getters['auth/authenticated']) {
@@ -103,5 +105,6 @@ router.afterEach(() => {
     appLoading.style.display = 'none'
   }
 })
+
 
 export default router

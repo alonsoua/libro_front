@@ -12,11 +12,11 @@
           </h2>
         </b-link>
 
-        <b-card-title class="mb-1">
-          Bienvenido al sistema Sie! 👋
+        <b-card-title class="mb-1 text-center">
+          Bienvenido(a) al sistema Sie! 👋
         </b-card-title>
-        <b-card-text class="mb-2">
-          Inicie sesión en su cuenta y comience la aventura.
+        <b-card-text class="mb-2 text-center">
+          Inicia sesión y comienza la aventura.
         </b-card-text>
 
         <!-- form -->
@@ -34,7 +34,7 @@
               id="rut"
               v-model="form.rut"
               name="login-rut"
-              placeholder="Ingresa tu rut (XX.XXX.XXX-X)"
+              placeholder="Ej: 12.345.678-K"
               autofocus
               :state="v$.form.rut.$error === true
                 ? false
@@ -45,6 +45,7 @@
             <b-form-invalid-feedback
               v-if="v$.form.rut.$error"
               id="rutInfo"
+              class="text-right"
             >
               <p v-for="error of v$.form.rut.$errors" :key="error.$uid">
                 {{ error.$message }}
@@ -55,7 +56,7 @@
           <!-- contraseña -->
           <b-form-group>
             <div class="d-flex justify-content-between">
-              <label for="password">Contraseña</label>
+              <label for="password">Clave</label>
               <!-- <b-link :to="{name:'auth-forgot-password-v1'}">
                 <small>olvidó su contraseña?</small>
               </b-link> -->
@@ -70,7 +71,7 @@
                 :type="passwordFieldType"
                 class="form-control-merge"
                 name="login-password"
-                placeholder="Ingresa tu contraseña"
+                placeholder="********"
                 :state="v$.form.password.$error === true
                   ? false
                   : null"
@@ -88,6 +89,7 @@
             <b-form-invalid-feedback
               v-if="v$.form.password.$error"
               id="passwordInfo"
+              class="text-right"
             >
             <p v-for="error of v$.form.password.$errors" :key="error.$uid">
               {{ error.$message }}

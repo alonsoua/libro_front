@@ -17,6 +17,7 @@
         <template #title>
           <span
             class="d-none d-inline mb-25"
+            :title="menu.index+'. '+menu.titulo"
           >
             {{ menu.index }}.
             {{ menu.abreviatura }}
@@ -24,34 +25,38 @@
         </template>
 
         <colLinea
-          style="margin-top: -15px; margin-bottom: 24px;"
+          style="margin-top: -15px; margin-bottom: 16px;"
         />
 
         <!-- ENCABEZADO -->
-        <div class="meetup-header d-flex align-items-center mt-2">
+        <div
+          class="meetup-header d-flex align-items-center"
+        >
           <div class="meetup-day">
 
             <!-- INDEX -->
             <b-card-text
               v-if="menu.index !== 'V'"
-              class="mb-0 ml-2"
+              class="ml-2"
+              style="margin-top: -2px;"
             >
               {{ menu.index }}
             </b-card-text>
             <b-card-title
               v-if="menu.index === 'V'"
               class="mb-0 ml-2"
+              style="margin-top: -2px;"
             >
               {{ menu.index }}
             </b-card-title>
           </div>
-          <div class="ml-1">
+          <div class="ml-50">
 
             <!-- TÍTULO -->
             <b-card-text
               v-if="menu.titulo !== '' && menu.index !== 'V'"
               class="mb-25"
-              style="margin-top: 4px;"
+              style="margin-top: 2px;"
             >
               {{ menu.titulo }}
               <!-- INFORMATIVO -->
@@ -69,26 +74,27 @@
             <b-card-title
               v-if="menu.titulo !== '' && menu.index === 'V'"
               class="mb-25"
-              style="margin-top: 4px;"
+              style="margin-top: 2px;"
             >
               {{ menu.titulo}}
             </b-card-title>
 
-            <!-- TEXTO -->
-            <b-card-text
-              v-if="menu.texto !== ''"
-              class="mr-4 mb-0 text-secondary"
-            >
-              {{ menu.texto }}
-            </b-card-text>
           </div>
         </div>
+        <!-- TEXTO -->
+        <b-card-text
+          v-if="menu.texto !== ''"
+          class="mr-3 ml-2 mt-25 text-secondary"
+        >
+          {{ menu.texto }}
+        </b-card-text>
 
         <colLinea
           ancho="100%"
           align="center"
-          class="mt-2 mb-25"
+          class="mt-50 mb-25"
         />
+          <!-- style="margin-top: -17px !important;" -->
 
         <!-- COMPONENTS -->
 
@@ -139,6 +145,7 @@ import actividades from './components/Actividades.vue'
 import reuniones from './components/Reuniones.vue'
 import FormLayoutDatalistHelperVue from '../../../../../../vuexy-full-version/src/views/forms/form-layout/FormLayoutDatalistHelper.vue'
 import TourVue from '../../../../../../vuexy-full-version/src/views/extensions/tour/Tour.vue'
+import TrabajoFamiliaVue from './components/Actividades/TrabajoFamilia.vue'
 
 
 export default {
@@ -180,7 +187,7 @@ export default {
           informacion: 'El Equipo de Aula es aquel grupo de profesionales conformado por el o los profesores de aula respectivo, el profesor especialista, profesor especializado o psicopedagoga, y otros profesionales asistentes de la educación, asistentes de aula, intérpretes en lengua de señas chilena, etc., cuya finalidad común es el mejoramiento de la calidad de la enseñanza en un marco de valorización de la diversidad y de respeto por las diferencias individuales.',
           submenus: [
             {
-              active: true,
+              active: false,
               index: '1',
               abreviatura: 'Identificación del equipo de aula',
               titulo: 'Identificación del equipo de aula',
@@ -189,7 +196,7 @@ export default {
               submenus: [],
             },
             {
-              active: false,
+              active: true,
               index: '2',
               abreviatura: 'Reuniones de coordinación',
               titulo: 'Reuniones de coordinación',
@@ -200,7 +207,7 @@ export default {
           ]
         },
         {
-          active: false,
+          active: true,
           index: 'II',
           abreviatura: 'Planificación educativa',
           titulo: 'Planificación del proceso educativo',
@@ -224,7 +231,7 @@ export default {
                   informacion: '',
                 },
                 {
-                  active: false,
+                  active: true,
                   index: 'b',
                   abreviatura: 'Estrategias',
                   titulo: 'Registro de las estrategias diversificadas que aplicará el profesor de educación regular para el curso',
@@ -242,15 +249,15 @@ export default {
               informacion: '',
               submenus: [
                 {
-                  active: true,
+                  active: false,
                   index: 'a',
                   abreviatura: 'Acciones',
                   titulo: 'Acciones que se implementarán',
-                  texto: '',
+                  texto: 'en colaboración.',
                   informacion: '',
                 },
                 {
-                  active: false,
+                  active: true,
                   index: 'b',
                   abreviatura: 'Apoyos',
                   titulo: 'Organización de los apoyos',
@@ -268,7 +275,7 @@ export default {
               informacion: '',
               submenus: [
                 {
-                  active: true,
+                  active: false,
                   index: 'a',
                   abreviatura: 'Diversidad',
                   titulo: 'Estrategias que se utilizarán para dar respuesta a la diversidad de estudiantes, en el aula común',
@@ -284,7 +291,7 @@ export default {
                   informacion: '',
                 },
                 {
-                  active: false,
+                  active: true,
                   index: 'c',
                   abreviatura: 'Evaluación',
                   titulo: 'Estrategias y procedimientos de evaluación de aprendizaje con foco en la diversidad y en las necesidades educativas especiales',
@@ -314,7 +321,7 @@ export default {
           ]
         },
         {
-          active: true,
+          active: false,
           index: 'III',
           abreviatura: 'Implementación y evaluación educativa',
           titulo: 'Registro de la implementación y evaluación del proceso educativo',

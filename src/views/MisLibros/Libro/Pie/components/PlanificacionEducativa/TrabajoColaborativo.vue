@@ -58,7 +58,6 @@
         <acciones
           v-if="menu.index === 'a'"
           class="mt-2"
-          btnSubmit="Actualizar Acciones"
         />
 
         <apoyos

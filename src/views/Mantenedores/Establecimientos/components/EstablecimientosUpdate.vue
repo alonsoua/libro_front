@@ -54,8 +54,8 @@ export default {
             },
           },
           {
-            position: 'top-center',
-            timeout: 2000,
+            position: 'bottom-right',
+            timeout: 3000,
           })
           // this.$router.replace({
           //   name: 'establecimientos',

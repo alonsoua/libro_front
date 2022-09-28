@@ -1,13 +1,13 @@
 <template>
-  <div v-if="selectedLibro">
+  <div v-if="selectedCalendario">
     <b-overlay
       :show="spinner"
       spinner-variant="primary"
       :variant="$store.state.appConfig.layout.skin"
     >
-      <librosForm
-        btnSubmit="Editar Libro"
-        :libro="selectedLibro"
+      <calendariosForm
+        btnSubmit="Editar Calendario"
+        :calendario="selectedCalendario"
         @processForm="editar"
       />
     </b-overlay>
@@ -21,11 +21,11 @@ import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import librosForm from './components/LibrosForm.vue'
+import calendariosForm from './CalendariosForm.vue'
 
 export default {
   components: {
-    librosForm,
+    calendariosForm,
     BOverlay,
   },
   data() {
@@ -34,32 +34,32 @@ export default {
     }
   },
   computed: {
-    ...mapState('libros', ['selectedLibro']),
+    ...mapState('calendarios', ['selectedCalendario']),
   },
   methods: {
-    ...mapActions({ updateLibro: 'libros/updateLibro' }),
-    editar(libro) {
+    ...mapActions({ updateCalendario: 'calendarios/updateCalendario' }),
+    editar(calendario) {
       this.spinner = true
-      this.updateLibro(libro).then(() => {
-        const errorLibros = store.state.libros
-        const errorMessage = errorLibros.errorMessage.errors
-        if (!errorLibros.error) {
+      this.updateCalendario(calendario).then(() => {
+        const errorCalendarios = store.state.calendarios
+        const errorMessage = errorCalendarios.errorMessage.errors
+        if (!errorCalendarios.error) {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Libro editado 👍',
-              text: `El libro "${libro.nombre}" fue editado con éxito!`,
+              title: 'Calendario editado 👍',
+              text: `El calendario "${calendario.nombre}" fue actualizado con éxito!`,
               icon: 'CheckIcon',
               variant: 'success',
             },
           },
           {
             position: 'bottom-right',
-            timeout: 4000,
+            timeout: 3000,
           })
-          this.$router.replace({
-            name: 'libros',
-          })
+          // this.$router.replace({
+          //   name: 'calendarios',
+          // })
         } else if (errorMessage.nombre) {
           this.$swal({
             title: 'Error!',
@@ -70,7 +70,7 @@ export default {
             },
             buttonsStyling: false,
           })
-        } else if (errorLibros.error) {
+        } else if (errorCalendarios.error) {
           this.$swal({
             title: 'Error!',
             text: 'Ingreso de datos fraudulento!',

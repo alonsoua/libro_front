@@ -1,20 +1,10 @@
 <template>
-
-  <b-modal
-    id="modal-create"
-    :title="title"
-    :ok-title="submitTitle"
-    cancel-title="Cancelar"
-    cancel-variant="outline-secondary"
-    size="lg"
-    centered
-    @ok="agregar"
-  >
-    <reunionesForm
-      :reunion.sync="data"
-      @processForm="agregar"
-    />
-  </b-modal>
+  <reunionesForm
+    nombreModal="modal-create"
+    title="Coordinar reunión"
+    :reunion.sync="data"
+    @processForm="agregar"
+  />
 </template>
 
 <script>
@@ -45,68 +35,63 @@ export default {
     return {
       data: {
         fecha: '',
-        asistentes: '',
+        horario: '08:00',
+        asistentes: [],
         acuerdos: '',
-        estado: null,
       },
     }
   },
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    submitTitle: {
-      type: String,
+    idCurso: {
+      type: Number,
       required: true,
     },
   },
   methods: {
-    // ...mapActions({ createEstablecimiento: 'establecimientos/addEstablecimientos' }),
-    agregar() {
-      console.log('reunion :', this.data)
-      // this.createEstablecimiento(establecimiento).then(() => {
-      //   const errorEstablecimientos = store.state.establecimientos
-      //   const errorMessage = errorEstablecimientos.errorMessage.errors
-      //   if (!errorEstablecimientos.error) {
-      //     this.$toast({
-      //       component: ToastificationContent,
-      //       props: {
-      //         title: 'Establecimiento creado 👍',
-      //         icon: 'CheckIcon',
-      //         text: `El establecimiento "${establecimiento.nombre}" fue creado con éxito!`,
-      //         variant: 'success',
-      //       },
-      //     },
-      //     {
-      //       position: 'bottom-right',
-      //       timeout: 4000,
-      //     })
-      //     this.$router.replace({
-      //       name: 'establecimientos',
-      //     })
-      //   } else if (errorMessage.nombre) {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: `${errorMessage.nombre[0]}!`,
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   } else {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: 'Ingreso de datos fraudulento!',
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   }
-      // })
+    ...mapActions({
+      createReunion: 'I_2_reuniones/addReunion',
+      fetchReuniones: 'I_2_reuniones/fetchReuniones',
+    }),
+    agregar(reunion) {
+      const data = {
+        fecha: reunion.fecha,
+        horario: reunion.horario,
+        acuerdos: reunion.acuerdos,
+        personas: reunion.asistentes,
+        id_cursos: this.idCurso,
+        id_periodo: 1,
+      }
+      this.createReunion(data).then(() => {
+        const statusReuniones = store.state.I_2_reuniones.status
+        if (statusReuniones === 'success') {
+          this.fetchReuniones(this.idCurso)
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Reunión guardada 👍',
+              icon: 'CheckIcon',
+              text: 'La reunión fue ingresada con éxito!',
+              variant: 'success',
+            },
+          },
+          {
+            position: 'bottom-right',
+            timeout: 4000,
+          })
+          this.$bvModal.hide('modal-create')
+        }
+        else {
+          this.$swal({
+            title: 'Error!',
+            text: 'Error',
+            icon: 'error',
+            customClass: {
+              confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+          })
+        }
+      })
     },
   },
 }

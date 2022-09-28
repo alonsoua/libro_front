@@ -6,14 +6,14 @@
   >
     <b-row>
       <b-col md="8">
-        <b-card-title
+        <b-card-text
           style="margin-top: 8px;"
-          class="mb-2"
+          class="h5"
         >
           Profesionales especializados asistentes de la educación
-        </b-card-title>
+        </b-card-text>
       </b-col>
-      <b-col md="4">
+      <b-col md="4" class="mt-2">
         <b-button
           v-ripple.400="'rgba(255, 255, 255, 0.15)'"
           variant="outline-primary float-right"
@@ -130,6 +130,7 @@
 // ETIQUETAS
 import {
   BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardTitle,
+  BCardText,
 } from 'bootstrap-vue'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
@@ -153,6 +154,7 @@ export default {
     BFormGroup,
     BFormInput,
     BCardTitle,
+    BCardText,
 
     // COMPONENTES RECICLADOS
     colLinea,

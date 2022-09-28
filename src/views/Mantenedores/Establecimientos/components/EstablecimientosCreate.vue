@@ -49,7 +49,7 @@ export default {
             },
           },
           {
-            position: 'top-center',
+            position: 'bottom-right',
             timeout: 3000,
           })
           // this.$router.replace({

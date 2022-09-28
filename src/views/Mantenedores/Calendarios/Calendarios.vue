@@ -37,9 +37,9 @@
         >
           <!-- BOTON CREAR -->
           <btnCrear
-            texto="Libro"
-            modulo="libros"
-            @processAdd="addLibro"
+            texto="Calendario"
+            modulo="calendarios"
+            @processAdd="addCalendario"
           />
         </b-col>
 
@@ -63,13 +63,6 @@
             :filter-included-fields="filterOn"
             @filtered="onFiltered"
           >
-
-            <template #table-busy>
-              <div class="text-center text-danger my-2">
-                <spinner />
-              </div>
-            </template>
-
             <!-- Cargando -->
             <template #table-busy>
               <div class="text-center text-danger my-2">
@@ -77,46 +70,27 @@
               </div>
             </template>
 
-            <!-- Column: Libro -->
-            <template #cell(nombre)="data">
-              <colNombreImg
-                :mostrarImg="true"
-                :imagen="data.item.insignia"
-                :nombre="data.item.nombre"
-                :txtMuted="data.item.abreviatura"
-                :nombreModal="null"
-              />
-            </template>
-
-            <!-- COLUMNA PERIODO -->
-            <template #cell(nombreLibro)="data">
-              <!-- <colLibro
-                modulo="libros"
-                :data="data.item"
-                @processUpdateLibro="updateLibro"
-              /> -->
-            </template>
 
             <!-- COLUMNA ESTADO -->
             <template #cell(estado)="data">
               <colEstado
                 :data="data"
-                modulo="libros"
+                modulo="calendarios"
                 @processUpdateEstado="updateEstado"
               />
             </template>
 
             <!-- Column: Action -->
             <template #cell(acciones)="data">
-              <colAccionesBtnes
-                modulo="libros"
+              <!-- <colAccionesBtnes
+                modulo="calendarios"
                 :modal="`modal-lg-${data.item.id}`"
                 :data="data"
-                @processGoToConfig="goToConfig"
                 @processGoToUpdate="goToUpdate"
-                @processGoToClone="goToClone"
                 @processRemove="remove(data.item)"
-              />
+              /> -->
+                <!-- @processGoToConfig="goToConfig"
+                @processGoToClone="goToClone" -->
             </template>
           </b-table>
         </b-col>
@@ -130,7 +104,7 @@
             :per-page="perPage"
             align="center"
             size="sm"
-            class="my-0"
+            class="my-0 mt-1"
           />
         </b-col>
 
@@ -149,7 +123,7 @@ import btnCrear from '../../components/List/btnCrear.vue'
 import inputFiltro from '../../components/List/inputFiltro.vue'
 import btnMostrar from '../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../components/List/colAccionesBtnes.vue'
-// import colLibro from '../../components/List/colLibro.vue'
+import colPeriodo from '../../components/List/colPeriodo.vue'
 import colEstado from '../../components/List/colEstado.vue'
 import spinner from '../../components/spinner.vue'
 import colNombreImg from '../../components/List/colNombreImg.vue'
@@ -168,7 +142,7 @@ export default {
     btnCrear,
     inputFiltro,
     btnMostrar,
-    // colLibro,
+    colPeriodo,
     colEstado,
     spinner,
     colNombreImg,
@@ -178,13 +152,12 @@ export default {
       cargando: false,
       spinner: false,
       // chk
-      items: [{
-        tipoEnseñanza: 'Educación Básica',
-        grado: '1ero Básico A',
-        estado: 'Activo',
-      }],
+      items: [],
+      selectedchk: [],
+      chkTodo: null,
+      checked: null,
 
-      perPage: 10,
+      perPage: 25,
       totalRows: 1,
       currentPage: 1,
       sortBy: '',
@@ -200,21 +173,47 @@ export default {
       },
       fields: [
         {
-          key: 'tipoEnseñanza',
-          label: 'Tipo Enseñanza',
+          key: 'periodo_escolar',
+          label: 'Periodo Escolar',
           sortable: true,
           thStyle: {
-            width: '200px !important',
+            width: '100px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'grado',
-          label: 'Grado',
-          sortable: true,
+          key: 'fecha_inicio',
+          label: 'Fecha Inicio',
+          sortable: false,
+          tdClass: 'text-center',
           thStyle: {
-            width: '200px !important',
+            'text-align': 'center',
+            width: '100px !important',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
+        {
+          key: 'fecha_termino',
+          label: 'Fecha Termino',
+          sortable: false,
+          tdClass: 'text-center',
+          thStyle: {
+            'text-align': 'center',
+            width: '100px !important',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
+        {
+          key: 'codigo_calendario',
+          label: 'Código Calendario',
+          sortable: false,
+          tdClass: 'text-center',
+          thStyle: {
+            'text-align': 'center',
+            width: '100px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -222,7 +221,7 @@ export default {
         {
           key: 'estado',
           label: 'Estado',
-          sortable: true,
+          sortable: false,
           tdClass: 'text-center',
           thStyle: {
             'text-align': 'center',
@@ -248,7 +247,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getLibros: 'libros/getLibros' }),
+    ...mapGetters({
+      getCalendarios: 'calendarios/getCalendarios',
+      getUser: 'auth/user',
+    }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -261,49 +263,50 @@ export default {
     },
   },
   watch: {
-    getLibros(val) {
+    getCalendarios(val) {
       this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getLibros
+      this.items = []
+      this.items = this.getCalendarios
     },
   },
   mounted() {
-    this.cargarLibros()
+    this.cargarCalendarios()
     this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchLibros: 'libros/fetchLibros',
-    //   updateLibroLibro: 'libros/updateLibroLibro',
-    //   removeLibros: 'libros/removeLibros',
-    // }),
-    // ...mapMutations('libros', ['setLibro']),
+    ...mapActions({
+      fetchCalendarios: 'calendarios/fetchCalendarios',
+      updateCalendarioPeriodo: 'calendarios/updateCalendarioPeriodo',
+      removeCalendarios: 'calendarios/removeCalendarios',
+    }),
+    ...mapMutations('calendarios', ['setCalendario']),
     setTableList() {
-      if (this.$can('update', 'libros')
-        || this.$can('delete', 'libros')
-      ) {
-        this.fields.push(this.fieldAcciones)
-      }
+      // this.fields.push(this.fieldAcciones)
+      // if (this.$can('update', 'calendarios')
+      //   || this.$can('delete', 'calendarios')
+      // ) {
+      // }
     },
-    cargarLibros() {
-      // this.fetchLibros().then(() => {
-      //   this.cargando = false
-      // })
-    },
-    addLibro() {
-      this.$router.replace({
-        name: 'libro-abierto',
+    cargarCalendarios() {
+      this.cargando = true
+      this.fetchCalendarios().then(() => {
+        this.cargando = false
       })
     },
-    updateLibro(libro) {
+    addCalendario() {
+      this.$router.replace({
+        name: 'calendarios-create',
+      })
+    },
+    updatePeriodo(calendario) {
       this.$swal({
-        title: 'Actualizar libro!',
-        html: 'Estás seguro que deseas actualizar el libro activo del'
-          + ' libro<br><span class="font-weight-bolder">'
-          + `${libro.nombre}</span>?`,
+        title: 'Actualizar periodo!',
+        html: 'Estás seguro que deseas actualizar el periodo activo del'
+          + ' calendario<br><span class="font-weight-bolder">'
+          + `${calendario.nombre}</span>?`,
         footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' libro activo, se creará un nuevo marco de trabajo para el'
-          + ' libro. No se puede devolver al libro anterior.</div>',
+          + ' periodo activo, se creará un nuevo marco de trabajo para el'
+          + ' calendario. No se puede devolver al periodo anterior.</div>',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, actualízalo!',
@@ -316,54 +319,54 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateLibroLibro(libro).then(() => {
+          // this.updateCalendarioPeriodo(calendario).then(() => {
           //   this.$swal({
           //     icon: 'success',
-          //     title: 'Libro activo actualizado!',
+          //     title: 'Periodo activo actualizado!',
           //     html:
-          //       'El libro activo del libro<br>'
+          //       'El periodo activo del calendario<br>'
           //       + ' <span class="font-weight-bolder">'
-          //       + `${libro.nombre}</span>`
+          //       + `${calendario.nombre}</span>`
           //       + '<br>ha sido actualizado con éxito!',
           //     customClass: {
           //       confirmButton: 'btn btn-primary',
           //     },
           //   })
           //   this.spinner = false
-          //   this.cargarLibros()
+          //   this.cargarCalendarios()
           // })
         } else {
           this.spinner = false
-          this.cargarLibros()
+          this.cargarCalendarios()
         }
       })
     },
     updateEstado() {
       // console.log('update')
     },
-    goToConfig(libro) {
-      this.setLibro(libro)
+    goToConfig(calendario) {
+      this.setCalendario(calendario)
       this.$router.push({
-        name: 'libros-config',
+        name: 'calendarios-config',
       })
     },
-    goToUpdate(libro) {
-      this.setLibro(libro)
+    goToUpdate(calendario) {
+      this.setCalendario(calendario)
       this.$router.push({
-        name: 'libros-update',
+        name: 'calendarios-update',
       })
     },
-    goToClone(libro) {
-      this.setLibro(libro)
+    goToClone(calendario) {
+      this.setCalendario(calendario)
       this.$router.push({
-        name: 'libros-clone',
+        name: 'calendarios-clone',
       })
     },
-    remove(libro) {
+    remove(calendario) {
       this.$swal({
-        title: 'Eliminar libro!',
-        text: `Estás seguro que deseas eliminar el libro
-          "${libro.nombre}"?`,
+        title: 'Eliminar calendario!',
+        text: `Estás seguro que deseas eliminar el calendario
+          "${calendario.nombre}"?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, eliminalo!',
@@ -376,11 +379,11 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.removeLibros(libro.id).then(() => {
+          // this.removeCalendarios(calendario.id).then(() => {
           //   this.$swal({
           //     icon: 'success',
           //     title: 'Eliminada con éxito!',
-          //     text: `"${libro.nombre}" ha sido eliminada!`,
+          //     text: `"${calendario.nombre}" ha sido eliminada!`,
           //     customClass: {
           //       confirmButton: 'btn btn-success',
           //     },
@@ -391,6 +394,23 @@ export default {
           this.spinner = false
         }
       })
+    },
+
+    // Checkbox select item Table
+    chkAll() {
+      this.items.forEach(item => {
+        const cliente = this.items.find(i => i.id === item.id)
+        cliente.chkSelected = this.chkTodo
+      })
+    },
+    chkCount() {
+      let chkCount = 0
+      this.items.forEach(item => {
+        chkCount = item.chkSelected
+          ? chkCount + 1
+          : chkCount
+      })
+      return chkCount === 0
     },
 
     // Vuexy

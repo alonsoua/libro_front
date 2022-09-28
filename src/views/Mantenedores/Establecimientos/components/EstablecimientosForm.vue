@@ -116,6 +116,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.rbd.$error"
                 id="rbdInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.rbd.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -146,6 +147,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.nombre.$error"
                 id="nombreInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.nombre.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -176,6 +178,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.abreviatura.$error"
                 id="abreviaturaInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.abreviatura.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -206,6 +209,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.correo.$error"
                 id="correoInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.correo.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -248,6 +252,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.celular.$error"
                 id="correoInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.celular.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -278,6 +283,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.nombre_calle.$error"
                 id="correoInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.nombre_calle.$errors" :key="error.$uid">
                   {{ error.$message }}
@@ -308,6 +314,7 @@
               <b-form-invalid-feedback
                 v-if="v$.establecimiento.numero_calle.$error"
                 id="correoInfo"
+                class="text-right"
               >
                 <p v-for="error of v$.establecimiento.numero_calle.$errors" :key="error.$uid">
                   {{ error.$message }}

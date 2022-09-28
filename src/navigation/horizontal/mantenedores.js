@@ -14,12 +14,13 @@ export default [
         icon: 'AwardIcon',
       },
       {
+
         title: 'Establecimientos',
         route: 'establecimientos',
         icon: 'HomeIcon',
       },
       {
-        title: 'Calendarios',
+        title: 'Calendario Escolar',
         route: 'calendarios',
         icon: 'CalendarIcon',
       },

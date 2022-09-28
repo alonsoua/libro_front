@@ -13,12 +13,14 @@
         sm="3"
         class="my-1"
       >
+
         <!-- BOTON MOSTRAR -->
         <btnMostrar
           :pageOptions.sync="pageOptions"
           :perPage.sync="perPage"
           :total.sync="items.length"
         />
+
       </b-col>
       <b-col
         lg="6"
@@ -26,52 +28,44 @@
         sm="5"
         class="my-1"
       >
+
         <!-- FILTRO -->
         <!-- <inputFiltro
           :filter.sync="filter"
         /> -->
 
-        <!-- CREAR y EDITAR -->
-        <apoyosCreate
-          submitTitle="Guardar Apoyo"
-          title="Registrar apoyo"
-        />
-        <!-- editar debe enviar id y si cambia  -->
-
       </b-col>
       <b-col
         md="4"
         sm="4"
-        class="my-1"
+        class="my-25"
       >
+
+        <!-- modulo="Apoyo" -->
+        <!-- CREAR y EDITAR -->
+        <apoyosCreate
+          submitTitle="Guardar Apoyo"
+          title="Registrar apoyo"
+          :idCurso.sync="getLibroSelected.id"
+        />
+
         <!-- BOTON CREAR -->
-        <!-- <btnCrear
-          accion="Coordinar"
-          texto="Reunión"
-          modulo="reuniones_coordinacion"
-          @processAdd="addReunionesCoordinacion"
-        /> -->
-        <div
-          class="d-flex align-items-center justify-content-end"
-        >
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Registrar Apoyo
-          </b-button>
-        </div>
+        <btn-crear-modal
+          accion="Registrar"
+          texto="Apoyo"
+          modal="modal-create"
+        />
+
       </b-col>
 
-      <b-col cols="12" style="min-height: 490px !important;">
+      <b-col cols="12" style="min-height: 490px !important; margin-top: -16px;">
         <b-table
           striped
           small
           hover
           noCollapse
-          class="mt-1"
+          bordered
+          class="mt-1 rounded"
           responsive
           :per-page="perPage"
           :current-page="currentPage"
@@ -86,12 +80,6 @@
           @filtered="onFiltered"
         >
 
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
-
           <!-- Cargando -->
           <template #table-busy>
             <div class="text-center text-danger my-2">
@@ -99,55 +87,28 @@
             </div>
           </template>
 
-          <!-- Header: Check -->
-          <!-- <template #head(colCheck)="data">
-
-            <b-form-checkbox
-              :id="data.label"
-              v-model="chkTodo"
-            />
-
+          <!-- col HORAS_AULA -->
+          <template #cell(horas_aula)="data">
+            {{ data.item.horas_aula }} hrs
+          </template>
+          <!-- col HORAS_FUERA -->
+          <template #cell(horas_fuera)="data">
+            {{ data.item.horas_fuera }} hrs
           </template>
 
-          <!-- Column: Check
-          <template #cell(colCheck)="data">
-
-            <b-form-checkbox
-              :id="`chk-${data.item.id}`"
-              v-model="data.item.chkSelected"
-            />
-
-          </template> -->
-
-          <!-- Column: asistentes -->
-          <template #cell(asistentes)="data">
-            <div
-              v-for="(asistente, key) in data.item.asistentes"
-              :key="key"
-            >
-              - {{ asistente.nombre }}
-            </div>
-          </template>
-
-
-          <!-- COLUMNA ESTADO -->
-          <template #cell(estado)="data">
-            <colEstado
-              :data="data"
-              modulo="reunionesCoordinaciones"
-              @processUpdateEstado="updateEstado"
-            />
-          </template>
-
-          <!-- Column: Action -->
+          <!-- col ACCIONES -->
           <template #cell(acciones)="data">
-            <colAccionesBtnes
-              modulo="reunionesCoordinaciones"
-              :modal="`modal-lg-${data.item.id}`"
+
+            <!-- modulo="reunionesCoordinaciones" -->
+            <apoyos-update
+              :modal="'modal-update-'+data.item.id"
               :data="data"
-              @processGoToConfig="goToConfig"
-              @processGoToUpdate="goToUpdate"
-              @processGoToClone="goToClone"
+              :idCurso="getLibroSelected.id"
+            />
+
+            <col-acciones-btnes
+              :modal="'modal-update-'+data.item.id"
+              :data="data"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -191,7 +152,9 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
 // COMPONENTES RECICLADOS
+// import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
 import btnMostrar from '../../../../../../components/List/btnMostrar.vue'
+import btnCrearModal from '../../../../../../components/List/btnCrearModal.vue'
 import colAccionesBtnes from '../../../../../../components/List/colAccionesBtnes.vue'
 import colPeriodo from '../../../../../../components/List/colPeriodo.vue'
 import colEstado from '../../../../../../components/List/colEstado.vue'
@@ -200,13 +163,12 @@ import colNombreImg from '../../../../../../components/List/colNombreImg.vue'
 
 // HIJOS
 import apoyosCreate from './Apoyos/ApoyosCreate.vue'
-
-// import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
-// import btnCrear from '../../../../../components/List/btnCrear.vue'
+import apoyosUpdate from './Apoyos/ApoyosUpdate.vue'
 
 
 export default {
   components: {
+    // ETIQUETAS
     BTable,
     BRow,
     BCol,
@@ -219,10 +181,10 @@ export default {
     BAlert,
 
     // COMPONENTES RECICLADOS
-    // btnCrear,
     // inputFiltro,
     colAccionesBtnes,
     btnMostrar,
+    btnCrearModal,
     colPeriodo,
     colEstado,
     spinner,
@@ -230,6 +192,7 @@ export default {
 
     // HIJOS
     apoyosCreate,
+    apoyosUpdate,
   },
   directives: {
     'b-modal': VBModal,
@@ -239,31 +202,16 @@ export default {
     return {
       cargando: false,
       spinner: false,
-      // chk
-      items: [
-        {
-          tipoAprendizaje: 'Lenguaje',
-          horasAula: '5',
-          horasFuera: '3',
-          tiposApoyo: 'FONOAUDIÓLOGA PROFESORA DIFERENCIAL ASISTENTE DE AULA PSICÓLOGA TERAPEUTA OCUPACIONAL',
-        },
-        {
-          tipoAprendizaje: 'Lenguaje',
-          horasAula: '5',
-          horasFuera: '3',
-          tiposApoyo: 'FONOAUDIÓLOGA PROFESORA DIFERENCIAL ASISTENTE DE AULA PSICÓLOGA TERAPEUTA OCUPACIONAL TRABAJADORA SOCIAL',
-        },
-        {
-          tipoAprendizaje: 'Lenguaje',
-          horasAula: '5',
-          horasFuera: '3',
-          tiposApoyo: 'FONOAUDIÓLOGA PROFESORA DIFERENCIAL ASISTENTE DE AULA PSICÓLOGA TERAPEUTA OCUPACIONAL TRABAJADORA SOCIAL',
-        },
-      ],
-      selectedchk: [],
-      chkTodo: null,
-      checked: null,
+      items: [],
 
+      // MODAL
+      infoModal: {
+        id: 'info-modal',
+        title: '',
+        content: '',
+      },
+
+      // TABLE
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
@@ -273,34 +221,21 @@ export default {
       filter: '',
       filterOn: [],
       pageOptions: [10, 25, 50],
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-      },
       fields: [
-        // {
-        //   key: 'colCheck',
-        //   label: 'chkHeader',
-        //   sortable: false,
-        //   thStyle: {
-        //     width: '0px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
         {
-          key: 'tipoAprendizaje',
+          key: 'nombre',
           label: 'Ámbito, asignatura y/o Módulo de Aprendizaje',
           sortable: true,
+          tdClass: 'text-center',
           thStyle: {
-            width: '150px !important',
+            'text-align': 'center',
+            width: '140px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
         {
-          key: 'horasAula',
+          key: 'horas_aula',
           label: 'Horas de apoyo en aula regular',
           sortable: true,
           tdClass: 'text-center',
@@ -312,7 +247,7 @@ export default {
           },
         },
         {
-          key: 'horasFuera',
+          key: 'horas_fuera',
           label: 'Horas de apoyo fuera del aula',
           sortable: true,
           tdClass: 'text-center',
@@ -324,11 +259,12 @@ export default {
           },
         },
         {
-          key: 'tiposApoyo',
+          key: 'apoyos',
           label: 'Tipos de apoyo especializado (Recursos materiales y/o profesionales)',
           sortable: true,
           thStyle: {
-            width: '400px !important',
+            'text-align': 'center',
+            width: '300px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -340,7 +276,7 @@ export default {
           label: 'acciones',
           tdClass: 'text-center',
           thStyle: {
-            width: '80px !important',
+            width: '50px !important',
             'text-align': 'center',
             display: 'table-cell',
             'vertical-align': 'middle',
@@ -350,7 +286,11 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getReunionesCoordinacions: 'reunionesCoordinaciones/getReunionesCoordinacions' }),
+    ...mapGetters({
+      getApoyos: 'II_2_b_apoyos/getApoyos',
+      getLibroSelected: 'libros/getLibroSelected'
+    }),
+
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -358,117 +298,42 @@ export default {
         .filter(f => f.sortable)
         .map(f => ({ text: f.label, value: f.key }))
     },
-    disabledExport() {
-      return this.chkCount()
-    },
   },
   watch: {
-    getReunionesCoordinacions(val) {
+    getApoyos(val) {
       this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getReunionesCoordinacions
+      this.items = []
+      this.items = this.getApoyos
     },
-    chkTodo() {
-      this.chkAll()
+    getLibroSelected(val) {
+      this.cargarApoyos(this.getLibroSelected.id)
     },
   },
   mounted() {
-    this.cargarReunionesCoordinacions()
+    this.cargarApoyos(this.getLibroSelected.id)
     this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchReunionesCoordinacions: 'reunionesCoordinaciones/fetchReunionesCoordinacions',
-    //   updateReunionesCoordinacionPeriodo: 'reunionesCoordinaciones/updateReunionesCoordinacionPeriodo',
-    //   removeReunionesCoordinacions: 'reunionesCoordinaciones/removeReunionesCoordinacions',
-    // }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
+    ...mapActions({
+      fetchApoyos: 'II_2_b_apoyos/fetchApoyos',
+      removeApoyo: 'II_2_b_apoyos/removeApoyo',
+    }),
     setTableList() {
-      if (this.$can('update', 'reunionesCoordinaciones')
-        || this.$can('delete', 'reunionesCoordinaciones')
-      ) {
-        this.fields.push(this.fieldAcciones)
-      }
+      this.fields.push(this.fieldAcciones)
+      // if (this.$can('update', 'reunionesCoordinaciones')
+      //   || this.$can('delete', 'reunionesCoordinaciones')
+      // ) {
+      // }
     },
-    cargarReunionesCoordinacions() {
-      // this.fetchReunionesCoordinacions().then(() => {
-      //   this.cargando = false
-      // })
+    cargarApoyos(idCurso) {
+      this.fetchApoyos(idCurso).then(() => {
+        this.cargando = false
+      })
     },
-    addReunionesCoordinacion() {
-      // this.$router.replace({
-      //   name: 'reunionesCoordinaciones-create',
-      // })
-    },
-    updatePeriodo(reunionesCoordinacion) {
+    remove(apoyo) {
       this.$swal({
-        title: 'Actualizar periodo!',
-        html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' reunionesCoordinacion<br><span class="font-weight-bolder">'
-          + `${reunionesCoordinacion.nombre}</span>?`,
-        footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' reunionesCoordinacion. No se puede devolver al periodo anterior.</div>',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, actualízalo!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          // this.updateReunionesCoordinacionPeriodo(reunionesCoordinacion).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Periodo activo actualizado!',
-          //     html:
-          //       'El periodo activo del reunionesCoordinacion<br>'
-          //       + ' <span class="font-weight-bolder">'
-          //       + `${reunionesCoordinacion.nombre}</span>`
-          //       + '<br>ha sido actualizado con éxito!',
-          //     customClass: {
-          //       confirmButton: 'btn btn-primary',
-          //     },
-          //   })
-          //   this.spinner = false
-          //   this.cargarReunionesCoordinacions()
-          // })
-        } else {
-          this.spinner = false
-          this.cargarReunionesCoordinacions()
-        }
-      })
-    },
-    updateEstado() {
-      // console.log('update')
-    },
-    goToConfig(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-config',
-      })
-    },
-    goToUpdate(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-update',
-      })
-    },
-    goToClone(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-clone',
-      })
-    },
-    remove(reunionesCoordinacion) {
-      this.$swal({
-        title: 'Eliminar reunionesCoordinacion!',
-        text: `Estás seguro que deseas eliminar el reunionesCoordinacion
-          "${reunionesCoordinacion.nombre}"?`,
+        title: 'Eliminar apoyo!',
+        text: 'Estás seguro que deseas eliminar el apoyo?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, eliminalo!',
@@ -481,38 +346,25 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.removeReunionesCoordinacions(reunionesCoordinacion.id).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Eliminada con éxito!',
-          //     text: `"${reunionesCoordinacion.nombre}" ha sido eliminada!`,
-          //     customClass: {
-          //       confirmButton: 'btn btn-success',
-          //     },
-          //   })
-          //   this.spinner = false
-          // })
+          const data = {
+            id: apoyo.id,
+            id_curso: this.getLibroSelected.id,
+          }
+          this.removeApoyo(data).then(() => {
+            this.$swal({
+              icon: 'success',
+              title: 'Eliminado con éxito!',
+              text: `El apoyo ha sido eliminado!`,
+              customClass: {
+                confirmButton: 'btn btn-success',
+              },
+            })
+            this.spinner = false
+          })
         } else {
           this.spinner = false
         }
       })
-    },
-
-    // Checkbox select item Table
-    chkAll() {
-      this.items.forEach(item => {
-        const cliente = this.items.find(i => i.id === item.id)
-        cliente.chkSelected = this.chkTodo
-      })
-    },
-    chkCount() {
-      let chkCount = 0
-      this.items.forEach(item => {
-        chkCount = item.chkSelected
-          ? chkCount + 1
-          : chkCount
-      })
-      return chkCount === 0
     },
 
     // Vuexy

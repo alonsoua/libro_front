@@ -42,16 +42,17 @@ export default {
             password: credenciales.password,
           },
         })
-
         // Enviamos el token a la actions attempt
         return dispatch('attempt', response.data)
       } catch (e) {
         return e.response.data
       }
     },
-    async attempt({ commit, state }, data) {
+    async attempt({ dispatch, commit, state }, data) {
       if (typeof data === 'string' && data !== null) {
         data = JSON.parse(data);
+      } else {
+        // return dispatch('unautorized')
       }
 
       if (data !== null && data.access_token) {
@@ -76,7 +77,9 @@ export default {
       }
     },
     signOut({ commit }) {
+      console.log('signOut :', 1)
       return axios.post('logout').then(() => {
+        console.log('2 :', 2)
         commit('SET_TOKEN', null)
         commit('SET_USER', null)
       })

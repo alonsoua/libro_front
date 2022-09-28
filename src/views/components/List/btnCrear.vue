@@ -5,7 +5,7 @@
   >
     <b-button
       variant="primary"
-      class="btn-sm"
+      class="btn"
       @click="$emit('processAdd')"
     >
       <span class="text-nowrap">{{ accion }} {{ texto }}</span>

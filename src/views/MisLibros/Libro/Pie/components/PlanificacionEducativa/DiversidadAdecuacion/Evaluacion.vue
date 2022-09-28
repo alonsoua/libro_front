@@ -1,62 +1,57 @@
 <template>
   <b-overlay
-    :show="!cargando"
+    :show="cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
   >
     <b-form
       ref="form"
-      :style="{height: trHeight}"
-      class="repeater-form mb-3"
-      @submit.prevent="repeateAgain"
+      class="mb-3"
     >
-
-      <!-- Action Buttons -->
-      <!-- <b-row
-        ref="row"
-      >
-        <b-col md="8">
-        </b-col>
-
-        <b-col md="4">
-          <btnSubmit
-            v-if="cargando"
-            class="float-right"
-            variant="primary"
-            :btnText="btnSubmit"
-            @processBtn="submitOption"
-          />
-        </b-col>
-      </b-row>
-
-      <colLinea /> -->
 
       <!-- Row Loop -->
       <b-row
         ref="row"
       >
-
-        <!-- PROCESO Y ACANCE -->
+        <!-- EVALUACION DE PROCESO Y ACANCE -->
         <b-col md="12">
           <b-form-group
             label="Evaluación de proceso y avance"
-            label-for="procesoAvance"
+            label-for="proceso"
           >
             <b-form-textarea
-              id="procesoAvance"
-              placeholder="Ingresa estrategias y procedimientos que aplicará para las siguientes evaluaciones:
+              id="proceso"
+              placeholder="Indique estrategias y procedimientos que aplicará para las siguientes evaluaciones:
 - Evaluaciones para el aprendizaje, periódicas, se recomiendan quincenales.
 - Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia."
-              v-model="evaluacion.procesoAvance"
+              v-model="evaluacion.proceso"
               rows="4"
+              :state="v$.evaluacion.proceso.$error === true
+                ? false
+                : null"
+              @blur.native="v$.evaluacion.proceso.$touch"
             />
+            <!-- Mensajes Error Validación -->
+            <b-form-invalid-feedback
+              v-if="v$.evaluacion.proceso.$error"
+              id="evaluacionInfo"
+              class="text-right"
+            >
+              <p
+                v-for="error of v$.evaluacion.proceso.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
 
         <!-- EVALUACIÓN ANUAL -->
         <b-col md="12">
           <b-form-group
-            label="Evaluación anual de logros de aprendizaje; de evolución del déficit o trastorno, de egreso o de continuidad en el PIE."
+            label="Evaluación anual de logros de aprendizaje; de evolución
+            del déficit o trastorno, de egreso o de continuidad en el PIE"
             label-for="evaluacionAnual"
           >
             <b-form-textarea
@@ -66,22 +61,25 @@
 - Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia."
               v-model="evaluacion.evaluacionAnual"
               rows="4"
+              :state="v$.evaluacion.evaluacionAnual.$error === true
+                ? false
+                : null"
+              @blur.native="v$.evaluacion.evaluacionAnual.$touch"
             />
+            <!-- Mensajes Error Validación -->
+            <b-form-invalid-feedback
+              v-if="v$.evaluacion.evaluacionAnual.$error"
+              id="evaluacionAnualInfo"
+              class="text-right"
+            >
+              <p
+                v-for="error of v$.evaluacion.evaluacionAnual.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
           </b-form-group>
-        </b-col>
-        <!-- APOYOS ENTRE PROFESORES Y ASISTENTES -->
-        <b-col md="12">
-          <!-- <b-form-group
-            label="Entre profesores y asistentes de la educación (psicólogos, fonoaudiólogos, auxiliares, intérpretes, etc.)"
-            label-for="profesoresasistentes"
-          >
-            <b-form-textarea
-              id="profesoresasistentes"
-              placeholder="Ingresa los apoyos entre profesores y asistentes"
-              v-model="acciones.profesoresasistentes"
-              rows="4"
-            />
-          </b-form-group> -->
         </b-col>
 
         <!-- OBSERVACIONES -->
@@ -92,10 +90,27 @@
           >
             <b-form-textarea
               id="observaciones"
-              placeholder="Ingresa las observaciones"
+              placeholder="Indique las observaciones"
               v-model="evaluacion.observaciones"
               rows="4"
+              :state="v$.evaluacion.observaciones.$error === true
+                ? false
+                : null"
+              @blur.native="v$.evaluacion.observaciones.$touch"
             />
+            <!-- Mensajes Error Validación -->
+            <b-form-invalid-feedback
+              v-if="v$.evaluacion.observaciones.$error"
+              id="observacionesInfo"
+              class="text-right"
+            >
+              <p
+                v-for="error of v$.evaluacion.observaciones.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </p>
+            </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
       </b-row>
@@ -111,9 +126,9 @@
 
         <b-col md="4">
           <btnSubmit
-            v-if="cargando"
             class="float-right"
             variant="primary"
+            :disabled="this.v$.evaluacion.$errors.length > 0"
             :btnText="btnSubmit"
             @processBtn="submitOption"
           />
@@ -126,20 +141,24 @@
 
 <script>
 
-// Etiquetas //
+// ETIQUETAS
 import {
   BForm, BFormGroup, BFormInput, BRow, BCol, BButton, BOverlay, BCardText,
-  BFormTextarea
+  BFormTextarea, BFormInvalidFeedback
 } from 'bootstrap-vue'
-import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
+import store from '@/store/index'
+import ToastificationContent
+from '@core/components/toastification/ToastificationContent.vue'
+import { mapGetters, mapActions } from 'vuex'
 
-import Cleave from 'vue-cleave-component'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'cleave.js/dist/addons/cleave-phone.us'
+// VALIDACIONES
+import useVuelidate from '@vuelidate/core'
+import { required
+  , maxLength, email, helpers } from '@vuelidate/validators'
 
-// Componentes //
+// COMPONENTES RECICLADOS
 import colLinea from '../../../../../../components/Form/colLinea.vue'
 import btnSubmit from '../../../../../../components/Form/btnSubmit.vue'
 
@@ -154,29 +173,24 @@ export default {
     BFormInput,
     BCardText,
     BFormTextarea,
+    BFormInvalidFeedback,
     colLinea,
     btnSubmit,
   },
   directives: {
     Ripple,
   },
-  mixins: [heightTransition],
+  computed: {
+    ...mapGetters({
+      getEvaluacion: 'II_3_c_evaluacion/getEvaluacion',
+      getLibroSelected: 'libros/getLibroSelected'
+    }),
+  },
   data() {
     return {
       evaluacion: [],
-      cargando: true,
-      coordinacion: [],
-      nextTodoId: 2,
+      cargando: false,
     }
-  },
-  mounted() {
-    this.initTrHeight()
-  },
-  created() {
-    window.addEventListener('resize', this.initTrHeight)
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.initTrHeight)
   },
   props: {
     btnSubmit: {
@@ -184,34 +198,141 @@ export default {
       default: 'Actualizar Estrategia',
     },
   },
+  watch: {
+    getLibroSelected(getLibroSelected) {
+      this.cargarEvaluacion(getLibroSelected.id)
+    },
+  },
+  validations() {
+    return {
+      evaluacion: {
+        proceso: {
+          $autoDirty: true,
+          maxLength: helpers.withMessage(
+            'Debe tener un máximo de 550 caracteres.',
+            maxLength(550)),
+        },
+        evaluacionAnual: {
+          $autoDirty: true,
+          maxLength: helpers.withMessage(
+            'Debe tener un máximo de 550 caracteres.',
+            maxLength(550)),
+        },
+        observaciones: {
+          $autoDirty: true,
+          maxLength: helpers.withMessage(
+            'Debe tener un máximo de 550 caracteres.',
+            maxLength(550)),
+        },
+      }
+    }
+  },
+  mounted() {
+    this.cargarEvaluacion(this.getLibroSelected.id)
+  },
   methods: {
+    ...mapActions({
+      fetchEvaluacion: 'II_3_c_evaluacion/fetchEvaluacion',
+      addEvaluacion: 'II_3_c_evaluacion/addEvaluacion',
+      updateEvaluacion: 'II_3_c_evaluacion/updateEvaluacion',
+    }),
+    cargarEvaluacion(idCurso) {
+      this.cargando = true
+      this.fetchEvaluacion(idCurso).then(() => {
+        if (typeof this.getEvaluacion !== 'undefined') {
+          this.evaluacion = {
+            proceso: this.getEvaluacion.evaluacion,
+            evaluacionAnual: this.getEvaluacion.estrategia,
+            observaciones: this.getEvaluacion.observaciones,
+          }
+        } else {
+          this.evaluacion = []
+        }
+        this.cargando = false
+      }).catch(() => {
+        this.cargando = false
+      })
+    },
     submitOption() {
-      console.log('this.v$ :', this.v$.asistencia)
-      // this.v$.asistencia.$touch()
-      // if (!this.v$.asistencia.$invalid) {
-      //   this.$emit('processForm', this.asistencia)
-      // }
+      this.v$.evaluacion.$touch()
+      if (!this.v$.evaluacion.$invalid) {
+        const text = `Estás seguro de actualizar las estrategias y
+          procedimientos de evaluación?`
+        this.$swal({
+          title: 'Guardar cambios!',
+          text,
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Si, guardar',
+          cancelButtonText: 'Cancelar',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-secondary ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.value) {
+            if (typeof this.getEvaluacion === 'undefined') {
+              this.agregar(this.evaluacion)
+            } else {
+              this.editar(this.evaluacion)
+            }
+          } else {
+            return false
+          }
+        })
+      }
     },
-    // REPEATER
-    repeateAgain() {
-      this.items.push({
-        id: this.nextTodoId += this.nextTodoId,
-      })
+    agregar(evaluacion) {
+      const datos = {
+        idCurso: this.getLibroSelected.id,
+        evaluacion: evaluacion.proceso,
+        estrategia: evaluacion.evaluacionAnual,
+        observaciones: evaluacion.observaciones,
+      }
 
-      this.$nextTick(() => {
-        this.trAddHeight(this.$refs.row[0].offsetHeight)
+      this.spinner = true
+      this.addEvaluacion(datos).then((response) => {
+        this.msjActualizar()
+        this.cargarEvaluacion(this.getLibroSelected.id)
+        this.spinner = false
       })
     },
-    removeItem(index) {
-      this.items.splice(index, 1)
-      this.trTrimHeight(this.$refs.row[0].offsetHeight)
-    },
-    initTrHeight() {
-      this.trSetHeight(null)
-      this.$nextTick(() => {
-        this.trSetHeight(this.$refs.form.scrollHeight)
+
+    editar(evaluacion) {
+      const datos = {
+        id: this.getEvaluacion.id,
+        idCurso: this.getLibroSelected.id,
+        evaluacion: evaluacion.proceso,
+        estrategia: evaluacion.evaluacionAnual,
+        observaciones: evaluacion.observaciones,
+      }
+      this.spinner = true
+      this.updateEvaluacion(datos).then((reponse) => {
+        this.msjActualizar()
+        this.cargarEvaluacion(this.getLibroSelected.id)
+        this.spinner = false
       })
     },
+
+    msjActualizar() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Registro actualizado 👍',
+          icon: 'CheckIcon',
+          text: `Las estrategias y procedimientos de evaluación han sido actualizadas con éxito!`,
+          variant: 'success',
+        },
+      },
+      {
+        position: 'bottom-right',
+        timeout: 3000,
+      })
+    },
+  },
+  setup() {
+    return { v$: useVuelidate() }
   },
 }
 </script>

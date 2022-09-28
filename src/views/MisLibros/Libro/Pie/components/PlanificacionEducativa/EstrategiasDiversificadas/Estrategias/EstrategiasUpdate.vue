@@ -1,55 +1,54 @@
 <template>
-  <div v-if="selectedEstablecimiento">
-    <b-overlay
-      :show="spinner"
-      spinner-variant="primary"
-      :variant="$store.state.appConfig.layout.skin"
-    >
-      <establecimientosForm
-        btnSubmit="Editar Establecimiento"
-        :establecimiento="selectedEstablecimiento"
-        @processForm="editar"
-      />
-    </b-overlay>
-  </div>
+  <estrategias-form
+    :nombreModal="modal"
+    title="Editar estrategia diversificada"
+    :estrategia="data.item"
+    @processForm="editar"
+  />
 </template>
 
 <script>
 
-import { BOverlay } from 'bootstrap-vue'
 import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import establecimientosForm from './components/EstablecimientosForm.vue'
+import estrategiasForm from './EstrategiasForm.vue'
 
 export default {
   components: {
-    establecimientosForm,
-    BOverlay,
+    estrategiasForm,
   },
-  data() {
-    return {
-      spinner: false,
-    }
-  },
-  computed: {
-    ...mapState('establecimientos', ['selectedEstablecimiento']),
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+    idCurso: {
+      type: Number,
+      required: true,
+    },
+    modal: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions({ updateEstablecimiento: 'establecimientos/updateEstablecimiento' }),
-    editar(establecimiento) {
-      this.spinner = true
-      this.updateEstablecimiento(establecimiento).then(() => {
-        const errorEstablecimientos = store.state.establecimientos
-        const errorMessage = errorEstablecimientos.errorMessage.errors
-        if (!errorEstablecimientos.error) {
+    ...mapActions({
+      updateEstrategia: 'II_1_b_estrategias/updateEstrategia',
+      fetchEstrategias: 'II_1_b_estrategias/fetchEstrategias',
+    }),
+    editar(estrategia) {
+      this.updateEstrategia(estrategia).then(() => {
+        const statusEstrategias = store.state.II_1_b_estrategias.status
+        if (statusEstrategias === 'success') {
+          this.fetchEstrategias(this.idCurso)
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Establecimiento editado 👍',
-              text: `El establecimiento "${establecimiento.nombre}" fue editado con éxito!`,
+              title: 'Estrategia guardada 👍',
               icon: 'CheckIcon',
+              text: 'La estrategia fue editada con éxito!',
               variant: 'success',
             },
           },
@@ -57,23 +56,12 @@ export default {
             position: 'bottom-right',
             timeout: 4000,
           })
-          this.$router.replace({
-            name: 'establecimientos',
-          })
-        } else if (errorMessage.nombre) {
+          this.$bvModal.hide(this.modal)
+        }
+        else {
           this.$swal({
             title: 'Error!',
-            text: `${errorMessage.nombre[0]}!`,
-            icon: 'error',
-            customClass: {
-              confirmButton: 'btn btn-primary',
-            },
-            buttonsStyling: false,
-          })
-        } else if (errorEstablecimientos.error) {
-          this.$swal({
-            title: 'Error!',
-            text: 'Ingreso de datos fraudulento!',
+            text: 'Error',
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',
@@ -81,7 +69,6 @@ export default {
             buttonsStyling: false,
           })
         }
-        this.spinner = false
       })
     },
   },

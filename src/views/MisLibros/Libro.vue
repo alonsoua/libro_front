@@ -5,7 +5,7 @@
     />
 
     <libro-header-menu
-      style="margin-top: 16px;"
+
     />
 
   </div>
@@ -43,11 +43,9 @@ export default {
       this.totalRows = val.length
       this.items = []
       this.items = this.getLibros
-      console.log('this.items :', this.items)
     },
   },
   mounted() {
-    console.log(this.selectedLibro);
   },
   methods: {
     ...mapActions({ createLibro: 'libros/addLibros' }),

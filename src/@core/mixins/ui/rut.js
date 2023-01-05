@@ -36,6 +36,10 @@ export const rut = {
       return rutFormateado === '-' ? '' : rutFormateado
     },
   },
+  formatRutSinPuntoGuion: (rut) => {
+    console.log('111111 :', 111111)
+    return rut.replace('-', '').replace('.', '').replace('.', '')
+  }
 }
 
 export const _ = null

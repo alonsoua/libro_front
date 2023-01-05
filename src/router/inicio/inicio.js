@@ -2,7 +2,7 @@ import store from '@/store'
 
 export default [
   {
-    path: '/',
+    path: '/inicio',
     name: 'inicio',
     component: () => import('@/views/Inicio/Inicio.vue'),
     beforeEnter: (to, from, next) => {

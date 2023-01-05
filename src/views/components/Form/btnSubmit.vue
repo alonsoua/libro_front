@@ -1,5 +1,6 @@
 <template>
   <b-button
+    v-if="$can('update' , modulo)"
     variant="relief-primary"
     class="mr-0 btn-sm-block mt-25"
     @click="$emit('processBtn')"
@@ -19,6 +20,10 @@ export default {
   },
   props: {
     btnText: {
+      type: String,
+      required: true,
+    },
+    modulo: {
       type: String,
       required: true,
     },

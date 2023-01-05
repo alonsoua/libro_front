@@ -22,9 +22,12 @@
           >
             <b-form-textarea
               id="aprendizajes"
-              placeholder="Ingresa los estilos y modos de aprendizaje"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa los estilos y modos de aprendizaje'
+                : 'Sin información'"
               v-model="panorama.estilo"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.panorama.estilo.$error === true
                 ? false
                 : null"
@@ -54,14 +57,18 @@
           >
             <b-form-textarea
               id="fortalezas"
-              placeholder="Ingresa las fortalezas"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las fortalezas'
+                : 'Sin información'"
               v-model="panorama.fortaleza"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.panorama.fortaleza.$error === true
                 ? false
                 : null"
               @blur.native="v$.panorama.fortaleza.$touch"
             />
+
             <!-- Mensajes Error Validación -->
             <b-form-invalid-feedback
               v-if="v$.panorama.fortaleza.$error"
@@ -86,9 +93,12 @@
           >
             <b-form-textarea
               id="necesidades"
-              placeholder="Ingresa las necesidades"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las necesidades'
+                : 'Sin información'"
               v-model="panorama.necesidad"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.panorama.necesidad.$error === true
                 ? false
                 : null"
@@ -123,6 +133,7 @@
           <btnSubmit
             class="float-right"
             variant="primary"
+            :modulo="nombre_permiso"
             :disabled="this.v$.panorama.$errors.length > 0"
             :btnText="btnSubmit"
             @processBtn="submitOption"
@@ -157,6 +168,9 @@ import { required
 import colLinea from '../../../../../../components/Form/colLinea.vue'
 import btnSubmit from '../../../../../../components/Form/btnSubmit.vue'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
+
 export default {
   components: {
     BOverlay,
@@ -175,6 +189,7 @@ export default {
   directives: {
     Ripple,
   },
+  mixins: [formatos],
   computed: {
     ...mapGetters({
       getPanorama: 'II_1_a_panorama/getPanorama',
@@ -183,6 +198,7 @@ export default {
   },
   data() {
     return {
+      nombre_permiso: 'pieII1A',
       panorama: [],
       cargando: true,
     }
@@ -248,22 +264,16 @@ export default {
     submitOption() {
       this.v$.panorama.$touch()
       if (!this.v$.panorama.$invalid) {
-        const html = `
-        <p class="mb-75 mt-50 text-center">
-          Estás seguro de actualizar el panorama<br>del curso?
-        </p>
-        <i
-          class="text-secondary"
-          style="font-size: 0.94rem;"
-        >
-          "La información ingresada en el panorama,<br>se verá reflejada en el perfil del curso"
-        </i>`
+        const text = `El registro ingresado en el panorama del curso,
+          será publicado en el encabezado de este libro
+          y estará visible para todos los usuarios que interactuen con el.`
+        const html = this.formatHTMLSweetInfo('el panorama del curso', text)
         this.$swal({
-          title: 'Guardar cambios',
+          title: 'Guardar cambios!',
           html,
           icon: 'info',
           showCancelButton: true,
-          confirmButtonText: 'Si, guardar',
+          confirmButtonText: 'Sí, guardar',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-primary',

@@ -2,12 +2,21 @@ export function setCursos(state, cursos) {
   state.cursos = cursos
 }
 
+export function setCursosPersonaRol(state, cursosPersonaRol) {
+  state.cursosPersonaRol = cursosPersonaRol
+}
+
 export function setCursosActivos(state, cursos) {
   state.cursosActivos = cursos
 }
 
 export function setCurso(state, curso) {
   state.selectedCurso = curso
+}
+
+export function setResponse(state, payload) {
+  state.status = payload.status
+  state.message = payload.message
 }
 
 export function updateCursoEstado(state, payload) {

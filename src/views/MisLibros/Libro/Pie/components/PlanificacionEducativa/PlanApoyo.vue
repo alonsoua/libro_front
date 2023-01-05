@@ -17,6 +17,7 @@
           :perPage.sync="perPage"
           :total.sync="items.length"
         /> -->
+        <!-- {{ items }} -->
       </b-col>
       <b-col
         lg="6"
@@ -29,11 +30,6 @@
           :filter.sync="filter"
         /> -->
 
-        <!-- CREAR -->
-        <plan-apoyo-create
-          submitTitle="Guardar Plan"
-          title="Registrar plan de apoyo individual"
-        />
 
         <!-- editar debe enviar id y si cambia  -->
 
@@ -44,40 +40,41 @@
         class="my-1"
       >
         <!-- BOTON CREAR -->
-        <!-- <btnCrear
-          accion="Coordinar"
-          texto="Reunión"
-          modulo="reuniones_coordinacion"
-          @processAdd="addReunionesCoordinacion"
-        /> -->
         <div
           class="d-flex align-items-center justify-content-end"
         >
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Registrar Plan
-          </b-button>
+          <!-- CREAR -->
+          <plan-apoyo-create
+            submitTitle="Guardar Plan de Apoyo"
+            title="Registrar plan de apoyo individual"
+          />
+
+          <!-- BOTON CREAR -->
+          <btn-crear-modal
+            :modulo="nombre_permiso"
+            accion="Registrar"
+            texto="Plan de Apoyo"
+            modal="modal-create"
+          />
         </div>
       </b-col>
-
       <b-col cols="12" style="min-height: 490px !important;">
         <b-table-simple
-          bordered
           striped
-          hover
           small
-          caption-top
+          hover
+          noCollapse
           responsive
+          bordered
+          class="mt-1 rounded"
+          :busy="cargando"
           :per-page="perPage"
           :current-page="currentPage"
         >
           <b-thead head-variant="light">
 
             <!-- FILAS -->
+
             <b-tr>
               <b-th
                 v-for="(field, key) in fields"
@@ -94,20 +91,97 @@
             v-for="(item, key) in items"
             :key="key"
           >
+            <!-- DESCRIPCIÓN -->
             <b-tr>
+              <b-td
+                :class="key%2 === 0 ? 'bg-light' : 'bg-light-primary'"
+                class="text-center"
+                colspan="5"
+              >
+                <div class="text-center">
+                  <b>{{ item.descripcion }}</b>
+                </div>
+              </b-td>
 
+              <!-- ACCIONES -->
+              <b-td
+                class="pl-25 pr-25 text-center"
+                :rowspan="item.apoyoEspecializado.length + 3"
+                :class="key%2 === 0 ? 'bg-light' : 'bg-light-primary'"
+              >
+
+                <!-- HORARIOS -->
+                <b-modal
+                  :id="'horarios-'+item.id"
+                  title="Horarios del plan de apoyo individual"
+                  centered
+                  size="xl"
+                  :hide-footer="true"
+                >
+                  <b-row class="text-center mt-50 mb-25">
+                    <b-col>
+                      <b>Descripción:</b> {{ item.descripcion }}
+                    </b-col>
+                  </b-row>
+                  <b-row class="text-center mb-1">
+                    <b-col>
+                      <b>Alumno:</b> {{ item.alumno.title }}
+                    </b-col>
+                  </b-row>
+
+                  <calendario-horarios
+                    :idModal="'horarios-'+item.id"
+                    :apoyoEspecializado.sync="item.apoyoEspecializado"
+                    :idPlanApoyo="item.id"
+                    title="Horarios del plan de apoyo individual"
+                    :planApoyo="item"
+                  />
+                </b-modal>
+                <b-button
+                  v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                  variant="primary"
+                  class="btn-sm mb-25 pl-75 pr-75"
+                  @click="goHorario('horarios-'+item.id, item)"
+                >
+                <!-- v-b-modal="" -->
+                  <feather-icon
+                    icon="CalendarIcon"
+                  />
+                  Horarios
+                </b-button>
+
+                <!-- UPDATE -->
+                <plan-apoyo-update
+                  :modal="'modal-update-'+item.id"
+                  :data="item"
+                  :idCurso="getLibroSelected.id"
+                />
+
+                <plan-apoyo-clone
+                  :modal="'modal-clone-'+item.id"
+                  :planApoyo="item"
+                  submitTitle="Guardar Plan de Apoyo"
+                  title="Registrar plan de apoyo individual"
+                />
+
+                <col-acciones-btnes
+                  :data="item"
+                  :modal="'modal-update-'+item.id"
+                  :modulo="nombre_permiso"
+                  clone="true"
+                  :modalClone="'modal-clone-'+item.id"
+                  @processRemove="remove(item)"
+                />
+              </b-td>
+            </b-tr>
+
+            <b-tr>
               <!-- ALUMNOS -->
               <b-td
-                :rowspan="item.apoyos.length + 1"
-                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
+                :rowspan="item.apoyoEspecializado.length + 1"
+                class="text-center"
               >
-                <div
-                  v-for="(alumno, key) in item.alumnos"
-                  :key="key"
-                  class=""
-                >
-                  {{ alumno.nombre }}
-                </div>
+                {{ item.alumno.title }}
               </b-td>
               <b-td class="pl-0 pr-0 pt-0 pb-0"></b-td>
               <b-td class="pl-0 pr-0 pt-0 pb-0"></b-td>
@@ -115,51 +189,32 @@
               <!-- FECHA INICIO -->
               <b-td
                 class="pl-25 pr-25 text-center"
-
-                :rowspan="item.apoyos.length + 1"
+                :rowspan="item.apoyoEspecializado.length + 1"
               >
-                {{ item.fechaInicio }}
+                {{ formatFechaVer(item.fecha_inicio) }}
               </b-td>
 
               <!-- FECHA TERMINO -->
               <b-td
                 class="pl-25 pr-25 text-center"
-                :rowspan="item.apoyos.length + 1"
+                :rowspan="item.apoyoEspecializado.length + 1"
               >
-                {{ item.fechaTermino }}
+                {{ formatFechaVer(item.fecha_termino) }}
               </b-td>
 
-              <!-- ACCIONES -->
-              <b-td
-                class="pl-25 pr-25 text-center"
-                :rowspan="item.apoyos.length + 2"
-                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
-              >
-                <colAccionesBtnes
-                  modulo="test"
-                  :data="item"
-                />
-                <!-- :modal="`modal-lg-${data.item.id}`" -->
-                    <!-- @processGoToConfig="goToConfig"
-                    @processGoToUpdate="goToUpdate"
-                    @processGoToClone="goToClone"
-                    @processRemove="remove(data.item)" -->
-              </b-td>
+
             </b-tr>
 
             <template
-              v-for="(apoyo, key2) in item.apoyos"
+              v-for="(apoyo, key2) in item.apoyoEspecializado"
             >
 
-              <!-- EDUC. DIFERENCIAL -->
-              <b-tr
-                v-if="apoyo.cargo === 'Educ. Diferencial'"
-              >
+              <b-tr>
                 <b-td>
-                  <b>Educ. Diferencial:</b><br>
-                  {{ apoyo.cargo === 'Educ. Diferencial' ? apoyo.nombre : '' }}
+                  <b>{{ apoyo.cargo}}:</b><br>
+                  {{ apoyo.nombre}}
                 </b-td>
-                <b-td>
+                <b-td v-if="apoyo.horarios.length !== 0">
                   <b-row
                     v-for="(horario, key) in apoyo.horarios"
                     :key="key"
@@ -167,97 +222,22 @@
                     <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
                     <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
                   </b-row>
+                </b-td>
+                <b-td v-else class="text-center">
+                  Sin horario
                 </b-td>
               </b-tr>
 
-              <!-- PSICOPEDAGOGO -->
-              <b-tr
-                v-if="apoyo.cargo === 'Psicopedagogo/a'"
-              >
-                <b-td>
-                  <b>Psicopedagogo/a</b><br>
-                  {{ apoyo.cargo === 'Psicopedagogo/a' ? apoyo.nombre : '' }}
-                </b-td>
-                <b-td>
-                  <b-row
-                    v-for="(horario, key) in apoyo.horarios"
-                    :key="key"
-                  >
-                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
-                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
-                  </b-row>
-                </b-td>
-              </b-tr>
-
-              <!-- FONOAUDIOLOGO -->
-              <b-tr
-                v-if="apoyo.cargo === 'Fonoaudiólogo/a'"
-              >
-                <b-td>
-                  <b>Fonoaudiólogo/a</b><br>
-                  {{ apoyo.cargo === 'Fonoaudiólogo/a' ? apoyo.nombre : '' }}
-                </b-td>
-                <b-td>
-                  <b-row
-                    v-for="(horario, key) in apoyo.horarios"
-                    :key="key"
-                  >
-                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
-                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
-                  </b-row>
-                </b-td>
-              </b-tr>
-
-              <!-- PSICOLOGO -->
-              <b-tr
-                v-if="apoyo.cargo === 'Psicólogo/a'"
-              >
-                <b-td>
-                  <b>Psicólogo/a</b><br>
-                  {{ apoyo.cargo === 'Psicólogo/a' ? apoyo.nombre : '' }}
-                </b-td>
-                <b-td>
-                  <b-row
-                    v-for="(horario, key) in apoyo.horarios"
-                    :key="key"
-                  >
-                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
-                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
-                  </b-row>
-                </b-td>
-              </b-tr>
-
-              <!-- OTRO -->
-              <b-tr
-                v-if="apoyo.cargo === 'Otro'"
-              >
-                <b-td>
-                  <b>Otro</b><br>
-                  {{ apoyo.cargo === 'Otro' ? apoyo.nombre : '' }}
-                </b-td>
-                <b-td>
-                  <b-row
-                    v-for="(horario, key) in apoyo.horarios"
-                    :key="key"
-                  >
-                    <b-col class="text-right pr-25">{{ horario.dia }}</b-col>
-                    <b-col class="text-left pl-25">{{ horario.hora }} hrs.</b-col>
-                  </b-row>
-                </b-td>
-              </b-tr>
             </template>
 
             <!-- OBSERVACIONES -->
             <b-tr>
               <b-td
-                :class="key%2 === 0 ? 'bg-light-secondary' : 'bg-light-primary'"
+
                 class="text-left pb-1 pt-1"
                 colspan="5"
               >
-                <b>Observaciones</b>
-                <div class="text-justify pt-25 pr-3">
-                  {{ item.observaciones }}
-                </div>
+                <b>Observaciones:</b> {{ item.observaciones }}
               </b-td>
             </b-tr>
           </b-tbody>
@@ -269,7 +249,7 @@
           class="text-center pt-25 pb-25"
         >
           <div class="alert-body">
-            <span>No existen planes registrados.</span>
+            <span>No existen planes de apoyo registrados.</span>
           </div>
         </b-alert>
       </b-col>
@@ -288,19 +268,31 @@ import {
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
+import store from '@/store'
+
+import calendarStoreModule from './PlanApoyo/Horarios/calendarStoreModule'
+
 // COMPONENTES RECICLADOS
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
-// import btnCrear from '../../../../../components/List/btnCrear.vue'
+import btnCrearModal from '../../../../../components/List/btnCrearModal.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
 import colPeriodo from '../../../../../components/List/colPeriodo.vue'
 import colEstado from '../../../../../components/List/colEstado.vue'
 import spinner from '../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../components/List/colNombreImg.vue'
 import { length } from '@validations';
-import colAccionesBtnes from '../components/colAccionesBtnes.vue'
+import colAccionesBtnes from '../../../../../components/List/colAccionesBtnes.vue'
+// import colAccionesBtnes from '../components/colAccionesBtnes.vue'
 
 // COMPONENTES HIJOS
 import planApoyoCreate from './PlanApoyo/PlanApoyoCreate.vue'
+import planApoyoUpdate from './PlanApoyo/PlanApoyoUpdate.vue'
+import planApoyoClone from './PlanApoyo/PlanApoyoClone.vue'
+
+import calendarioHorarios from './PlanApoyo/Horarios/CalendarioHorarios.vue'
+
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos';
 
 export default {
   components: {
@@ -325,8 +317,8 @@ export default {
     BThead,
 
     // COMPONENTES RECICLADOS
-    // btnCrear,
     // inputFiltro,
+    btnCrearModal,
     colAccionesBtnes,
     btnMostrar,
     colPeriodo,
@@ -336,342 +328,22 @@ export default {
 
     // COMPONENTES HIJOS
     planApoyoCreate,
+    planApoyoUpdate,
+    planApoyoClone,
+    calendarioHorarios,
+    calendarStoreModule,
   },
   directives: {
     'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieII4',
       cargando: false,
       spinner: false,
-      // chk
-      items: [
-        {
-          alumnos: [
-            {
-              nombre: 'Catalina Andrea Gaete Jeria',
-            },
-            {
-              nombre: 'Martín Alejandro Lopez Perez',
-            }
-          ],
-          apoyos: [
-            {
-              nombre: 'Paula Mercedes Leiva Alvarez',
-              cargo: 'Fonoaudiólogo/a',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Daniela Carmen Jeria Cisternas',
-              cargo: 'Psicopedagogo/a',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '18:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Daniela Ignacia Vega Oyanedel',
-              cargo: 'Educ. Diferencial',
-              horarios: [
-                {
-                  dia: 'Miércoles',
-                  hora: '14:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '11:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Polet Macarena Rodriguez Gonzalez',
-              cargo: 'Psicólogo/a',
-              horarios: [
-                {
-                  dia: 'Martes',
-                  hora: '11:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '14:00',
-                },
-              ],
-            },
-          ],
-          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-          fechaInicio: '22-04-2022',
-          fechaTermino: '22-07-2022',
-          estado: 'Desarrollada',
-        },
-        {
-          alumnos: [
-            {
-              nombre: 'Gabriel Andres Cortez Acevedo',
-            },
-          ],
-          apoyos: [
-            {
-              nombre: 'Polet Rodriguez',
-              cargo: 'Psicólogo/a',
-              horarios: [
-                {
-                  dia: 'Martes',
-                  hora: '11:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '14:00',
-                },
-              ],
-            },
-          ],
-          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-          estado: 'Desarrollada',
-        },
-        {
-          alumnos: [
-            {
-              nombre: 'Gabriel Andres Cortez Acevedo',
-            },
-            {
-              nombre: 'Rodrigo Luis Centeno Marino',
-            },
-            {
-              nombre: 'Manuel Lindorgo Diaz Riquelme',
-            }
-          ],
-          apoyos: [
-            {
-              nombre: 'Kineciologo - Paul Bastian Paredes Ramirez',
-              cargo: 'Otro',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Paula Mercedes Leiva Alvarez',
-              cargo: 'Fonoaudiólogo/a',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Psicologo - Pedro Ismael Fernandez Oyarzun',
-              cargo: 'Otro',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Kine - Paulo Pedro Perez Londra',
-              cargo: 'Otro',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Daniela Vega',
-              cargo: 'Educ. Diferencial',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '14:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '11:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Polet Rodriguez',
-              cargo: 'Psicólogo/a',
-              horarios: [
-                {
-                  dia: 'Martes',
-                  hora: '11:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '14:00',
-                },
-              ],
-            },
-          ],
-          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-          fechaInicio: '22-04-2022',
-          fechaTermino: '22-07-2022',
-          estado: 'Desarrollada',
-        },
-        {
-          alumnos: [
-            {
-              nombre: 'Catalina Andrea Gaete Jeria',
-            },
-            {
-              nombre: 'Martín Alejandro Lopez Perez',
-            }
-          ],
-          apoyos: [
-            {
-              nombre: 'Paula Mercedes Leiva Alvarez',
-              cargo: 'Fonoaudiólogo/a',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Daniela Vega',
-              cargo: 'Educ. Diferencial',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '14:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '11:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Polet Rodriguez',
-              cargo: 'Psicólogo/a',
-              horarios: [
-                {
-                  dia: 'Martes',
-                  hora: '11:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '14:00',
-                },
-              ],
-            },
-          ],
-          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-          fechaInicio: '22-04-2022',
-          fechaTermino: '22-07-2022',
-          estado: 'Desarrollada',
-        },
-        {
-          alumnos: [
-            {
-              nombre: 'Catalina Andrea Gaete Jeria',
-            },
-            {
-              nombre: 'Martín Alejandro Lopez Perez',
-            }
-          ],
-          apoyos: [
-            {
-              nombre: 'Paula Mercedes Leiva Alvarez',
-              cargo: 'Fonoaudiólogo/a',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '12:00',
-                },
-                {
-                  dia: 'Martes',
-                  hora: '14:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Daniela Vega',
-              cargo: 'Educ. Diferencial',
-              horarios: [
-                {
-                  dia: 'Lunes',
-                  hora: '14:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '11:00',
-                },
-              ],
-            },
-            {
-              nombre: 'Polet Rodriguez',
-              cargo: 'Psicólogo/a',
-              horarios: [
-                {
-                  dia: 'Martes',
-                  hora: '11:00',
-                },
-                {
-                  dia: 'Viernes',
-                  hora: '14:00',
-                },
-              ],
-            },
-          ],
-          observaciones: 'Priorización de evaluaciones alumnos PIE Calendarizada reunión con COSAM debido a los alumnos Thomás T. y Emilia M. Alumnos con derivación psicosocial (Gustavo, León, Thomás, Emilia) Angelina M. EDI se asigna a Amaro G. para trabajar con él. grupos de trabajo y diagnóstico asociado a cada niño y niña.',
-          fechaInicio: '22-04-2022',
-          fechaTermino: '22-07-2022',
-          estado: 'Desarrollada',
-        },
-      ],
-      selectedchk: [],
-      chkTodo: null,
-      checked: null,
-
+      items: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
@@ -687,20 +359,11 @@ export default {
         content: '',
       },
       fields: [
-        // {
-        //   key: 'colCheck',
-        //   label: 'chkHeader',
-        //   sortable: false,
-        //   thStyle: {
-        //     width: '0px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
         {
-          key: 'alumnos',
-          label: 'Nombre del/los estudiante(s)',
+          key: 'alumno',
+          label: 'Nombre del estudiante',
           sortable: true,
+
           style: 'display: table-cell; vertical-align: middle; width: 24%;',
           thStyle: {
             width: '100px !important',
@@ -733,7 +396,7 @@ export default {
           },
         },
         {
-          key: 'fechaInicio',
+          key: 'fecha_inicio',
           label: 'Fecha inicio',
           sortable: true,
           class: 'text-center',
@@ -745,7 +408,7 @@ export default {
           },
         },
         {
-          key: 'fechaTermino',
+          key: 'fecha_termino',
           label: 'Fecha término',
           sortable: true,
           class: 'text-center',
@@ -756,18 +419,18 @@ export default {
             'vertical-align': 'middle',
           },
         },
-        {
-          key: 'acciones',
-          label: 'acciones',
-          class: 'text-center',
-          style: 'display: table-cell; vertical-align: middle; width: 2% !important;',
-          thStyle: {
-            width: '80px !important',
-            'text-align': 'center',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
+        // {
+        //   key: 'acciones',
+        //   label: 'acciones',
+        //   class: 'text-center',
+        //   style: 'display: table-cell; vertical-align: middle; width: 2% !important;',
+        //   thStyle: {
+        //     width: '80px !important',
+        //     'text-align': 'center',
+        //     display: 'table-cell',
+        //     'vertical-align': 'middle',
+        //   },
+        // },
         // {
         //   key: 'estado',
         //   label: 'Estado',
@@ -781,135 +444,115 @@ export default {
         //   },
         // },
       ],
-      // fieldAcciones: [
-      //   {
-      //     key: 'acciones',
-      //     label: 'acciones',
-      //     class: 'text-center',
-      //     thStyle: {
-      //       width: '80px !important',
-      //       'text-align': 'center',
-      //       display: 'table-cell',
-      //       'vertical-align': 'middle',
-      //     },
-      //   },
-      // ],
+      fieldAcciones: {
+        key: 'acciones',
+        label: 'acciones',
+        class: 'text-center',
+        style: 'display: table-cell; vertical-align: middle; width: 2% !important;',
+        thStyle: {
+          width: '80px !important',
+          'text-align': 'center',
+          display: 'table-cell',
+          'vertical-align': 'middle',
+        },
+      },
     }
   },
   computed: {
-    // ...mapGetters({ getReunionesCoordinacions: 'reunionesCoordinaciones/getReunionesCoordinacions' }),
-    // Vuexy
-    sortOptions() {
-      // Create an options list from our fields
-      return this.fields
-        .filter(f => f.sortable)
-        .map(f => ({ text: f.label, value: f.key }))
-    },
-    disabledExport() {
-      return this.chkCount()
-    },
+    ...mapGetters({
+      getPlanApoyos: 'II_4_plan_apoyo/getPlanApoyos',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
   },
   watch: {
-    getReunionesCoordinacions(val) {
-      this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getReunionesCoordinacions
+    getLibroSelected(val) {
+      this.setPlanApoyos(this.getLibroSelected.id)
     },
-    chkTodo() {
-      this.chkAll()
+    getPlanApoyos(val) {
+      this.cargaPlanApoyos(this.getPlanApoyos)
     },
   },
   mounted() {
-    this.cargarReunionesCoordinacions()
-    // this.setTableList()
+    this.setPlanApoyos(this.getLibroSelected.id)
+    this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchReunionesCoordinacions: 'reunionesCoordinaciones/fetchReunionesCoordinacions',
-    //   updateReunionesCoordinacionPeriodo: 'reunionesCoordinaciones/updateReunionesCoordinacionPeriodo',
-    //   removeReunionesCoordinacions: 'reunionesCoordinaciones/removeReunionesCoordinacions',
-    // }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
+    ...mapActions({
+      fetchPlanApoyos: 'II_4_plan_apoyo/fetchPlanApoyos',
+      removePlanApoyo: 'II_4_plan_apoyo/removePlanApoyo',
+    }),
     setTableList() {
-      if (this.$can('update', 'reunionesCoordinaciones')
-        || this.$can('delete', 'reunionesCoordinaciones')
-      ) {
+      // if (this.$can('update', 'reunionesCoordinaciones')
+      //   || this.$can('delete', 'reunionesCoordinaciones')
+      // ) {
         this.fields.push(this.fieldAcciones)
+      // }
+    },
+    setPlanApoyos(idCurso) {
+      this.fetchPlanApoyos(idCurso).then(() => {
+        this.cargaPlanApoyos(this.getPlanApoyos)
+      })
+    },
+    cargaPlanApoyos(planApoyos) {
+      this.items = []
+      if (planApoyos.status !== 'error') {
+        planApoyos.forEach(plan => {
+          const alumno = plan.personas.find(p => p.id_rol === 10) // ROL ALUMNO
+          const nombreAlumno = alumno.nombre+' '+alumno.primer_apellido+' '+alumno.segundo_apellido
+
+          let apoyoEspecializado = []
+          const apoyosEspecializados = plan.personas.filter(p => p.id_rol === 7) // ROL ESPECIALISTA
+
+          apoyosEspecializados.forEach(apoyo => {
+            const nombreApoyo = apoyo.nombre+' '+apoyo.primer_apellido+' '+apoyo.segundo_apellido
+            const cargo = apoyo.nombre_rol
+            const titleApoyo = apoyo.nombre+' '+apoyo.primer_apellido+' - '+cargo
+            apoyoEspecializado.push({
+              value: apoyo.id_persona_rol,
+              id_plan_apoyo_persona: apoyo.id,
+              title: titleApoyo,
+              nombre: nombreApoyo,
+              cargo,
+              horarios: [
+                // {
+                //   dia: 'Lunes',
+                //   hora: '12:00',
+                // },
+              ]
+            })
+          })
+
+          this.items.push(
+            {
+              id: plan.id,
+              descripcion: plan.descripcion,
+              fecha_creacion: plan.fecha_creacion,
+              fecha_inicio: plan.fecha_inicio,
+              fecha_termino: plan.fecha_termino,
+              observaciones: plan.observaciones,
+              alumno: {
+                value: alumno.id_persona_rol,
+                title: nombreAlumno,
+              },
+              apoyoEspecializado,
+            }
+          )
+        })
+        this.cargando = false
       }
     },
-    cargarReunionesCoordinacions() {
-      // this.fetchReunionesCoordinacions().then(() => {
-      //   this.cargando = false
-      // })
+
+    // HORARIO
+    goHorario(nombreModal, planApoyo) {
+      this.cargaIdPlanApoyo(planApoyo.id)
+      this.cargaIdPersonaRol(1)
+      this.$bvModal.show(nombreModal)
     },
-    addReunionesCoordinacion() {
-      // this.$router.replace({
-      //   name: 'reunionesCoordinaciones-create',
-      // })
+    cargaIdPlanApoyo(id_plan_apoyo) {
+      calendarStoreModule.state.id_plan_apoyo = id_plan_apoyo
     },
-    updatePeriodo(reunionesCoordinacion) {
-      this.$swal({
-        title: 'Actualizar periodo!',
-        html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' reunionesCoordinacion<br><span class="font-weight-bolder">'
-          + `${reunionesCoordinacion.nombre}</span>?`,
-        footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' reunionesCoordinacion. No se puede devolver al periodo anterior.</div>',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, actualízalo!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          // this.updateReunionesCoordinacionPeriodo(reunionesCoordinacion).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Periodo activo actualizado!',
-          //     html:
-          //       'El periodo activo del reunionesCoordinacion<br>'
-          //       + ' <span class="font-weight-bolder">'
-          //       + `${reunionesCoordinacion.nombre}</span>`
-          //       + '<br>ha sido actualizado con éxito!',
-          //     customClass: {
-          //       confirmButton: 'btn btn-primary',
-          //     },
-          //   })
-          //   this.spinner = false
-          //   this.cargarReunionesCoordinacions()
-          // })
-        } else {
-          this.spinner = false
-          this.cargarReunionesCoordinacions()
-        }
-      })
-    },
-    updateEstado() {
-      // console.log('update')
-    },
-    goToConfig(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-config',
-      })
-    },
-    goToUpdate(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-update',
-      })
-    },
-    goToClone(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-clone',
-      })
+    cargaIdPersonaRol(id_persona_rol) {
+      calendarStoreModule.state.id_persona_rol = id_persona_rol
     },
     remove(reunionesCoordinacion) {
       this.$swal({
@@ -918,7 +561,7 @@ export default {
           "${reunionesCoordinacion.nombre}"?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo!',
+        confirmButtonText: 'Sí, eliminalo!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
@@ -931,7 +574,7 @@ export default {
           // this.removeReunionesCoordinacions(reunionesCoordinacion.id).then(() => {
           //   this.$swal({
           //     icon: 'success',
-          //     title: 'Eliminada con éxito!',
+          //     title: 'Eliminado con éxito!',
           //     text: `"${reunionesCoordinacion.nombre}" ha sido eliminada!`,
           //     customClass: {
           //       confirmButton: 'btn btn-success',
@@ -943,23 +586,6 @@ export default {
           this.spinner = false
         }
       })
-    },
-
-    // Checkbox select item Table
-    chkAll() {
-      this.items.forEach(item => {
-        const cliente = this.items.find(i => i.id === item.id)
-        cliente.chkSelected = this.chkTodo
-      })
-    },
-    chkCount() {
-      let chkCount = 0
-      this.items.forEach(item => {
-        chkCount = item.chkSelected
-          ? chkCount + 1
-          : chkCount
-      })
-      return chkCount === 0
     },
 
     // Vuexy

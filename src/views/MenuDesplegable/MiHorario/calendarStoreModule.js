@@ -5,27 +5,27 @@ export default {
   state: {
     calendarOptions: [
       {
-        color: 'success',
-        label: 'Mis Bloques',
+        color: 'danger',
+        label: 'Personal',
       },
       {
-        color: 'secondary',
-        label: 'Otros Bloques',
+        color: 'primary',
+        label: 'Business',
       },
-      // {
-      //   color: 'danger',
-      //   label: 'Eventos',
-      // },
-      // {
-      //   color: 'warning',
-      //   label: 'Vacaciones',
-      // },
-      // {
-      //   color: 'info',
-      //   label: 'ETC',
-      // },
+      {
+        color: 'warning',
+        label: 'Family',
+      },
+      {
+        color: 'success',
+        label: 'Holiday',
+      },
+      {
+        color: 'info',
+        label: 'ETC',
+      },
     ],
-    selectedCalendars: ['Mis Bloques', 'Otros Bloques'],
+    selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC'],
   },
   getters: {},
   mutations: {
@@ -35,7 +35,7 @@ export default {
   },
   actions: {
     fetchEvents(ctx, { calendars }) {
-      return new Promise((resolve, reject) => {
+      const data = new Promise((resolve, reject) => {
         axios
           .get('/apps/calendar/events', {
             params: {
@@ -45,6 +45,7 @@ export default {
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
+      return data
     },
     addEvent(ctx, { event }) {
       return new Promise((resolve, reject) => {

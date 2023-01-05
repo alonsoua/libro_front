@@ -85,7 +85,7 @@ export default {
         else {
           this.$swal({
             title: 'Error!',
-            text: 'Error',
+            text: store.state.II_1_b_estrategias.message,
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',

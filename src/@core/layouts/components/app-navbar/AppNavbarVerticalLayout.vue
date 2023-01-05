@@ -28,7 +28,7 @@
       <!-- <locale /> -->
       <!-- <search-bar /> -->
       <!-- <cart-dropdown /> -->
-      <notification-dropdown />
+      <!-- <notification-dropdown /> -->
       <user-dropdown />
     </b-navbar-nav>
   </div>
@@ -65,6 +65,9 @@ export default {
       type: Function,
       default: () => {},
     },
+  },
+  mounted() {
+    // console.log(this.toggleVerticalMenuActive)
   },
 }
 </script>

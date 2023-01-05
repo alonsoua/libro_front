@@ -5,3 +5,8 @@ export default function estrategia() {
 export function getEstrategias(state) {
   return state.estrategias
 }
+
+export function getEstrategiasDisponibles(state) {
+  // console.log('state.estrategiasDisponibles :', state.estrategiasDisponibles)
+  return state.estrategiasDisponibles
+}

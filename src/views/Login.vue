@@ -197,7 +197,7 @@ export default {
       rut: '',
       password: '',
       status: '',
-      // validation rules
+      spinner: false,
       // email,
     }
   },
@@ -210,12 +210,12 @@ export default {
     return {
       form: {
         rut: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
+          // $autoDirty: true,
+          required: helpers.withMessage('El rut es requerido.', required),
         },
         password: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
+          // $autoDirty: true,
+          required: helpers.withMessage('La clave es requerida.', required),
         },
       }
     }
@@ -256,20 +256,31 @@ export default {
           rut,
           password: this.form.password
         }
+
         this.signIn(form).then(response => {
           if (response === undefined && this.authErrorMessage === null) {
             localStorage.setItem('userData', JSON.stringify(this.user))
-            // this.$ability.update(this.user.permisos)
+            let permisos = [{
+              action: 'read',
+              subject: 'home',
+            }]
+            this.user.permisos.forEach(permiso => {
+              permisos.push(permiso)
+            })
+            this.$ability.update(permisos)
 
+            const title = `Bienvenido ${this.user.nombre} ${this.user.primer_apellido} ${this.user.segundo_apellido}`
             this.$toast({
               component: ToastificationContent,
               props: {
-                title: `Bienvenido ${this.user.nombre}`,
+                title,
                 icon: 'CoffeeIcon',
                 variant: 'primary',
-                text: `Has iniciado sesión correctamente
-                  como ${this.user.rolActivo}.
+                text: `Has iniciado sesión.
                 Ahora puedes comenzar a explorar! 👋`,
+                // text: `Has iniciado sesión
+                //   como ${this.user.rolActivo}.
+                // Ahora puedes comenzar a explorar! 👋`,
               },
             },
             {
@@ -277,7 +288,7 @@ export default {
               timeout: 3000,
             })
             this.$router.replace({
-              name: 'home',
+              name: 'inicio',
             })
           }
           // else if (response === 'email&pass') {

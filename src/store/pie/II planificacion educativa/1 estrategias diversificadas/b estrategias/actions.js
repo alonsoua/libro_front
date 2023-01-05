@@ -10,17 +10,31 @@ export async function fetchEstrategias({ commit }, idCurso) {
       method: 'GET',
       url: `estrategiadetalle/${idCurso}`,
     })
-    console.log('/estrategiadetalle Estrategias GET con exito...', data)
     commit('setEstrategias', data)
   } catch (e) {
-    commit('estrategiasError', e.response.data)
+    commit('estrategiaError', e.response.data)
   }
 }
+
+export async function fetchEstrategiasDisponibles({ commit }, idCurso) {
+  try {
+    // * Obtiene las estrategias que aún pueden ser trabajadas en
+    // * Modulo > III_1_A Acciones de aplicación
+    const { data } = await axios({
+      method: 'GET',
+      url: `estrategiadetalleregistro/${idCurso}`,
+    })
+    commit('setEstrategiasDisponibles', data)
+  } catch (e) {
+    commit('estrategiaError', e.response.data)
+  }
+}
+
+
 
 export async function addEstrategia({ commit }, estrategia) {
   try {
     commit('estrategiaErrorNull')
-    console.log('estrategia :', estrategia)
     const { data } = await axios({
       method: 'POST',
       url: 'estrategiadetalle',
@@ -33,7 +47,6 @@ export async function addEstrategia({ commit }, estrategia) {
       },
     })
     commit('setResponse', data)
-    console.log('/estrategiadetalle Estrategias CREATE con exito...', data)
   } catch (e) {
     commit('estrategiaError', e.response.data)
   }
@@ -42,7 +55,6 @@ export async function addEstrategia({ commit }, estrategia) {
 export async function updateEstrategia({ commit }, estrategia) {
   try {
     commit('estrategiaErrorNull')
-    console.log('estrategia :', estrategia)
     const {data} = await axios({
       method: 'PUT',
       url: `estrategiadetalle/${estrategia.id}`,
@@ -53,22 +65,19 @@ export async function updateEstrategia({ commit }, estrategia) {
         id_periodo: estrategia.id_periodo,
       },
     })
-    console.log('/estrategiadetalle Estrategias UPDATE exito...', data)
     commit('setResponse', data)
   } catch (e) {
-    console.log('e.reponse.data :', e.reponse.data)
     commit('estrategiaError', e.response.data)
   }
 }
 
 export async function removeEstrategia({ commit, dispatch }, estrategia) {
   try {
-    await axios({
+    const {data} = await axios({
       method: 'DELETE',
       url: `/estrategiadetalle/${estrategia.id}`,
     })
     // actualizamos lista de estrategias
-    console.log('estrategia :', estrategia)
     dispatch('fetchEstrategias', estrategia.id_curso)
   } catch (e) {
     commit('estrategiaError', e.response.data)

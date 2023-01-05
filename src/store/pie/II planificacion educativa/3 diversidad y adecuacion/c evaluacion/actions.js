@@ -11,7 +11,6 @@ export async function fetchEvaluacion({ commit }, idCurso) {
       url: `adecuacionc/${idCurso}`,
     })
     commit('setEvaluacion', data[0])
-    console.log('/adecuacionc Evaluación GET con exito... data[0]', data[0])
   } catch (e) {
     commit('evaluacionError', e.response.data)
   }
@@ -30,7 +29,6 @@ export async function addEvaluacion({ commit }, evaluacion) {
         observaciones: evaluacion.observaciones,
       },
     })
-    console.log('/adecuacionc Evaluacion CREATE con exito...', data)
   } catch (e) {
     commit('evaluacionError', e.response.data)
   }
@@ -49,7 +47,6 @@ export async function updateEvaluacion({ commit }, evaluacion) {
         observaciones: evaluacion.observaciones,
       },
     })
-    console.log('/adecuacionc Evaluacion UPDATE con exito...', data)
   } catch (e) {
     commit('evaluacionError', e.response.data)
   }

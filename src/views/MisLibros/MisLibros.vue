@@ -3,6 +3,7 @@
     :show="spinner"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
+    v-if="$can('read', 'mislibros')"
   >
     <b-card>
       <b-row>
@@ -185,13 +186,7 @@ export default {
       cargando: false,
       spinner: false,
       // chk
-      items: [
-      // {
-      //   tipoEnseñanza: 'Educación Básica',
-      //   grado: '1ero Básico A',
-      //   estado: 'Activo',
-      // }
-      ],
+      items: [],
 
       perPage: 10,
       totalRows: 1,
@@ -208,16 +203,16 @@ export default {
         content: '',
       },
       fields: [
-        {
-          key: 'tipoEnseñanza',
-          label: 'Tipo Enseñanza',
-          sortable: true,
-          thStyle: {
-            width: '200px !important',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
+        // {
+        //   key: 'tipoEnseñanza',
+        //   label: 'Tipo Enseñanza',
+        //   sortable: true,
+        //   thStyle: {
+        //     width: '200px !important',
+        //     display: 'table-cell',
+        //     'vertical-align': 'middle',
+        //   },
+        // },
         {
           key: 'grado',
           label: 'Grado',
@@ -228,18 +223,18 @@ export default {
             'vertical-align': 'middle',
           },
         },
-        {
-          key: 'estado',
-          label: 'Estado',
-          sortable: true,
-          tdClass: 'text-center',
-          thStyle: {
-            'text-align': 'center',
-            width: '100px !important',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
+        // {
+        //   key: 'estado',
+        //   label: 'Estado',
+        //   sortable: true,
+        //   tdClass: 'text-center',
+        //   thStyle: {
+        //     'text-align': 'center',
+        //     width: '100px !important',
+        //     display: 'table-cell',
+        //     'vertical-align': 'middle',
+        //   },
+        // },
       ],
       fieldAcciones: [
         {
@@ -259,16 +254,6 @@ export default {
   computed: {
     ...mapState('auth', ['user']),
     ...mapGetters({ getLibros: 'libros/getLibros' }),
-    // Vuexy
-    sortOptions() {
-      // Create an options list from our fields
-      return this.fields
-        .filter(f => f.sortable)
-        .map(f => ({ text: f.label, value: f.key }))
-    },
-    disabledExport() {
-      return this.chkCount()
-    },
   },
   watch: {
     getLibros(val) {

@@ -1,27 +1,13 @@
 <template>
-
-  <b-modal
-    id="modal-create"
-    :title="title"
-    :ok-title="submitTitle"
-    cancel-title="Cancelar"
-    cancel-variant="outline-secondary"
-    size="xl"
-    no-close-on-backdrop
-    centered
-    @ok="agregar"
-  >
-    <logros-aprendizaje-form
-      :logros.sync="data"
-      @processForm="agregar"
-    />
-  </b-modal>
+  <logros-aprendizaje-form
+    nombreModal="modal-create"
+    title="Registrar logros de aprendizaje"
+    :logros.sync="data"
+    @processForm="agregar"
+  />
 </template>
 
 <script>
-import {
-  BModal, VBModal
-} from 'bootstrap-vue'
 import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -31,82 +17,70 @@ import LogrosAprendizajeForm from './LogrosAprendizajeForm.vue'
 
 export default {
   components: {
-    // ETIQUETAS
-    BModal,
-    VBModal,
-
     // COMPONENTES
     LogrosAprendizajeForm,
   },
   directives: {
-    'b-modal': VBModal,
     Ripple,
   },
   data() {
     return {
       data: {
-        estudiantes: [],
+        id_persona: '',
         logros: '',
         comentarios: '',
       },
     }
   },
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    submitTitle: {
-      type: String,
+    idCurso: {
+      type: Number,
       required: true,
     },
   },
   methods: {
-    // ...mapActions({ createEstablecimiento: 'establecimientos/addEstablecimientos' }),
-    agregar() {
-      console.log('reunion :', this.data)
-      // this.createEstablecimiento(establecimiento).then(() => {
-      //   const errorEstablecimientos = store.state.establecimientos
-      //   const errorMessage = errorEstablecimientos.errorMessage.errors
-      //   if (!errorEstablecimientos.error) {
-      //     this.$toast({
-      //       component: ToastificationContent,
-      //       props: {
-      //         title: 'Establecimiento creado 👍',
-      //         icon: 'CheckIcon',
-      //         text: `El establecimiento "${establecimiento.nombre}" fue creado con éxito!`,
-      //         variant: 'success',
-      //       },
-      //     },
-      //     {
-      //       position: 'bottom-right',
-      //       timeout: 4000,
-      //     })
-      //     this.$router.replace({
-      //       name: 'establecimientos',
-      //     })
-      //   } else if (errorMessage.nombre) {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: `${errorMessage.nombre[0]}!`,
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   } else {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: 'Ingreso de datos fraudulento!',
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   }
-      // })
+    ...mapActions({
+      createLogro: 'III_3_logros/addLogro',
+      fetchLogros: 'III_3_logros/fetchLogros',
+    }),
+    agregar(logros) {
+      const data = {
+        logros: logros.logros,
+        comentarios: logros.comentarios,
+        id_persona_rol_alumno: logros.id_persona_rol_alumno,
+        id_curso: this.idCurso,
+      }
+      this.createLogro(data).then(() => {
+        const statusLogros = store.state.III_3_logros.status
+        if (statusLogros === 'success') {
+          this.fetchLogros(this.idCurso)
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Logro de aprendizaje guardado 👍',
+              icon: 'CheckIcon',
+              text: 'El logro de aprendizaje fue ingresado con éxito!',
+              variant: 'success',
+            },
+          },
+          {
+            position: 'bottom-right',
+            timeout: 4000,
+          })
+          this.$bvModal.hide('modal-create')
+        }
+        else {
+          this.$swal({
+            title: 'Error!',
+            text: store.state.III_3_logros.message,
+            icon: 'error',
+            customClass: {
+              confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+          })
+        }
+      })
     },
   },
 }

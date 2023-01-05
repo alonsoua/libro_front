@@ -1,17 +1,16 @@
 <template>
-  <div v-if="selectedEstablecimiento">
-    <b-overlay
-      :show="spinner"
-      spinner-variant="primary"
-      :variant="$store.state.appConfig.layout.skin"
-    >
-      <establecimientosForm
-        btnSubmit="Editar Establecimiento"
-        :establecimiento="selectedEstablecimiento"
-        @processForm="editar"
-      />
-    </b-overlay>
-  </div>
+  <b-overlay
+    :show="spinner"
+    spinner-variant="primary"
+    :variant="$store.state.appConfig.layout.skin"
+  >
+    <plan-apoyo-form
+      :nombreModal="modal"
+      title="Editar plan de apoyo individual"
+      :planApoyo.sync="data"
+      @processForm="editar"
+    />
+  </b-overlay>
 </template>
 
 <script>
@@ -21,35 +20,65 @@ import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import establecimientosForm from './components/EstablecimientosForm.vue'
+import PlanApoyoForm from './PlanApoyoForm.vue'
 
 export default {
   components: {
-    establecimientosForm,
+    PlanApoyoForm,
     BOverlay,
   },
   data() {
     return {
       spinner: false,
+      apoyoEspecializado: [],
     }
   },
-  computed: {
-    ...mapState('establecimientos', ['selectedEstablecimiento']),
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+    idCurso: {
+      type: Number,
+      required: true,
+    },
+    modal: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions({ updateEstablecimiento: 'establecimientos/updateEstablecimiento' }),
-    editar(establecimiento) {
-      this.spinner = true
-      this.updateEstablecimiento(establecimiento).then(() => {
-        const errorEstablecimientos = store.state.establecimientos
-        const errorMessage = errorEstablecimientos.errorMessage.errors
-        if (!errorEstablecimientos.error) {
+    ...mapActions({
+      updatePlanApoyo: 'II_4_plan_apoyo/updatePlanApoyo',
+      fetchPlanApoyos: 'II_4_plan_apoyo/fetchPlanApoyos',
+    }),
+    editar(planApoyo) {
+      let personas = []
+      personas.push(planApoyo.alumno.value)
+      planApoyo.apoyoEspecializado.forEach(apoyo => {
+        personas.push(apoyo.value)
+      })
+
+      const data = {
+        id: this.data.id,
+        descripcion: planApoyo.descripcion,
+        observaciones: planApoyo.observaciones,
+        fecha_inicio: planApoyo.fecha_inicio,
+        fecha_termino: planApoyo.fecha_termino,
+        id_curso: this.idCurso,
+        personas,
+        id_periodo: 1,
+      }
+      this.updatePlanApoyo(data).then(() => {
+        const statusPlanApoyos = store.state.II_4_plan_apoyo.status
+        if (statusPlanApoyos === 'success') {
+          this.fetchPlanApoyos(this.idCurso)
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Establecimiento editado 👍',
-              text: `El establecimiento "${establecimiento.nombre}" fue editado con éxito!`,
+              title: 'Plan de apoyo guardado 👍',
               icon: 'CheckIcon',
+              text: 'El plan de apoyo individual fue editado con éxito!',
               variant: 'success',
             },
           },
@@ -57,23 +86,12 @@ export default {
             position: 'bottom-right',
             timeout: 4000,
           })
-          this.$router.replace({
-            name: 'establecimientos',
-          })
-        } else if (errorMessage.nombre) {
+          this.$bvModal.hide(this.modal)
+        }
+        else {
           this.$swal({
             title: 'Error!',
-            text: `${errorMessage.nombre[0]}!`,
-            icon: 'error',
-            customClass: {
-              confirmButton: 'btn btn-primary',
-            },
-            buttonsStyling: false,
-          })
-        } else if (errorEstablecimientos.error) {
-          this.$swal({
-            title: 'Error!',
-            text: 'Ingreso de datos fraudulento!',
+            text: 'Error',
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',
@@ -81,7 +99,6 @@ export default {
             buttonsStyling: false,
           })
         }
-        this.spinner = false
       })
     },
   },

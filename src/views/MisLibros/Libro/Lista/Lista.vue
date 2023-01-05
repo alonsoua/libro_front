@@ -3,6 +3,7 @@
     :show="mostrarCargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
+    v-if="$can('read', 'lista')"
   >
     <b-row>
       <b-col
@@ -64,6 +65,7 @@
     <btnSubmit
       variant="primary"
       :btnText="btnSubmit"
+      :modulo="nombre_permiso"
       @processBtn="submitOption"
     />
 
@@ -90,6 +92,7 @@ export default {
   },
   data() {
     return {
+      nombre_permiso: 'lista',
       mostrarCargando: false,
       btnSubmit: 'Actualizar orden de Lista',
       list: [{
@@ -135,10 +138,13 @@ export default {
       ],
     }
   },
-  submitOption () {
-    console.log('1 :', 1)
-  }
+  methods: {
+    submitOption () {
+      console.log('1 :', 1)
+    }
+  },
 }
+
 </script>
 
 <style>

@@ -5,10 +5,10 @@
     :variant="$store.state.appConfig.layout.skin"
   >
     <b-row>
-      <b-col cols="12" class="mb-50 mt-50">
+      <b-col cols="12" class="mt-50 mb-0">
         <b-card-text
-          style="margin-top: 8px; "
-          class="h5"
+          style="margin-top: 8px; margin-bottom: -8px;"
+          class="h5 text-left text-italic"
         >
           Calendarización de reuniones de coordinación
         </b-card-text>
@@ -32,11 +32,12 @@
         sm="5"
         class="my-1"
       >
+
         <!-- FILTRO -->
-        <!-- <inputFiltro
+        <inputFiltro
           class="mt-50"
           :filter.sync="filter"
-        /> -->
+        />
 
       </b-col>
       <b-col
@@ -53,15 +54,12 @@
           />
 
           <!-- BOTON CREAR -->
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Coordinar Reunión
-          </b-button>
-
+          <btn-crear-modal
+            accion="Coordinar"
+            texto="Reunión"
+            modal="modal-create"
+            :modulo="nombre_permiso"
+          />
         </div>
       </b-col>
 
@@ -99,11 +97,8 @@
 
           <!-- FECHA -->
           <template #cell(fecha)="data">
-            <div class="mb-25 mt-75">
-              {{ formatFechaVer(data.item.fecha) }}
-            </div>
-            <div class="mb-50">
-              {{ formatHoraVer(data.item.horario) }}
+            <div class="mb-50 mt-50">
+              {{ formatFechaVer(data.item.fecha) }} - {{ formatHoraVer(data.item.horario) }}
             </div>
           </template>
 
@@ -113,19 +108,15 @@
               v-for="(asistente, key) in data.item.asistentes"
               :key="key"
             >
-              - {{ asistente.nombre }}
+              <b>{{ asistente.nombre_rol }}</b><br>
+              {{ asistente.nombre }} {{ asistente.primer_apellido }} {{ asistente.segundo_apellido }}
+              <hr
+                v-if="key + 1 !== data.item.asistentes.length"
+                style="margin-top: 1px; margin-bottom: 5px;"
+              >
             </div>
           </template>
 
-
-          <!-- ESTADO -->
-          <!-- <template #cell(estado)="data">
-            <colEstado
-              :data="data"
-              modulo="reunionesCoordinaciones"
-              @processUpdateEstado="updateEstado"
-            />
-          </template> -->
 
           <!-- ACCIONES -->
           <template #cell(acciones)="data">
@@ -139,7 +130,7 @@
             <colAccionesBtnes
               :modal="'modal-update-'+data.item.id"
               :data="data"
-              @processGoToUpdate="goToUpdate"
+              :modulo="nombre_permiso"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -180,8 +171,10 @@ import {
   BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardTitle,
   BButton, VBModal, BAlert, BCardText,
 } from 'bootstrap-vue'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+
 import Ripple from 'vue-ripple-directive'
+
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 // FORMATOS
 import { formatos } from '@core/mixins/ui/formatos'
@@ -189,10 +182,11 @@ import { formatos } from '@core/mixins/ui/formatos'
 
 // COMPONENTES
 import inputFiltro from '../../../../../components/List/inputFiltro.vue'
+import btnCrearModal from '../../../../../components/List/btnCrearModal.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../../../../components/List/colAccionesBtnes.vue'
-import colPeriodo from '../../../../../components/List/colPeriodo.vue'
-import colEstado from '../../../../../components/List/colEstado.vue'
+// import colPeriodo from '../../../../../components/List/colPeriodo.vue'
+// import colEstado from '../../../../../components/List/colEstado.vue'
 import spinner from '../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../components/List/colNombreImg.vue'
 
@@ -217,10 +211,9 @@ export default {
 
     // COMPONENTES
     inputFiltro,
-    colAccionesBtnes,
     btnMostrar,
-    colPeriodo,
-    colEstado,
+    btnCrearModal,
+    colAccionesBtnes,
     spinner,
     colNombreImg,
 
@@ -235,6 +228,7 @@ export default {
   mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieI2',
       cargando: false,
       spinner: false,
       items: [],
@@ -257,15 +251,14 @@ export default {
       },
       // Filas
       fields: [
-
         {
           key: 'fecha',
           label: 'Fecha/horario',
           sortable: true,
-          tdClass: 'text-center',
+          // tdClass: 'text-center',
           thStyle: {
-            'text-align': 'center',
-            width: '60px !important',
+            // 'text-align': 'center',
+            width: '120px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -285,21 +278,11 @@ export default {
           label: 'Acuerdos',
           sortable: false,
           thStyle: {
-            width: '300px !important',
+            width: '250px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
-        // {
-        //   key: 'colCheck',
-        //   label: 'chkHeader',
-        //   sortable: false,
-        //   thStyle: {
-        //     width: '0px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
         // {
         //   key: 'estado',
         //   label: 'Estado',
@@ -340,9 +323,6 @@ export default {
         .filter(f => f.sortable)
         .map(f => ({ text: f.label, value: f.key }))
     },
-    disabledExport() {
-      return this.chkCount()
-    },
   },
   watch: {
     getReuniones(val) {
@@ -364,38 +344,32 @@ export default {
       updateReuniones: 'I_2_reuniones/updateReuniones',
       removeReunion: 'I_2_reuniones/removeReunion',
     }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
     setTableList() {
-      this.fields.push(this.fieldAcciones)
-      // if (this.$can('update', 'reunionesCoordinaciones')
-      //   || this.$can('delete', 'reunionesCoordinaciones')
-      // ) {
-      // }
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
+      ) {
+        this.fields.push(this.fieldAcciones)
+      }
     },
     cargarReuniones(idCurso) {
       this.fetchReuniones(idCurso).then(() => {
         this.cargando = false
       })
     },
-    goToUpdate(reunion) {
-      this.setReunionesCoordinacion(reunion)
-      this.$router.push({
-        name: 'reuniones-update',
-      })
-    },
     remove(reunion) {
+      const fecha = `${this.formatFechaVerCompleto(reunion.fecha)}, a las
+        ${this.formatHoraVer(reunion.horario)}`
+      const html = this.formatHTMLSweetEliminar('la reunión', fecha)
       this.$swal({
         title: 'Eliminar reunión!',
-        text: `Estás seguro que deseas eliminar la reunión del día
-        ${this.formatFechaVer(reunion.fecha)} a las
-        ${this.formatHoraVer(reunion.horario)}?`,
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, elimínala!',
+        confirmButtonText: 'Sí, elimínala!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          cancelButton: 'btn btn-outline-secondary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
@@ -404,7 +378,7 @@ export default {
           this.removeReunion(reunion.id).then(() => {
             this.$swal({
               icon: 'success',
-              title: 'Eliminada con éxito!',
+              title: 'Eliminado con éxito!',
               text: `La reunión ha sido eliminada!`,
               customClass: {
                 confirmButton: 'btn btn-success',

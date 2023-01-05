@@ -3,18 +3,20 @@
     :show="!cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
+    class="mb-2"
   >
     <b-row>
       <b-col md="8">
         <b-card-text
           style="margin-top: 8px;"
-          class="h5"
+          class="h5 mb-1"
         >
           Docente(s) de educación regular del curso
         </b-card-text>
       </b-col>
       <b-col md="4" class="mt-2">
-        <b-button
+        <!-- <b-button
+          v-if="$can('create', nombre_permiso)"
           v-ripple.400="'rgba(255, 255, 255, 0.15)'"
           variant="outline-primary float-right"
           @click="repeateAgain"
@@ -25,16 +27,17 @@
             class="mr-25"
           />
           <span>Agregar docente</span>
-        </b-button>
+        </b-button> -->
       </b-col>
     </b-row>
 
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-0 mt-0 overflow-auto border-light"
-      style="min-height: 456px !important; max-height: 456px !important; margin: 0px -17px 0px 0px; padding: 20px 18px 0px 18px;"
+      class="repeater-form mt-0 overflow-auto border-light"
+      style="min-height: 380px !important; max-height: 380px !important; margin: 0px 0px 15px 0px; padding: 20px 18px 0px 18px;"
       @submit.prevent="repeateAgain"
+      :disabled="true"
     >
 
       <!-- Row Loop -->
@@ -57,6 +60,7 @@
               id="nombre"
               type="text"
               placeholder="Ingresa el nombre"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -72,26 +76,30 @@
               id="nucleo-asignatura-modulo"
               type="text"
               placeholder="Ingresa el núcleo, asignatura y/o módulo"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
 
         <!-- FIRMAS -->
-        <b-col md="2">
+        <b-col md="2" >
           <b-form-group
             label="Firma"
             label-for="firma"
             class="text-center"
           >
             <firmas
-                :data.sync="item"
-                text="Firmar identificación de equipo de aula como docente"
+              :idModal="index"
+              :data.sync="item"
+              :modulo="nombre_permiso"
+              text="Firmar identificación de equipo de aula como docente"
               />
           </b-form-group>
         </b-col>
 
         <!-- Remove Button -->
         <b-col
+          v-if="$can('delete', nombre_permiso)"
           lg="1"
           md="1"
           class="mb-50"
@@ -99,6 +107,7 @@
           <b-button
             v-ripple.400="'rgba(234, 84, 85, 0.15)'"
             variant="outline-danger"
+            title="Eliminar Docente"
             class="mt-0 mt-md-2 pr-1 pl-1"
             @click="removeItem(index)"
           >
@@ -114,6 +123,7 @@
       </b-row>
     </b-form>
     <b-button
+      v-if="$can('create', nombre_permiso)"
       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
       variant="outline-primary float-right"
       @click="repeateAgain"
@@ -165,7 +175,7 @@ export default {
   mixins: [heightTransition],
   data() {
     return {
-
+      nombre_permiso: 'pieI1',
       cargando: true,
       items: [
         {
@@ -185,6 +195,13 @@ export default {
         {
           id: 3,
           nombre: 'Paulina Rios Sanhueza',
+          asignatura: 'Orientación',
+          telefono: '56990477880',
+          correo: 'paulina@gmail.com',
+        },
+        {
+          id: 4,
+          nombre: 'Paola Vidal Henriquez',
           asignatura: 'Orientación',
           telefono: '56990477880',
           correo: 'paulina@gmail.com',

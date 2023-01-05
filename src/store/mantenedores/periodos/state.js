@@ -1,6 +1,6 @@
 export default {
   periodos: [],
-  periodosActivos: [],
+  periodosEstablecimiento: [],
   selectedPeriodo: null,
   error: false,
   errorMessage: [],

@@ -2,6 +2,9 @@ export function setEstrategias(state, estrategia) {
   state.estrategias = estrategia
 }
 
+export function setEstrategiasDisponibles(state, estrategiasDisponibles) {
+  state.estrategiasDisponibles = estrategiasDisponibles
+}
 
 export function updateEstrategiaEstado(state, payload) {
   const estrategia = state.estrategias.find(u => u.id === payload.id)

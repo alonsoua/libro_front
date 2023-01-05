@@ -9,10 +9,12 @@
     <div
       v-for="(menu, key) in submenus"
       :key="key"
+      v-if="menu.can"
     >
       <b-tab
         :active="menu.active"
         lazy
+        :disabled="menu.disabled"
         :title="menu.index.toUpperCase()+`. `+menu.abreviatura"
       >
         <!-- ENCABEZADO -->

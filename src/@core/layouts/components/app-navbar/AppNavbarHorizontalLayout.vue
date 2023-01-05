@@ -28,7 +28,7 @@
       <!-- <locale /> -->
       <!-- <search-bar /> -->
       <!-- <cart-dropdown /> -->
-      <notification-dropdown />
+      <!-- <notification-dropdown /> -->
       <user-dropdown />
     </b-navbar-nav>
   </div>

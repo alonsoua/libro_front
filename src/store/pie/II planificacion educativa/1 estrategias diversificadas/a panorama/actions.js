@@ -31,7 +31,6 @@ export async function addPanorama({ commit }, panorama) {
         necesidad: panorama.necesidad,
       },
     })
-    console.log('Panorama creado con exito...')
   } catch (e) {
     commit('panoramaError', e.response.data)
   }
@@ -50,7 +49,6 @@ export async function updatePanorama({ commit }, panorama) {
         necesidad: panorama.necesidad,
       },
     })
-    console.log('Panorama actualizado con exito...')
   } catch (e) {
     commit('panoramaError', e.response.data)
   }

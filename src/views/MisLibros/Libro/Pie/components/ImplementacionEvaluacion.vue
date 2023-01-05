@@ -6,10 +6,12 @@
     <div
       v-for="(menu, key) in submenus"
       :key="key"
+      v-if="menu.can"
     >
       <b-tab
         lazy
         :active="menu.active"
+        :disabled="menu.disabled"
       >
 
         <!-- MENU TAB -->

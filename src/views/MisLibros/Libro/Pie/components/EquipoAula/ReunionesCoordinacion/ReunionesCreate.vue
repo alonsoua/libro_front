@@ -8,9 +8,6 @@
 </template>
 
 <script>
-import {
-  BModal, VBModal
-} from 'bootstrap-vue'
 import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -20,15 +17,10 @@ import reunionesForm from './ReunionesForm.vue'
 
 export default {
   components: {
-    // ETIQUETAS
-    BModal,
-    VBModal,
-
     // COMPONENTES
     reunionesForm,
   },
   directives: {
-    'b-modal': VBModal,
     Ripple,
   },
   data() {
@@ -83,7 +75,7 @@ export default {
         else {
           this.$swal({
             title: 'Error!',
-            text: 'Error',
+            text: store.state.I_2_reuniones.message,
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',

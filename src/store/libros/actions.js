@@ -1,13 +1,15 @@
 import axios from 'axios'
+import store from '@/store/index'
 
 export default async function libros() {
   return 0
 }
 
-export async function fetchLibros({ commit }) {
+export async function fetchLibros({ commit, dispatch }) {
   try {
     const { data } = await axios.get('curso')
     commit('setLibros', data)
+    console.log('/curso GET cursos:', data)
   } catch (e) {
     commit('libroError', e.response.data)
   }
@@ -21,6 +23,7 @@ export async function fetchLibrosUser({ commit }, idUsuario) {
       url: `curso/${idUsuario}`,
     })
     commit('setLibros', data)
+    console.log('/curso/${idUsuario} GET cursos por usuario:', data)
   } catch (e) {
     commit('libroError', e.response.data)
   }

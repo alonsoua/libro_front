@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { LCircle } from 'vue2-leaflet'
 
 export default async function establecimientos() {
   return 0
@@ -34,7 +33,6 @@ export async function addEstablecimiento({ commit }, establecimiento) {
     //   },
     // })
   } catch (e) {
-    console.log('e.response.data :', e.response.data)
     commit('establecimientoError', e.response.data)
   }
 }
@@ -42,7 +40,6 @@ export async function addEstablecimiento({ commit }, establecimiento) {
 export async function updateEstablecimiento({ commit }, establecimiento) {
   try {
     commit('establecimientoErrorNull')
-    console.log('establecimiento :', establecimiento)
     const response = await axios({
       method: 'PUT',
       url: `establecimiento/${establecimiento.id}`,
@@ -56,7 +53,6 @@ export async function updateEstablecimiento({ commit }, establecimiento) {
         correo: establecimiento.correo,
       },
     })
-    console.log('response :', response)
   } catch (e) {
     commit('establecimientoError', e.response.data)
   }

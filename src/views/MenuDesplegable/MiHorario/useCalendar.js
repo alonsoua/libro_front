@@ -4,8 +4,6 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 
-import '@fullcalendar/core/vdom' // solves problem with Vite
-
 // Notification
 import { useToast } from 'vue-toastification/composition'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -22,22 +20,24 @@ export default function userCalendar() {
   // ------------------------------------------------
   const refCalendar = ref(null)
 
+
   // ------------------------------------------------
   // calendarApi
   // ------------------------------------------------
   let calendarApi = null
   onMounted(() => {
+    console.log('refCalendar :', refCalendar)
     calendarApi = refCalendar.value.getApi()
   })
-
   // ------------------------------------------------
   // calendars
   // ------------------------------------------------
   const calendarsColor = {
-    'Mis Bloques': 'success',
-    'Otros Bloques': 'secondary',
-    // verano: 'warning',
-    // eventos: 'danger',
+    Business: 'primary',
+    Holiday: 'success',
+    Personal: 'danger',
+    Family: 'warning',
+    ETC: 'info',
   }
 
   // ------------------------------------------------
@@ -71,19 +71,18 @@ export default function userCalendar() {
   // ? This is useless because this just add event in calendar and not in our data
   // * If we try to call it on new event then callback & try to toggle from calendar we get two events => One from UI and one from data
   // ------------------------------------------------
-  const addEventInCalendar = eventData => {
-    console.log('addEventInCalendar :', eventData)
-    toast({
-      component: ToastificationContent,
-      position: 'bottom-right',
-      props: {
-        title: 'Event Added',
-        icon: 'CheckIcon',
-        variant: 'success',
-      },
-    })
-    calendarApi.addEvent(eventData)
-  }
+  // const addEventInCalendar = eventData => {
+  //   toast({
+  //     component: ToastificationContent,
+  //     position: 'bottom-right',
+  //     props: {
+  //       title: 'Event Added',
+  //       icon: 'CheckIcon',
+  //       variant: 'success',
+  //     },
+  //   })
+  //   calendarApi.addEvent(eventData)
+  // }
 
   // ------------------------------------------------
   // (UI) updateEventInCalendar
@@ -92,7 +91,7 @@ export default function userCalendar() {
     toast({
       component: ToastificationContent,
       props: {
-        title: 'Bloque Actualizado',
+        title: 'Event Updated',
         icon: 'CheckIcon',
         variant: 'success',
       },
@@ -172,7 +171,6 @@ export default function userCalendar() {
   // addEvent
   // ------------------------------------------------
   const addEvent = eventData => {
-
     store.dispatch('calendar/addEvent', { event: eventData }).then(() => {
       // eslint-disable-next-line no-use-before-define
       refetchEvents()
@@ -210,8 +208,6 @@ export default function userCalendar() {
     calendarApi.refetchEvents()
   }
 
-
-
   // ------------------------------------------------
   // selectedCalendars
   // ------------------------------------------------
@@ -225,6 +221,7 @@ export default function userCalendar() {
   // AXIOS: fetchEvents
   // * This will be called by fullCalendar to fetch events. Also this can be used to refetch events.
   // --------------------------------------------------------------------------------------------------
+
   // OBTIENE LOS EVENTOS
   const fetchEvents = (info, successCallback) => {
     // If there's no info => Don't make useless API call
@@ -235,8 +232,8 @@ export default function userCalendar() {
         calendars: selectedCalendars.value,
       })
       .then(response => {
-        successCallback(response.data)
         console.log('response.data :', response.data)
+        successCallback(response.data)
       })
       .catch(() => {
         toast({
@@ -250,20 +247,16 @@ export default function userCalendar() {
       })
   }
 
-  // const id = ref(10)
   // ------------------------------------------------------------------------
   // calendarOptions
   // * This isn't considered in UI because this is the core of calendar app
   // ------------------------------------------------------------------------
-  const calendarOptions = ref({
 
+  const calendarOptions = ref({
     plugins: [timeGridPlugin, listPlugin, interactionPlugin],
     initialView: 'timeGridWeek',
-    headerToolbar: {
-      start: 'sidebarToggle',
-      end: 'timeGridWeek,listMonth',
-    },
-    height: 560,
+    headerToolbar: false,
+    height: 550,
     allDaySlot: false, // Quita slot AllDay
     weekends: false, // quita los fin de semanas
     locale: 'es-CL', // horario cl
@@ -283,7 +276,6 @@ export default function userCalendar() {
       omitZeroMinute: false,
     },
 
-    // hiddenDays: [ 2, 4 ],
     events: fetchEvents,
 
     /*
@@ -308,7 +300,7 @@ export default function userCalendar() {
       Max number of events within a given day
       ? Docs: https://fullcalendar.io/docs/dayMaxEvents
     */
-    dayMaxEvents: 12,
+    dayMaxEvents: 2,
 
     /*
       Determines if day names and week names are clickable
@@ -319,24 +311,19 @@ export default function userCalendar() {
     eventClassNames({ event: calendarEvent }) {
       // eslint-disable-next-line no-underscore-dangle
       const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
-      console.log('calendarEvent :', calendarEvent._def.extendedProps.calendar)
-      console.log('colorName :', colorName)
+
       return [
         // Background Color
         `bg-light-${colorName}`,
       ]
     },
     eventClick({ event: clickedEvent }) {
-      console.log('clickedEvent :', clickedEvent )
       // * Only grab required field otherwise it goes in infinity loop
       // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-      console.log(' clickedEvent:',clickedEvent )
-      if (clickedEvent._def.extendedProps.calendar === 'Mis Bloques') {
-        event.value = grabEventDataFromEventApi(clickedEvent)
+      event.value = grabEventDataFromEventApi(clickedEvent)
 
-        // eslint-disable-next-line no-use-before-define
-        isEventHandlerSidebarActive.value = true
-      }
+      // eslint-disable-next-line no-use-before-define
+      isEventHandlerSidebarActive.value = true
     },
 
     customButtons: {
@@ -351,13 +338,12 @@ export default function userCalendar() {
     },
 
     dateClick(info) {
-      console.log('info :', info)
       /*
         ! Vue3 Change
         Using Vue.set isn't working for now so we will try to check reactivity in Vue 3 as it can handle this automatically
         ```
-        event.value.start = info.date
         ```
+        event.value.start = info.date
       */
       event.value = JSON.parse(JSON.stringify(Object.assign(event.value, { start: info.date })))
       // eslint-disable-next-line no-use-before-define

@@ -11,7 +11,6 @@ export async function fetchAcciones({ commit }, idCurso) {
       url: `trabajo/${idCurso}`,
     })
     commit('setAcciones', data[0])
-    console.log('/trabajo Accion GET con exito... data[0]', data)
   } catch (e) {
     commit('accionError', e.response.data)
   }
@@ -33,7 +32,6 @@ export async function addAccion({ commit }, accion) {
         id_curso: accion.idCurso,
       },
     })
-    console.log('/trabajo Acciones CREATE con exito...', data)
   } catch (e) {
     commit('accionError', e.response.data)
   }
@@ -55,7 +53,6 @@ export async function updateAccion({ commit }, accion) {
         id_curso: accion.idCurso,
       },
     })
-    console.log('/trabajo Acciones UPDATE con exito...', data)
   } catch (e) {
     commit('accionError', e.response.data)
   }

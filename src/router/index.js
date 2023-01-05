@@ -9,7 +9,6 @@ import miPerfil from './menuDesplegable/miPerfil'
 import miHorario from './menuDesplegable/miHorario'
 // Menu
 import inicio from './inicio/inicio'
-import home from './inicio/home'
 import libros from './libros/libros'
 import matriculas from './matriculas/matriculas'
 // Mantenedor
@@ -40,7 +39,6 @@ const router = new VueRouter({
     ...miHorario,
     // Menu
     ...inicio,
-    ...home,
     ...libros,
     ...matriculas,
     // Mantenedor
@@ -52,7 +50,7 @@ const router = new VueRouter({
     ...usuarios,
     {
       path: '*',
-      redirect: 'error-404',
+      redirect: 'inicio',
     },
   ],
 })
@@ -98,6 +96,7 @@ const router = new VueRouter({
 // })
 
 router.afterEach(() => {
+  // console.log('ROUTER GET authenticated:', router)
   localStorage.setItem('userData', JSON.stringify(store.getters['auth/user']))
   // Remove initial loading
   const appLoading = document.getElementById('loading-bg')

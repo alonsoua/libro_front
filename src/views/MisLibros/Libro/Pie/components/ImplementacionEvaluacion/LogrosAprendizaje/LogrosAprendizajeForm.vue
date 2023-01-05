@@ -1,176 +1,124 @@
 <template>
-  <b-overlay
-    :show="!cargando"
-    spinner-variant="primary"
-    :variant="$store.state.appConfig.layout.skin"
+  <b-modal
+    :id="nombreModal"
+    :title="title"
+    centered
+    size="xl"
+    cancel-title="Cancelar"
+    cancel-variant="outline-secondary"
+    ok-title="Guardar Logro"
+    :ok-disabled="this.v$.logros.$errors.length > 0"
+    @ok.prevent="submitOption"
   >
-    <!-- <b-form> -->
-      <!-- Reunión Info: Input Fields -->
-      <b-row>
-
-        <!-- Field: ALUMNOS -->
-        <b-col
-          cols="12"
-          md="12"
-        >
-          <b-form-group
-            label="Plan de apoyos *"
-            label-for="plan"
-          >
-
-            <v-select
-              v-model="logros.alumnos"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              multiple
-              label="title"
-              :options="optionsAlumnos"
-              placeholder="Selecciona el plan de apoyo"
-            />
-              <!-- :state="v$.logros.asistentes.$error === true
-              ? false
-              : null"
-              @blur.native="v$.logros.asistentes.$touch" -->
-            <!-- <b-form-invalid-feedback
-              v-if="v$.logros.asistentes.$error"
-              id="asistentesInfo"
-            >
-              <p v-for="error of v$.logros.asistentes.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback> -->
-          </b-form-group>
-        </b-col>
-
-      </b-row>
-
-      <!-- REPEAT -->
-        <!-- :style="{height: trHeight}" -->
-      <b-form-group
-        label="Registro de logros"
-        label-for="objetivos"
-        class="mb-1 mt-1 h3"
-      />
-      <b-form
-        ref="form"
-        class="repeater-form overflow-auto border-light"
-        style="min-height: 540px !important; max-height: 540px !important; margin: 0px 0px 0px 0px; padding: 20px 18px 0px 18px;"
-        @submit.prevent="repeateAgain"
-      >
-        <b-alert
-          v-if="items.length === 0"
-          variant="primary"
-          show
-        >
-          <div class="alert-body">
-            <span>No existen logros agregados.</span>
-          </div>
-        </b-alert>
-        <b-row
-          v-for="(item, index) in items"
-          :id="item.id"
-          :key="item.id"
-          ref="row"
-        >
+    <b-overlay
+      :show="!cargando"
+      spinner-variant="primary"
+      :variant="$store.state.appConfig.layout.skin"
+    >
+      <!-- <b-form> -->
+        <!-- Reunión Info: Input Fields -->
+        <b-row>
 
           <!-- ESTUDIANTES -->
-          <b-col md="3">
+          <b-col
+            cols="12"
+            md="12"
+          >
             <b-form-group
-              label="Estudiante(s)"
-              :label-for="'fecha-'+item.id"
+              label="Estudiante"
+              label-for="estudiante"
             >
               <v-select
-                v-model="item.estudiantes"
+                v-model="logros.id_persona_rol_alumno"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                multiple
-                label="title"
+                label="nombre_completo"
+                input-id="id_persona_rol_alumno"
                 :options="optionsEstudiantes"
-                placeholder="Selecciona el o los estudiantes"
+                placeholder="Selecciona un estudiante..."
+                :reduce="option => option.id_persona_rol"
+                :class="v$.logros.id_persona_rol_alumno.$error === true
+                  ? 'border-danger rounded'
+                  : ''"
               />
+              <div
+                v-if="v$.logros.id_persona_rol_alumno.$error"
+                id="id_asignaturaInfo"
+                class="text-danger text-right"
+                style="font-size: 0.857rem;"
+              >
+                <p v-for="error of v$.logros.id_persona_rol_alumno.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </div>
             </b-form-group>
           </b-col>
 
           <!-- LOGROS -->
-          <b-col md="4">
+          <b-col
+            cols="12"
+            md="12"
+          >
             <b-form-group
               label="Logros más relevantes"
-              :label-for="'logros-'+item.id"
+              label-for="logros"
             >
               <b-form-input
-              id="logros"
-              placeholder="Ingresa los logros más relevantes"
-              v-model="item.logros"
-            />
+                id="logros"
+                placeholder="Ingresa los logros más relevantes"
+                v-model="logros.logros"
+                :state="v$.logros.logros.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.logros.logros.$touch"
+              />
+              <!-- Mensajes Error Validación -->
+              <b-form-invalid-feedback
+                v-if="v$.logros.logros.$error"
+                id="acuerdoInfo"
+                class="text-right"
+              >
+                <p v-for="error of v$.logros.logros.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
 
           <!-- COMNENTARIOS Y SUGERENCIAS -->
-          <b-col md="4">
+          <b-col
+            cols="12"
+            md="12"
+          >
             <b-form-group
               label="Comentarios y sugerencias"
-              :label-for="'comentariosSugerencias-'+item.id"
+              label-for="comentariosSugerencias"
             >
               <b-form-input
                 id="comentariosSugerencias"
                 placeholder="Ingresa los comentarios y sugerencias"
-                v-model="item.comentarios"
+                v-model="logros.comentarios"
+                :state="v$.logros.comentarios.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.logros.comentarios.$touch"
               />
+              <!-- Mensajes Error Validación -->
+              <b-form-invalid-feedback
+                v-if="v$.logros.comentarios.$error"
+                id="acuerdoInfo"
+                class="text-right"
+              >
+                <p v-for="error of v$.logros.comentarios.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
 
-
-          <!-- FIRMA -->
-          <!-- <b-col
-            lg="1"
-            md="1"
-          >
-            <b-form-group
-              label="Firma"
-              :label-for="'firma-'+item.id"
-            >
-              <firmas
-                :data.sync="item"
-                text="Firmar logros registrado para un estudiante o grupo de estudiantes"
-              />
-            </b-form-group>
-          </b-col> -->
-
-          <!-- Remove Button -->
-          <b-col
-            lg="1"
-            md="1"
-            class="mb-50 text-right"
-          >
-            <b-button
-              v-ripple.400="'rgba(234, 84, 85, 0.15)'"
-              variant="outline-danger"
-              class="mt-0 mt-md-2 pl-1 pr-1"
-              @click="removeItem(index)"
-            >
-              <feather-icon
-                icon="TrashIcon"
-              />
-            </b-button>
-          </b-col>
-          <b-col cols="12">
-            <hr class="mt-0">
-          </b-col>
         </b-row>
       </b-form>
-
-      <b-button
-        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-        variant="outline-primary"
-        class="mt-25 pl-1 pr-1"
-        @click="repeateAgain"
-      >
-        <feather-icon
-          icon="PlusIcon"
-          class="mr-25"
-        />
-        <span>Agregar logros</span>
-      </b-button>
-    </b-form>
-  </b-overlay>
+    </b-overlay>
+  </b-modal>
 </template>
 
 <script>
@@ -184,6 +132,8 @@ import {
 import vSelect from 'vue-select'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
+
+import { mapGetters, mapActions } from 'vuex'
 
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
@@ -226,47 +176,10 @@ export default {
   mixins: [heightTransition],
   data() {
     return {
+      nombre_permiso: 'pieIII3',
       cargando: true,
-      optionsAlumnos: [
-        {
-          value: 1,
-          title: 'Catalina Gaete - Martín López',
-        },
-        {
-          value: 2,
-          title: 'Thomas Torres - Samanta Vásquez - Catalina Gaete - Martín López',
-        },
-        {
-          value: 3,
-          title: 'Felipe López',
-        },
-      ],
-      optionsEstudiantes: [
-        {
-          value: 1,
-          title: 'Catalina Gaete',
-        },
-        {
-          value: 2,
-          title: 'Martín López',
-        },
-        {
-          value: 3,
-          title: 'Thomas Torres',
-        },
-        {
-          value: 4,
-          title: 'Samanta Vásquez',
-        },
-        {
-          value: 5,
-          title: 'Felipe López',
-        },
-      ],
+      optionsEstudiantes: [],
 
-      // REPEAT
-      items: [],
-      nextTodoId: 1,
     }
   },
   props: {
@@ -274,43 +187,69 @@ export default {
       type: Object,
       required: true,
     },
+    nombreModal: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
   },
   validations() {
     return {
       logros: {
-        rbd: {
+        id_persona_rol_alumno: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 8 caracteres.', maxLength(8)),
         },
-        nombre: {
+        logros: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
           maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
         },
-        abreviatura: {
+        comentarios: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 10 caracteres.', maxLength(10)),
-        },
-        correo: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-          email: helpers.withMessage('Debe ser un correo valido.', email),
+          maxLength: helpers.withMessage('Debe tener un máximo de 250 caracteres.', maxLength(250)),
         },
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      getPlanApoyos: 'II_4_plan_apoyo/getPlanApoyos',
+      getLibroSelected: 'libros/getLibroSelected',
+      getAlumnos: 'personas/getAlumnos',
+    }),
+  },
+  watch: {
+    getLibroSelected() {
+      this.cargaEstudiantesPie(this.getLibroSelected.id)
+    },
+    getAlumnos(val) {
+      this.optionsEstudiantes = []
+      this.optionsEstudiantes = this.getAlumnos
+    },
+  },
   mounted() {
-    this.initTrHeight()
-  },
-  created() {
-    window.addEventListener('resize', this.initTrHeight)
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.initTrHeight)
+    this.cargaEstudiantesPie(this.getLibroSelected.id)
   },
   methods: {
+    ...mapActions({
+      fetchAlumnosPie: 'personas/fetchAlumnosPie',
+    }),
+    cargaEstudiantesPie(idCurso) {
+      this.fetchAlumnosPie(idCurso).then(() => {})
+    },
+    submitOption() {
+      this.v$.logros.$touch()
+        // this.cargando = true
+      if (!this.v$.logros.$invalid) {
+        this.$emit('processForm', this.logros)
+        // this.cargando = false
+      }
+    },
     dateDisabled(ymd, date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
       // disable days that fall on the 13th of the month
@@ -319,34 +258,6 @@ export default {
       // Return `true` if the date should be disabled
       // return weekday === 0 || weekday === 6 || day === 1
       return weekday === 0 || weekday === 6
-    },
-    // submitOption() {
-    //   console.log('this.v$ :', this.v$.logros)
-    //   this.v$.logros.$touch()
-    //   // if (!this.v$.logros.$invalid) {
-    //   //   this.$emit('processForm', this.logros)
-    //   // }
-    // },
-
-    // REPEAT
-    repeateAgain() {
-      this.items.push({
-        id: this.nextTodoId += 1,
-      })
-
-      this.$nextTick(() => {
-        this.trAddHeight(this.$refs.row[0].offsetHeight)
-      })
-    },
-    removeItem(index) {
-      this.items.splice(index, 1)
-      this.trTrimHeight(this.$refs.row[0].offsetHeight)
-    },
-    initTrHeight() {
-      this.trSetHeight(null)
-      this.$nextTick(() => {
-        this.trSetHeight(this.$refs.form.scrollHeight)
-      })
     },
   },
 }

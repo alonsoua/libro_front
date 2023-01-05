@@ -5,10 +5,12 @@
     <div
       v-for="(menu, key) in submenus"
       :key="key"
+      v-if="menu.can"
     >
       <b-tab
         lazy
         :active="menu.active"
+        :disabled="menu.disabled"
       >
         <template #title>
           <span
@@ -69,6 +71,7 @@
         </div>
 
         <colLinea
+          v-if="menu.submenus.length !== 0"
           ancho="100%"
           align="center"
           class="mt-1"
@@ -82,7 +85,7 @@
 
         <reuniones-coordinacion
           v-if="menu.index === '2'"
-          class="mb-3 ml-2 mr-2"
+          class="mb-3 ml-2 mr-2 mt-2"
         />
 
       </b-tab>

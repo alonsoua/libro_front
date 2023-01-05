@@ -15,7 +15,7 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
           <h5 class="mb-0">
-            {{ eventLocal.id ? 'Editar': 'Agregar' }} Bloque
+            {{ eventLocal.id ? 'Update': 'Add' }} Event
           </h5>
           <div>
             <feather-icon
@@ -49,20 +49,20 @@
             <!-- Title -->
             <validation-provider
               #default="validationContext"
-              name="Asignatura"
+              name="Title"
               rules="required"
             >
               <b-form-group
-                label="Asignatura"
-                label-for="event-asignatura"
+                label="Title"
+                label-for="event-title"
               >
                 <b-form-input
-                  id="event-asignatura"
+                  id="event-title"
                   v-model="eventLocal.title"
                   autofocus
                   :state="getValidationState(validationContext)"
                   trim
-                  placeholder="Asignatura"
+                  placeholder="Event Title"
                 />
 
                 <b-form-invalid-feedback>
@@ -72,7 +72,7 @@
             </validation-provider>
 
             <!-- Calendar -->
-            <!-- <validation-provider
+            <validation-provider
               #default="validationContext"
               name="Calendar"
               rules="required"
@@ -115,34 +115,24 @@
                   {{ validationContext.errors[0] }}
                 </b-form-invalid-feedback>
               </b-form-group>
-            </validation-provider> -->
+            </validation-provider>
 
-            <!-- Hora Inicio -->
+            <!-- Start Date -->
             <validation-provider
               #default="validationContext"
-              name="Hora Inicio"
+              name="Start Date"
               rules="required"
             >
 
               <b-form-group
-                label="Hora Inicio"
-                label-for="hora-inicio"
+                label="Start Date"
+                label-for="start-date"
                 :state="getValidationState(validationContext)"
               >
-                <!-- <flat-pickr
+                <flat-pickr
                   v-model="eventLocal.start"
                   class="form-control"
-
-                /> -->
-
-                <b-form-timepicker
-                  v-model="eventLocal.start"
-                  placeholder="Seleccione una hora"
-                  hide-header
-                  locale='es-CL'
-                  no-close-button
-                  hour12
-                  :config="{ dateFormat: 'H:i'}"
+                  :config="{ enableTime: true, dateFormat: 'Y-m-d H:i'}"
                 />
                 <b-form-invalid-feedback :state="getValidationState(validationContext)">
                   {{ validationContext.errors[0] }}
@@ -181,7 +171,7 @@
                 switch
                 inline
               >
-                All Day
+                Todos los días
               </b-form-checkbox>
             </b-form-group>
 
@@ -276,14 +266,14 @@
                 class="mr-2"
                 type="submit"
               >
-                {{ eventLocal.id ? 'Editar Bloque' : 'Agregar Bloque ' }}
+                {{ eventLocal.id ? 'Update' : 'Add ' }}
               </b-button>
               <b-button
                 v-ripple.400="'rgba(186, 191, 199, 0.15)'"
                 type="reset"
                 variant="outline-secondary"
               >
-                Cancelar
+                Reset
               </b-button>
             </div>
           </b-form>
@@ -295,8 +285,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormCheckbox, BAvatar, BFormTextarea,
-  BButton, BFormInvalidFeedback, BFormTimepicker,
+  BSidebar, BForm, BFormGroup, BFormInput, BFormCheckbox, BAvatar, BFormTextarea, BButton, BFormInvalidFeedback,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
@@ -322,7 +311,6 @@ export default {
     ValidationProvider,
     BFormInvalidFeedback,
     ValidationObserver,
-    BFormTimepicker,
   },
   directives: {
     Ripple,
@@ -343,11 +331,6 @@ export default {
     clearEventData: {
       type: Function,
       required: true,
-    },
-  },
-  watch: {
-    eventLocal (eventLocal) {
-      console.log('eventLocal :', eventLocal)
     },
   },
   data() {
@@ -404,6 +387,9 @@ export default {
       refFormObserver,
       getValidationState,
     }
+  },
+  mounted() {
+    console.log('this.event :', this.event)
   },
 }
 </script>

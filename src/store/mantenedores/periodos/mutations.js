@@ -2,8 +2,8 @@ export function setPeriodos(state, periodos) {
   state.periodos = periodos
 }
 
-export function setPeriodosActivos(state, periodos) {
-  state.periodosActivos = periodos
+export function setPeriodosEstablecimiento(state, periodos) {
+  state.periodosEstablecimiento = periodos
 }
 
 export function setPeriodo(state, periodo) {

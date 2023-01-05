@@ -12,9 +12,8 @@ export async function fetchApoyos({ commit }, idCurso) {
       url: `trabajodetalle/${idCurso}`,
     })
     commit('setApoyos', data)
-    console.log('/trabajodetalle Apoyos GET con exito...', data)
   } catch (e) {
-    commit('apoyosError', e.response.data)
+    commit('apoyoError', e.response.data)
   }
 }
 
@@ -32,7 +31,6 @@ export async function addApoyo({ commit }, apoyo) {
       },
     })
     commit('setResponse', data)
-    console.log('/apoyodetalle Apoyos CREATE con exito...', data)
   } catch (e) {
     commit('apoyoError', e.response.data)
   }
@@ -51,7 +49,6 @@ export async function updateApoyo({ commit }, apoyo) {
         id_asignatura: apoyo.id_asignatura,
       },
     })
-    console.log('/apoyodetalle Apoyos UPDATE con exito...', data)
     commit('setResponse', data)
   } catch (e) {
     commit('apoyoError', e.response.data)
@@ -60,7 +57,6 @@ export async function updateApoyo({ commit }, apoyo) {
 
 export async function removeApoyo({ commit, dispatch }, apoyo) {
   try {
-    console.log('apoyo :', apoyo)
     await axios({
       method: 'DELETE',
       url: `/trabajodetalle/${apoyo.id}`,

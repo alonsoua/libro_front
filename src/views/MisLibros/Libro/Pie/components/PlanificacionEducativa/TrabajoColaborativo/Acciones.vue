@@ -22,9 +22,12 @@
           >
             <b-form-textarea
               id="profesores"
-              placeholder="Ingresa las estrategias y/o acciones entre profesores"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las estrategias y/o acciones entre profesores'
+                : 'Sin información'"
               v-model="acciones.profesores"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.profesores.$error === true
                 ? false
                 : null"
@@ -51,9 +54,12 @@
           >
             <b-form-textarea
               id="asistentes"
-              placeholder="Ingresa las estrategias y/o acciones entre profesores y asistentes de la educación"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las estrategias y/o acciones entre profesores y asistentes de la educación'
+                : 'Sin información'"
               v-model="acciones.asistentes"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.asistentes.$error === true
                 ? false
                 : null"
@@ -80,9 +86,12 @@
           >
             <b-form-textarea
               id="estudiantes"
-              placeholder="Ingresa las estrategias y/o acciones entre estudiantes"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las estrategias y/o acciones entre estudiantes'
+                : 'Sin información'"
               v-model="acciones.estudiantes"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.estudiantes.$error === true
                 ? false
                 : null"
@@ -109,9 +118,12 @@
           >
             <b-form-textarea
               id="familia"
-              placeholder="Ingresa las estrategias y/o acciones con la familia y entre familia"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las estrategias y/o acciones con la familia y entre familia'
+                : 'Sin información'"
               v-model="acciones.familia"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.familia.$error === true
                 ? false
                 : null"
@@ -138,9 +150,12 @@
           >
             <b-form-textarea
               id="comunidad"
-              placeholder="Ingresa las estrategias y/o acciones con la comunidad"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las estrategias y/o acciones con la comunidad'
+                : 'Sin información'"
               v-model="acciones.comunidad"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.comunidad.$error === true
                 ? false
                 : null"
@@ -167,9 +182,12 @@
           >
             <b-form-textarea
               id="observaciones"
-              placeholder="Ingresa las observaciones"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las observaciones'
+                : 'Sin información'"
               v-model="acciones.observaciones"
               rows="4"
+              :plaintext="!$can('update', nombre_permiso)"
               :state="v$.acciones.observaciones.$error === true
                 ? false
                 : null"
@@ -203,6 +221,7 @@
             v-if="!cargando"
             class="float-right"
             variant="primary"
+            :modulo="nombre_permiso"
             :disabled="this.v$.acciones.$errors.length > 0"
             :btnText="btnSubmit"
             @processBtn="submitOption"
@@ -234,6 +253,9 @@ import { required , maxLength, helpers } from '@vuelidate/validators'
 import colLinea from '../../../../../../components/Form/colLinea.vue'
 import btnSubmit from '../../../../../../components/Form/btnSubmit.vue'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
+
 export default {
   components: {
     // ETIQUETAS
@@ -255,8 +277,10 @@ export default {
   directives: {
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieII2A',
       acciones: [],
       cargando: false,
     }
@@ -375,14 +399,13 @@ export default {
     submitOption() {
       this.v$.acciones.$touch()
       if (!this.v$.acciones.$invalid) {
-        const text = `Estás seguro de actualizar las acciones
-          que se implementarán?`
+        const html = this.formatHTMLSweetInfo('las acciones que se implementarán', '')
         this.$swal({
           title: 'Guardar cambios!',
-          text,
+          html,
           icon: 'info',
           showCancelButton: true,
-          confirmButtonText: 'Si, guardar',
+          confirmButtonText: 'Sí, guardar',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-primary',

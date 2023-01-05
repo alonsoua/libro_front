@@ -82,8 +82,6 @@ export default {
       isEventHandlerSidebarActive,
     } = useCalendar()
 
-    console.log('fetchEvents() :', fetchEvents())
-    console.log('calendarOptions :', calendarOptions.value.events)
     fetchEvents()
 
     return {

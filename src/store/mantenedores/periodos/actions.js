@@ -14,6 +14,18 @@ export async function fetchPeriodos({ commit }) {
   }
 }
 
+export async function fetchPeriodosEstablecimiento({ commit }, idEstablecimiento) {
+  try {
+    const { data } = await axios({
+      method: 'GET',
+      url: `periodosEstablecimiento/${idEstablecimiento}`,
+    })
+    commit('setPeriodosEstablecimiento', data)
+  } catch (e) {
+    commit('periodoError', e.response.data)
+  }
+}
+
 export async function addPeriodo({ commit }, periodo) {
   try {
     commit('periodoErrorNull')
@@ -35,7 +47,6 @@ export async function addPeriodo({ commit }, periodo) {
     //   },
     // })
   } catch (e) {
-    console.log('e.response.data :', e.response.data)
     commit('periodoError', e.response.data)
   }
 }
@@ -43,7 +54,6 @@ export async function addPeriodo({ commit }, periodo) {
 export async function updatePeriodo({ commit }, periodo) {
   try {
     commit('periodoErrorNull')
-    console.log('periodo :', periodo)
     const response = await axios({
       method: 'PUT',
       url: `periodo/${periodo.id}`,
@@ -57,7 +67,6 @@ export async function updatePeriodo({ commit }, periodo) {
         correo: periodo.correo,
       },
     })
-    console.log('response :', response)
   } catch (e) {
     commit('periodoError', e.response.data)
   }

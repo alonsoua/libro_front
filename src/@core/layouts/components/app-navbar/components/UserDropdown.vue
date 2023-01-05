@@ -7,11 +7,11 @@
     <template #button-content>
       <div class="d-sm-flex d-none user-nav">
         <p class="user-name font-weight-bolder mb-0">
-          {{ user.nombre }} - {{ user.username }}
-          <!-- {{ userData.fullName || userData.username }} -->
+          <!-- {{ user.nombre }} - {{ user.username }} -->
+          {{ userData.fullName }}
         </p>
         <span class="user-status">
-          CESA | Docente
+          {{ userData.nombre_rol }} | CSF
           <!-- {{ userData.role }} -->
         </span>
       </div>
@@ -33,7 +33,7 @@
 
     <!-- PERFIL -->
     <!-- :to="{ name: 'pages-profile'}" -->
-    <b-dropdown-item
+    <!-- <b-dropdown-item
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -42,24 +42,11 @@
         class="mr-50"
       />
       <span>Mi Perfil</span>
-    </b-dropdown-item>
-
-    <!-- PERFIL -->
-    <b-dropdown-item
-      link-class="d-flex align-items-center"
-      :to="{ name: 'mi-horario'}"
-    >
-      <feather-icon
-        size="16"
-        icon="CalendarIcon"
-        class="mr-50"
-      />
-      <span>Mi Horario</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
 
     <!-- Mensajes -->
     <!-- :to="{ name: 'apps-email' }" -->
-    <b-dropdown-item
+    <!-- <b-dropdown-item
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -68,7 +55,7 @@
         class="mr-50"
       />
       <span>Mensajes</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
 
     <!-- PERFIL -->
     <!-- <b-dropdown-item
@@ -83,11 +70,11 @@
       <span>Chat</span>
     </b-dropdown-item> -->
 
-    <b-dropdown-divider />
+    <!-- <b-dropdown-divider /> -->
 
     <!-- AJUSTES -->
     <!-- :to="{ name: 'pages-account-setting' }" -->
-    <b-dropdown-item
+    <!-- <b-dropdown-item
       link-class="d-flex align-items-center"
     >
       <feather-icon
@@ -96,10 +83,10 @@
         class="mr-50"
       />
       <span>Ajustes</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
 
     <!-- FAQ -->
-    <b-dropdown-item
+    <!-- <b-dropdown-item
       :to="{ name: 'pages-faq' }"
       link-class="d-flex align-items-center"
     >
@@ -109,7 +96,22 @@
         class="mr-50"
       />
       <span>FAQ</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
+
+    <!-- HORARIO -->
+    <!-- <b-dropdown-item
+      link-class="d-flex align-items-center"
+      :to="{ name: 'mi-horario'}"
+    >
+      <feather-icon
+        size="16"
+        icon="CalendarIcon"
+        class="mr-50"
+      />
+      <span>Carga Horaria</span>
+    </b-dropdown-item> -->
+
+    <!-- Cerrar Sesión -->
     <b-dropdown-item
       link-class="d-flex align-items-center"
       @click="signOut"
@@ -151,23 +153,42 @@ export default {
   data() {
     return {
       userData: JSON.parse(localStorage.getItem('userData')),
+      datosLocal: JSON.parse(localStorage.getItem('userData')),
       avatarText,
     }
   },
   mounted() {
     this.me(this.user)
+    this.setUserData(this.datosLocal)
+  },
+  watch: {
+    user(val) {
+      if (val === null) {
+        this.timeOut()
+      }
+    },
+    datosLocal(val) {
+      this.setUserData(val)
+    },
   },
   methods: {
     ...mapActions({
       signOutAction: 'auth/signOut',
       attempt: 'auth/attempt',
     }),
+    setUserData(user) {
+      const fullName = `${user.nombre} ${user.primer_apellido} ${user.segundo_apellido}`
+      this.userData = {
+        fullName: fullName,
+        avatar: null,
+        rut: user.rut,
+        dv: user.dv,
+        nombre_rol: user.nombre_rol,
+      }
+    },
     me(user) {
       if (user) {
-        // this.attempt(user).then((response) => {
-        //   console.log('user :', user)
-        //   console.log('response :', response)
-        // })
+        this.attempt().then(() => {})
       }
     },
     logout() {
@@ -185,14 +206,14 @@ export default {
       // Redirect to login page
       this.$router.push({ name: 'auth-login' })
     },
-    signOut() {
+    timeOut() {
       this.$toast({
         component: ToastificationContent,
         props: {
           title: 'Cerrando Sesión...',
           icon: 'RefreshCcwIcon',
           variant: 'primary',
-          text: `Hasta pronto ${this.user.nombre}! 👋 `,
+          text: `Hasta pronto ${this.userData.fullName}! 👋 `,
         },
       },
       {
@@ -200,14 +221,33 @@ export default {
         timeout: 2000,
       })
 
-      // Remove userData from localStorage
       localStorage.removeItem('userData')
       localStorage.removeItem('token')
+      this.$router.replace({
+        name: 'login',
+      })
+    },
+    signOut() {
+      // this.$toast({
+      //   component: ToastificationContent,
+      //   props: {
+      //     title: 'Cerrando Sesión...',
+      //     icon: 'RefreshCcwIcon',
+      //     variant: 'primary',
+      //     text: `Hasta pronto ${this.userData.nombre}! 👋 `,
+      //   },
+      // },
+      // {
+      //   position: 'top-center',
+      //   timeout: 2000,
+      // })
 
       this.signOutAction().then(() => {
-        this.$router.replace({
-          name: 'login',
-        })
+        // localStorage.removeItem('userData')
+        // localStorage.removeItem('token')
+        // this.$router.replace({
+        //   name: 'login',
+        // })
       })
     },
   },

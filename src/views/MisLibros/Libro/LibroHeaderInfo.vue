@@ -6,7 +6,8 @@
   >
     <b-card
       aria-hidden="true"
-      class="mb-4"
+      style="margin-bottom: 12px; "
+      class="text-dark"
       :bg-variant="$store.state.appConfig.layout.skin === 'semi-dark'
         ? 'light-primary'
         : $store.state.appConfig.layout.skin === 'light'
@@ -16,17 +17,18 @@
 
       <b-form>
         <b-row>
+
           <!-- PROFESOR JEFE -->
           <b-col
             xs="12"
             md="6"
           >
-            <b-card-title
-              class="text-left mb-25"
+            <b-card-text
+              class="text-left mb-25 text-dark h5"
               style="margin-left: -5px;"
             >
                 Profesor Jefe
-            </b-card-title>
+            </b-card-text>
             <h5
               class="text-dark text-bold font-weight-normal text-left mt-1"
               style="margin-left: -5px;"
@@ -40,9 +42,9 @@
             xs="12"
             md="6"
           >
-            <b-card-title class="text-left mb-25">
-                Curso
-            </b-card-title>
+            <b-card-text class="text-left mb-25 text-dark h5">
+                Libro Seleccionado
+            </b-card-text>
             <v-select
               v-model="idCurso"
               placeholder="Selecciona el Curso"
@@ -57,12 +59,13 @@
             />
           </b-col>
 
+
         </b-row>
 
-        <!-- DETALLE DEL CURSO -->
+        <!-- PANORAMA DEL CURSO -->
         <b-tabs
           v-if="panorama.estilo || panorama.fortaleza || panorama.necesidad"
-          class="mt-1"
+          class="mt-1 text-dark"
           style="margin-left: -21px;"
         >
           <b-tab
@@ -71,17 +74,17 @@
             title="Estilos y modos de aprendizaje"
             class="ml-2"
           >
-            <b-card-text class="text-secondary" style="margin-left: -4px;">
+            <b-card-text class="text-dark" style="margin-left: -4px;">
               {{ panorama.estilo }}
             </b-card-text>
           </b-tab>
           <b-tab v-if="panorama.fortaleza" title="Fortalezas">
-            <b-card-text class="text-secondary mb-2" style="margin-left: 17px;">
+            <b-card-text class="text-dark mb-2" style="margin-left: 17px;">
               {{ panorama.fortaleza }}
             </b-card-text>
           </b-tab>
           <b-tab v-if="panorama.necesidad" title="Necesidades de apoyo">
-            <b-card-text class="text-secondary mb-2" style="margin-left: 17px;">
+            <b-card-text class="text-dark mb-2" style="margin-left: 17px;">
               {{ panorama.necesidad }}
             </b-card-text>
           </b-tab>

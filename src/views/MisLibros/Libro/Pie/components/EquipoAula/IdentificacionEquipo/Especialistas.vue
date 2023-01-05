@@ -3,18 +3,20 @@
     :show="!cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
+    class="mb-2"
   >
     <b-row>
       <b-col md="8">
         <b-card-text
           style="margin-top: 8px;"
-          class="h5"
+          class="h5 mb-1"
         >
           Profesionales especializados asistentes de la educación
         </b-card-text>
       </b-col>
       <b-col md="4" class="mt-2">
-        <b-button
+        <!-- <b-button
+          v-if="$can('create', nombre_permiso)"
           v-ripple.400="'rgba(255, 255, 255, 0.15)'"
           variant="outline-primary float-right"
           @click="repeateAgain"
@@ -25,14 +27,14 @@
             class="mr-25"
           />
           <span>Agregar especialista</span>
-        </b-button>
+        </b-button> -->
       </b-col>
     </b-row>
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-0 mt-0 overflow-auto border-light"
-      style="min-height: 456px !important; max-height: 456px !important; margin: 0px -17px 0px 0px; padding: 20px 18px 0px 18px;"
+      class="repeater-form mt-0 overflow-auto border-light"
+      style="min-height: 380px !important; max-height: 380px !important; margin: 0px 0px 15px 0px; padding: 20px 18px 0px 18px;"
       @submit.prevent="repeateAgain"
     >
       <!-- Row Loop -->
@@ -54,6 +56,7 @@
               id="nombre"
               type="text"
               placeholder="Ingresa el nombre"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -69,6 +72,7 @@
               id="especialidad"
               type="text"
               placeholder="Ingresa la especialidad"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -81,14 +85,17 @@
             class="text-center"
           >
             <firmas
-                :data.sync="item"
-                text="Firmar identificación de equipo de aula como especialista"
-              />
+              :idModal="index"
+              :modulo="nombre_permiso"
+              :data.sync="item"
+              text="Firmar identificación de equipo de aula como especialista"
+            />
           </b-form-group>
         </b-col>
 
         <!-- Remove Button -->
         <b-col
+          v-if="$can('delete', nombre_permiso)"
           lg="1"
           md="1"
           class="mb-50"
@@ -111,6 +118,7 @@
       </b-row>
     </b-form>
     <b-button
+      v-if="$can('create', nombre_permiso)"
       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
       variant="outline-primary float-right"
       @click="repeateAgain"
@@ -166,7 +174,7 @@ export default {
   mixins: [heightTransition],
   data() {
     return {
-
+      nombre_permiso: 'pieI1',
       cargando: true,
       items: [
         {
@@ -189,6 +197,13 @@ export default {
           especialidad: 'Psicóloga',
           telefono: '56990477880',
           correo: 'camila@gmail.com',
+        },
+        {
+          id: 4,
+          nombre: 'Maria Andrea Aedo Ugarte',
+          especialidad: 'Psicóloga',
+          telefono: '56990477480',
+          correo: 'maria@gmail.com',
         },
       ],
       phone: {

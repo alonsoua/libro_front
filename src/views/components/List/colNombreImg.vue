@@ -1,12 +1,12 @@
 <template>
   <b-media vertical-align="center">
-    <template #aside v-if="mostrarImg">
+    <!-- <template #aside v-if="mostrarImg">
       <b-avatar
         size="32"
         :src="imagen"
         :text="avatarText(nombre)"
       />
-    </template>
+    </template> -->
 
     <b-link
       v-b-modal="nombreModal"

@@ -1,6 +1,6 @@
 <template>
   <b-overlay
-    :show="!cargando"
+    :show="cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
   >
@@ -8,7 +8,6 @@
       ref="form"
       :style="{height: trHeight}"
       class="repeater-form mb-2 mt-3"
-      @submit.prevent="repeateAgain"
     >
 
       <b-row
@@ -51,193 +50,105 @@
 
       <colLinea class="mt-25 mb-1"/>
 
-      <!-- DE ACCESO -->
-      <b-row>
+      <b-row
+        v-for="(item, index) in items"
+        :id="item.id"
+        :key="item.id"
+        ref="row"
+      >
         <!-- ADECUACIÓN -->
         <b-col md="3">
           <b-form-checkbox
-            v-model="adecuacion.acceso"
-            value="CC"
+            :id="'adecuacion-'+item.id"
+            v-model="item.adecuacion_chk"
+            value="1"
+            :disabled="!$can('update', nombre_permiso)"
           >
-            De acceso
+            <b>{{ item.adecuacion }}</b>
           </b-form-checkbox>
         </b-col>
 
-        <!-- ESTRATEGIAS PARA -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa el ámbito de aprendizaje, asignatura o módulo"
-            v-model="adecuacion.accesoAsignaturas"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- COMO? -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa la estrategia principal"
-            v-model="adecuacion.accesoEstrategias"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- A QUIENES? -->
+        <!-- ASIGNATURA -->
         <b-col md="3">
           <v-select
-            v-model="adecuacion.accesoAumnos"
+            v-if="$can('update', nombre_permiso)"
+            :id="'id_asignatura-'+item.id"
+            v-model="item.id_asignatura"
+            placeholder="Selecciona una asignatura..."
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            multiple
-            label="title"
-            :options="optionsAlumnos"
-            placeholder="Seleccione el/la estudiante"
+            label="texto"
+            :options="asignaturasOption"
+            :reduce="option => option.id"
+            input-id="id_periodo"
+          />
+          <b-form-textarea
+            v-if="!$can('update', nombre_permiso)"
+            v-model="item.id_asignatura"
+            :id="'id_asignatura-text-'+item.id"
+            placeholder="Sin información"
+            :plaintext="!$can('update', nombre_permiso)"
           />
         </b-col>
-      </b-row>
 
-      <colLinea />
-
-      <!-- OBJETIVOS -->
-      <b-row>
-        <!-- ADECUACIÓN -->
+        <!-- ESTRATEGIAS -->
         <b-col md="3">
-          <b-form-checkbox
-            v-model="adecuacion.objetivos"
-            value="CC"
+          <b-form-textarea
+            :id="'estrategias-'+item.id"
+            :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa una estrategia'
+                : 'Sin información'"
+            :plaintext="!$can('update', nombre_permiso)"
+            v-model="item.estrategia"
+            rows="6"
+          />
+        </b-col>
+
+        <!-- ESTUDIANTES -->
+        <b-col md="3">
+          <v-select
+            v-if="$can('update', nombre_permiso)"
+            :id="'estudiantes-'+item.id"
+            v-model="item.personas"
+            multiple
+            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+            label="nombre_completo"
+            placeholder="Selecciona un estudiante..."
+            :options="estudiantesOption"
+            :reduce="option => option.id_persona_rol"
+            input-id="personas"
+          />
+
+          <template
+            v-if="!$can('update', nombre_permiso)"
           >
-            A los objetivos de aprendizaje en el caso de la educación básica
-          </b-form-checkbox>
+            <div
+              v-if="item.personas.length !== 0"
+            >
+              <div
+                v-for="(persona, key) in item.personas"
+                :key="key"
+                class="text-secondary"
+              >
+                {{ persona.nombre_completo }}
+                <hr
+                  style="margin-top: 1px; margin-bottom: 5px;"
+                >
+              </div>
+            </div>
+            <div v-else>
+              <b-form-textarea
+                :id="'estudiantes-text-'+item.id"
+                placeholder="Sin información"
+                :plaintext="!$can('update', nombre_permiso)"
+              />
+            </div>
+          </template>
+        </b-col>
+        <b-col cols="12">
+          <colLinea />
         </b-col>
 
-        <!-- ESTRATEGIAS PARA -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa el ámbito de aprendizaje, asignatura o módulo"
-            v-model="adecuacion.objetivosAsignaturas"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- COMO? -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa las principales estratégias"
-            v-model="adecuacion.objetivosEstrategias"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- A QUIENES? -->
-        <b-col md="3">
-          <v-select
-            v-model="adecuacion.objetivosAlumnos"
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            multiple
-            label="title"
-            :options="optionsAlumnos"
-            placeholder="Seleccione el/la estudiante"
-          />
-        </b-col>
       </b-row>
-
-      <colLinea />
-
-      <!-- PLAN -->
-      <b-row>
-        <!-- ADECUACIÓN -->
-        <b-col md="3">
-          <b-form-checkbox
-            v-model="adecuacion.plan"
-            value="CC"
-          >
-            Al plan de estudio (básica)
-          </b-form-checkbox>
-        </b-col>
-
-        <!-- ESTRATEGIAS PARA -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa el ámbito de aprendizaje, asignatura o módulo"
-            v-model="adecuacion.planAsignatura"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- COMO? -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa las principales estratégias"
-            v-model="adecuacion.planEstrategias"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- A QUIENES? -->
-        <b-col md="3">
-          <v-select
-            v-model="adecuacion.planAlumnos"
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            multiple
-            label="title"
-            :options="optionsAlumnos"
-            placeholder="Seleccione el/la estudiante"
-          />
-        </b-col>
-      </b-row>
-
-      <colLinea />
-
-      <!-- PLAN -->
-      <b-row>
-        <!-- ADECUACIÓN -->
-        <b-col md="3">
-          <b-form-checkbox
-            v-model="adecuacion.adecuacion"
-            value="CC"
-          >
-            Plan de adecuación curricular individual (PACI) (básica)
-          </b-form-checkbox>
-        </b-col>
-
-        <!-- ESTRATEGIAS PARA -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa el ámbito de aprendizaje, asignatura o módulo"
-            v-model="adecuacion.adecuacionAsignatura"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- COMO? -->
-        <b-col md="3">
-          <b-form-textarea
-            id="como"
-            placeholder="Ingresa las principales estratégias"
-            v-model="adecuacion.adecuacionEstrategias"
-            rows="6"
-          />
-        </b-col>
-
-        <!-- A QUIENES? -->
-        <b-col md="3">
-          <v-select
-            v-model="adecuacion.adecuacionAlumnos"
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            multiple
-            label="title"
-            :options="optionsAlumnos"
-            placeholder="Seleccione el/la estudiante"
-          />
-        </b-col>
-      </b-row>
-
-      <colLinea />
 
       <!-- Action Buttons -->
       <b-row
@@ -248,9 +159,9 @@
 
         <b-col md="4">
           <btnSubmit
-            v-if="cargando"
             class="float-right"
             variant="primary"
+            :modulo="nombre_permiso"
             :btnText="btnSubmit"
             @processBtn="submitOption"
           />
@@ -272,8 +183,16 @@ import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import Cleave from 'vue-cleave-component'
+
+import ToastificationContent
+from '@core/components/toastification/ToastificationContent.vue'
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'cleave.js/dist/addons/cleave-phone.us'
+import { mapGetters, mapActions } from 'vuex'
+
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
 
 // COMPONENTES
 import colLinea from '../../../../../../components/Form/colLinea.vue'
@@ -300,71 +219,215 @@ export default {
   directives: {
     Ripple,
   },
-  mixins: [heightTransition],
+  mixins: [heightTransition, formatos],
   data() {
     return {
-      adecuacion: [],
-      cargando: true,
-      coordinacion: [],
+      nombre_permiso: 'pieII3B',
+      cargando: false,
       nextTodoId: 2,
-      optionsAlumnos: [
-        {
-          value: 1,
-          title: 'Catalina Gaete',
-        },
-        {
-          value: 2,
-          title: 'Thomas Torres',
-        },
-        {
-          value: 3,
-          title: 'Felipe López',
-        },
-      ],
+
+      items: [],
+      estudiantesOption: [],
+      asignaturasOption: [],
     }
   },
-  mounted() {
-    this.initTrHeight()
+  computed: {
+    ...mapGetters({
+      getAdecuacion: 'II_3_b_adecuacion/getAdecuacion',
+      getLibroSelected: 'libros/getLibroSelected',
+      getAsignaturasCurso: 'asignaturas/getAsignaturasCurso',
+      getAlumnos: 'personas/getAlumnos',
+    }),
   },
-  created() {
-    window.addEventListener('resize', this.initTrHeight)
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.initTrHeight)
+  watch: {
+    getLibroSelected(getLibroSelected) {
+      this.cargarAdecuaciones(getLibroSelected.id)
+    },
+    getAsignaturasCurso(val) {
+      this.asignaturasOption = []
+      this.asignaturasOption = this.getAsignaturasCurso
+    },
+    getAlumnos(val) {
+      this.estudiantesOption = []
+      this.estudiantesOption = this.getAlumnos
+    },
   },
   props: {
     btnSubmit: {
       type: String, // Texto del boton
-      default: 'Actualizar Estrategia',
+      default: 'Actualizar Adecuacion',
     },
   },
-  methods: {
-    submitOption() {
-      console.log('this.v$ :', this.v$.asistencia)
-      // this.v$.asistencia.$touch()
-      // if (!this.v$.asistencia.$invalid) {
-      //   this.$emit('processForm', this.asistencia)
-      // }
-    },
+  mounted() {
+    this.cargarAsignaturas(this.getLibroSelected.id)
+    this.cargaEstudiantesPie(this.getLibroSelected.id)
+    this.cargarAdecuaciones(this.getLibroSelected.id)
+    this.resetItems()
     // REPEATER
-    repeateAgain() {
-      this.items.push({
-        id: this.nextTodoId += this.nextTodoId,
-      })
+    // this.initTrHeight()
+  },
+  methods: {
+    ...mapActions({
+      // ADECUACIONES
+      fetchAdecuacion: 'II_3_b_adecuacion/fetchAdecuacion',
+      addAdecuacion: 'II_3_b_adecuacion/addAdecuacion',
+      updateAdecuacion: 'II_3_b_adecuacion/updateAdecuacion',
 
-      this.$nextTick(() => {
-        this.trAddHeight(this.$refs.row[0].offsetHeight)
+      // OTROS
+      fetchAsignaturasCurso: 'asignaturas/fetchAsignaturasCurso',
+      fetchAlumnosPie: 'personas/fetchAlumnosPie',
+    }),
+    cargarAsignaturas(idCurso) {
+      this.fetchAsignaturasCurso(idCurso).then(() => {})
+    },
+    cargaEstudiantesPie(idCurso) {
+      this.fetchAlumnosPie(idCurso).then(() => {})
+    },
+    cargarAdecuaciones(idCurso) {
+      this.cargando = true
+      this.fetchAdecuacion(idCurso).then(() => {
+        if (typeof this.getAdecuacion.message === 'undefined') {
+          this.items = []
+          this.items = this.getAdecuacion
+        } else {
+          this.resetForms()
+          this.resetItems()
+        }
+        this.cargando = false
+      }).catch(() => {
+        this.cargando = false
       })
     },
-    removeItem(index) {
-      this.items.splice(index, 1)
-      this.trTrimHeight(this.$refs.row[0].offsetHeight)
-    },
-    initTrHeight() {
-      this.trSetHeight(null)
-      this.$nextTick(() => {
-        this.trSetHeight(this.$refs.form.scrollHeight)
+    submitOption() {
+      const text = 'las estrategias que se utilizarán para adecuar o flexibilizar el currículum'
+      const html = this.formatHTMLSweetInfo(text, '')
+      this.$swal({
+        title: 'Guardar cambios!',
+        html,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-secondary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          if (this.getAdecuacion.message === 'Registro no existe') {
+            this.agregarAdecuaciones(this.items)
+          } else {
+            this.editarAdecuaciones(this.items)
+          }
+        } else {
+          return false
+        }
       })
+    },
+
+    agregarAdecuaciones(adecuaciones) {
+      this.spinner = true
+      adecuaciones.forEach(adecuacion => {
+        const data = {
+          id_curso: this.getLibroSelected.id,
+          adecuacion_chk: adecuacion.adecuacion_chk,
+          adecuacion: adecuacion.adecuacion,
+          id_asignatura: adecuacion.id_asignatura,
+          estrategia: adecuacion.estrategia,
+          personas: adecuacion.personas,
+        }
+        this.addAdecuacion(data).then((response) => {
+          this.cargarAdecuaciones(this.getLibroSelected.id)
+        })
+      })
+      this.msjActualizar()
+      this.spinner = false
+    },
+
+    editarAdecuaciones(adecuaciones) {
+      this.spinner = true
+      adecuaciones.forEach(adecuacion => {
+        let personas = []
+        adecuacion.personas.forEach(asistente => {
+        if (typeof asistente.id === 'undefined') {
+          personas.push(asistente)
+        } else {
+          personas.push(asistente.id_persona_rol)
+        }
+      })
+        const data = {
+          id: adecuacion.id,
+          id_curso: this.getLibroSelected.id,
+          adecuacion_chk: adecuacion.adecuacion_chk,
+          adecuacion: adecuacion.adecuacion,
+          id_asignatura: adecuacion.id_asignatura,
+          estrategia: adecuacion.estrategia,
+          personas: personas,
+        }
+        this.updateAdecuacion(data).then((response) => {
+          this.cargarAdecuaciones(this.getLibroSelected.id)
+        })
+      })
+      this.msjActualizar()
+      this.spinner = false
+    },
+
+    msjActualizar() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Registro actualizado 👍',
+          icon: 'CheckIcon',
+          text: `Las estrategias que se utilizarán para adecuar o flexibilizar el currículum, han sido actualizadas con éxito!`,
+          variant: 'success',
+        },
+      },
+      {
+        position: 'bottom-right',
+        timeout: 3000,
+      })
+    },
+
+    resetForms() {
+      this.items = []
+    },
+    resetItems() {
+      this.items = []
+      this.items = [
+        {
+          id: 1,
+          adecuacion_chk: false,
+          adecuacion: 'De acceso',
+          id_asignatura: null,
+          estrategia: '',
+          personas: [],
+        },
+        {
+          id: 2,
+          adecuacion_chk: false,
+          adecuacion: 'A los objetivos de aprendizaje en el caso de la educación básica.',
+          id_asignatura: null,
+          estrategia: '',
+          personas: [],
+        },
+        {
+          id: 3,
+          adecuacion_chk: false,
+          adecuacion: 'Al plan de estudio (básica)',
+          id_asignatura: null,
+          estrategia: '',
+          personas: [],
+        },
+        {
+          id: 4,
+          adecuacion_chk: false,
+          adecuacion: 'Plan de adecuación curricular individual (PACI) (Básica)',
+          id_asignatura: null,
+          estrategia: '',
+          personas: [],
+        },
+      ]
     },
   },
 }

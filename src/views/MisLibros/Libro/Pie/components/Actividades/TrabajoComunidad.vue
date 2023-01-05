@@ -28,14 +28,6 @@
         <!-- <inputFiltro
           :filter.sync="filter"
         /> -->
-
-        <!-- CREAR -->
-        <trabajo-familia-create
-          submitTitle="Guardar Trabajo"
-          title="Registrar con la comunidad y el entorno escolar"
-        />
-        <!-- editar debe enviar id y si cambia  -->
-
       </b-col>
       <b-col
         md="4"
@@ -43,23 +35,22 @@
         class="my-1"
       >
         <!-- BOTON CREAR -->
-        <!-- <btnCrear
-          accion="Coordinar"
-          texto="Reunión"
-          modulo="reuniones_coordinacion"
-          @processAdd="addReunionesCoordinacion"
-        /> -->
         <div
           class="d-flex align-items-center justify-content-end"
         >
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Registrar Trabajo
-          </b-button>
+
+          <!-- CREAR -->
+          <trabajo-comunidad-create
+            :idCurso="getLibroSelected.id"
+          />
+
+          <!-- BOTON CREAR -->
+          <btn-crear-modal
+            accion="Registrar"
+            texto="Trabajo"
+            modal="modal-create"
+            :modulo="nombre_permiso"
+          />
         </div>
       </b-col>
 
@@ -69,7 +60,8 @@
           small
           hover
           noCollapse
-          class="mt-1"
+          bordered
+          class="mt-1 rounded"
           responsive
           :per-page="perPage"
           :current-page="currentPage"
@@ -84,12 +76,6 @@
           @filtered="onFiltered"
         >
 
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
-
           <!-- Cargando -->
           <template #table-busy>
             <div class="text-center text-danger my-2">
@@ -97,25 +83,12 @@
             </div>
           </template>
 
-          <!-- Header: Check -->
-          <!-- <template #head(colCheck)="data">
-
-            <b-form-checkbox
-              :id="data.label"
-              v-model="chkTodo"
-            />
-
+          <!-- FECHA -->
+          <template #cell(fecha)="data">
+            <div class="mb-25 mt-75">
+              {{ formatFechaVer(data.item.fecha) }}
+            </div>
           </template>
-
-          <!-- Column: Check
-          <template #cell(colCheck)="data">
-
-            <b-form-checkbox
-              :id="`chk-${data.item.id}`"
-              v-model="data.item.chkSelected"
-            />
-
-          </template> -->
 
           <!-- Column: alumnos -->
           <template #cell(participantes)="data">
@@ -123,40 +96,48 @@
               v-for="(participante, key) in data.item.participantes"
               :key="key"
             >
-              <b>{{ participante.rol }}</b><br>
+              <b>{{ participante.nombre_rol }}</b><br>
 
-              {{ participante.nombre }}
+              {{ participante.nombre }} {{ participante.primer_apellido }} {{ participante.segundo_apellido }}
+              <hr
+                v-if="key + 1 !== data.item.participantes.length"
+                style="margin-top: 1px; margin-bottom: 5px;"
+              >
             </div>
           </template>
 
           <!-- Column: totalFirmas -->
-          <template #cell(totalFirmas)="data">
+          <!-- <template #cell(totalFirmas)="data">
             <div
               v-for="(asistente, key) in data.item.asistentes"
               :key="key"
             >
               - {{ asistente.nombre }}
             </div>
-          </template>
+          </template> -->
 
           <!-- COLUMNA ESTADO -->
-          <template #cell(estado)="data">
+          <!-- <template #cell(estado)="data">
             <colEstado
               :data="data"
               modulo="reunionesCoordinaciones"
               @processUpdateEstado="updateEstado"
             />
-          </template>
+          </template> -->
 
           <!-- Column: Action -->
           <template #cell(acciones)="data">
-            <colAccionesBtnes
-              modulo="reunionesCoordinaciones"
-              :modal="`modal-lg-${data.item.id}`"
+
+            <trabajo-comunidad-update-vue
+              :modal="'modal-update-'+data.item.id"
               :data="data"
-              @processGoToConfig="goToConfig"
-              @processGoToUpdate="goToUpdate"
-              @processGoToClone="goToClone"
+              :idCurso="getLibroSelected.id"
+            />
+
+            <colAccionesBtnes
+              :modulo="nombre_permiso"
+              :modal="`modal-update-${data.item.id}`"
+              :data="data"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -201,9 +182,12 @@ import {
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
+
 // COMPONENTES
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
-// import btnCrear from '../../../../../components/List/btnCrear.vue'
+import btnCrearModal from '../../../../../components/List/btnCrearModal.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../../../../components/List/colAccionesBtnes.vue'
 import colPeriodo from '../../../../../components/List/colPeriodo.vue'
@@ -212,7 +196,8 @@ import spinner from '../../../../../components/spinner.vue'
 import colNombreImg from '../../../../../components/List/colNombreImg.vue'
 
 // HIJOS
-import trabajoFamiliaCreate from './TrabajoFamilia/TrabajoFamiliaCreate.vue'
+import trabajoComunidadCreate from './TrabajoComunidad/TrabajoComunidadCreate.vue'
+import TrabajoComunidadUpdateVue from './TrabajoComunidad/TrabajoComunidadUpdate.vue'
 
 export default {
   components: {
@@ -228,6 +213,7 @@ export default {
     BAlert,
 
     // COMPONENTES
+    btnCrearModal,
     colAccionesBtnes,
     btnMostrar,
     colPeriodo,
@@ -236,60 +222,21 @@ export default {
     colNombreImg,
 
     // HIJOS
-    trabajoFamiliaCreate,
+    trabajoComunidadCreate,
+    TrabajoComunidadUpdateVue,
   },
   directives: {
     'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieIV2',
       cargando: false,
       spinner: false,
-      // chk
-      items: [
-        {
-          fecha: '08-06-2022',
-          participantes: [
-            {
-              nombre: 'Monica Andrea Morales Rivera',
-              rol: 'Apoderado',
-              firma: null,
-            },
-            {
-              nombre: 'Consuelo Paz Contreras Oyarzun',
-              rol: 'Fonoaudiologa',
-              firma: null,
-            },
-          ],
-          objetivo: 'SOLICITAR INFORMACION DEL DESARROLLO Y ANTECEDENTES ESCOLARES Y DEL LENGUAJE DEL NIÑO',
-          actividad: 'APLICACION DE PAUTA COACH PARA DETERMINAR LINEAMIENTOS DE TRABAJO CON AMARO GONZALEZ',
-          acuerdoCompromiso: 'MANTENER COMUNICACION Y APOYO CONSTANTE',
-          resultado: 'TRABAJO CON LA FAMILIA',
-        },
-        {
-          fecha: '24-08-2022',
-          participantes: [
-            {
-              nombre: 'Monica',
-              rol: 'Apoderado',
-              firma: null,
-            },
-            {
-              nombre: 'Camila Luisa Rivera Pradenas',
-              rol: 'Psicologa PIE',
-              firma: null,
-            },
-          ],
-          objetivo: 'Retroalimentación ida al neurólogo del estudiante.',
-          actividad: 'Entrevista vía zoom solicitando retroalimentación respecto a la ida al neurólogo de Martín. Padre informan sobre las ecolalias y “ataques o crisis de risa” que el niño presenta, motivo principal por el cual fueron al neurólogo. Informan por otro lado, que neurólogo ya había diagnosti cado a Martín con TEA. Finalmente, médico indica tratamiento con neuliptel (1%) 3 gotas en la mañana, 3 en la tarde y 3 en la noche, ir aumentando en caso de no ver cambios, hasta llegar máximo a 10 gotitas, indicado principalmente para “calmarse”.',
-          acuerdoCompromiso: 'Se tiene control con neurólogo en 2 meses más. Se pide que puedan solicitar al médico un informe para la escuela donde indique diagnóstico y observaciones.',
-          resultado: '',
-        },
-      ],
-      selectedchk: [],
-      chkTodo: null,
-      checked: null,
+
+      items: [],
 
       perPage: 25,
       totalRows: 1,
@@ -326,7 +273,6 @@ export default {
             'vertical-align': 'middle',
           },
         },
-
         {
           key: 'objetivo',
           label: 'Objetivo(s)',
@@ -348,7 +294,7 @@ export default {
           },
         },
         {
-          key: 'acuerdoCompromiso',
+          key: 'acuerdo',
           label: 'Acuerdo(s) / Compromiso(s)',
           sortable: true,
           thStyle: {
@@ -396,7 +342,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getReunionesCoordinacions: 'reunionesCoordinaciones/getReunionesCoordinacions' }),
+    ...mapGetters({
+      getActividades: 'IV_actividades/getActividades',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -404,161 +353,78 @@ export default {
         .filter(f => f.sortable)
         .map(f => ({ text: f.label, value: f.key }))
     },
-    disabledExport() {
-      return this.chkCount()
-    },
   },
   watch: {
-    getReunionesCoordinacions(val) {
+    getActividades(val) {
       this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getReunionesCoordinacions
+      this.items = []
+      this.items = this.getActividades
     },
-    chkTodo() {
-      this.chkAll()
+    getLibroSelected(val) {
+      this.cargarActividades(this.getLibroSelected.id)
     },
   },
   mounted() {
-    this.cargarReunionesCoordinacions()
+    this.cargarActividades(this.getLibroSelected.id)
     this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchReunionesCoordinacions: 'reunionesCoordinaciones/fetchReunionesCoordinacions',
+    ...mapActions({
+      fetchActividades: 'IV_actividades/fetchActividades',
+      removeActividad: 'IV_actividades/removeActividad',
     //   updateReunionesCoordinacionPeriodo: 'reunionesCoordinaciones/updateReunionesCoordinacionPeriodo',
-    //   removeReunionesCoordinacions: 'reunionesCoordinaciones/removeReunionesCoordinacions',
-    // }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
+    }),
     setTableList() {
-      if (this.$can('update', 'reunionesCoordinaciones')
-        || this.$can('delete', 'reunionesCoordinaciones')
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
       ) {
         this.fields.push(this.fieldAcciones)
       }
     },
-    cargarReunionesCoordinacions() {
-      // this.fetchReunionesCoordinacions().then(() => {
-      //   this.cargando = false
-      // })
+    cargarActividades(idCurso) {
+      const data = {
+        idCurso,
+        tipo: 2, // Tipo Trabajo Comunidad
+      }
+      this.fetchActividades(data).then(() => {
+        this.cargando = false
+      })
     },
-    addReunionesCoordinacion() {
-      // this.$router.replace({
-      //   name: 'reunionesCoordinaciones-create',
-      // })
-    },
-    updatePeriodo(reunionesCoordinacion) {
+    remove(actividad) {
+      const fecha = `${this.formatFechaVerCompleto(actividad.fecha)}`
+      const html = this.formatHTMLSweetEliminar('el trabajo', fecha)
       this.$swal({
-        title: 'Actualizar periodo!',
-        html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' reunionesCoordinacion<br><span class="font-weight-bolder">'
-          + `${reunionesCoordinacion.nombre}</span>?`,
-        footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' reunionesCoordinacion. No se puede devolver al periodo anterior.</div>',
+        title: 'Eliminar trabajo!',
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, actualízalo!',
+        confirmButtonText: 'Sí, elimínalo!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          cancelButton: 'btn btn-outline-secondary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateReunionesCoordinacionPeriodo(reunionesCoordinacion).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Periodo activo actualizado!',
-          //     html:
-          //       'El periodo activo del reunionesCoordinacion<br>'
-          //       + ' <span class="font-weight-bolder">'
-          //       + `${reunionesCoordinacion.nombre}</span>`
-          //       + '<br>ha sido actualizado con éxito!',
-          //     customClass: {
-          //       confirmButton: 'btn btn-primary',
-          //     },
-          //   })
-          //   this.spinner = false
-          //   this.cargarReunionesCoordinacions()
-          // })
-        } else {
-          this.spinner = false
-          this.cargarReunionesCoordinacions()
-        }
-      })
-    },
-    updateEstado() {
-      // console.log('update')
-    },
-    goToConfig(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-config',
-      })
-    },
-    goToUpdate(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-update',
-      })
-    },
-    goToClone(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-clone',
-      })
-    },
-    remove(reunionesCoordinacion) {
-      this.$swal({
-        title: 'Eliminar reunionesCoordinacion!',
-        text: `Estás seguro que deseas eliminar el reunionesCoordinacion
-          "${reunionesCoordinacion.nombre}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          // this.removeReunionesCoordinacions(reunionesCoordinacion.id).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Eliminada con éxito!',
-          //     text: `"${reunionesCoordinacion.nombre}" ha sido eliminada!`,
-          //     customClass: {
-          //       confirmButton: 'btn btn-success',
-          //     },
-          //   })
-          //   this.spinner = false
-          // })
-        } else {
-          this.spinner = false
-        }
-      })
-    },
+          this.removeActividad(actividad.id).then(() => {
+            this.$swal({
+              icon: 'success',
+              title: 'Eliminado con éxito!',
+              text: `El trabajo ha sido eliminado!`,
+              customClass: {
+                confirmButton: 'btn btn-success',
+              },
+            })
 
-    // Checkbox select item Table
-    chkAll() {
-      this.items.forEach(item => {
-        const cliente = this.items.find(i => i.id === item.id)
-        cliente.chkSelected = this.chkTodo
+            this.cargarActividades(this.getLibroSelected.id)
+            this.spinner = false
+          })
+        } else {
+          this.spinner = false
+        }
       })
-    },
-    chkCount() {
-      let chkCount = 0
-      this.items.forEach(item => {
-        chkCount = item.chkSelected
-          ? chkCount + 1
-          : chkCount
-      })
-      return chkCount === 0
     },
 
     // Vuexy

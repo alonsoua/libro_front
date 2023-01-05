@@ -20,11 +20,14 @@
             label-for="proceso"
           >
             <b-form-textarea
-              id="proceso"
-              placeholder="Indique estrategias y procedimientos que aplicará para las siguientes evaluaciones:
-- Evaluaciones para el aprendizaje, periódicas, se recomiendan quincenales.
-- Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia."
               v-model="evaluacion.proceso"
+              id="proceso"
+              :placeholder="$can('update', nombre_permiso)
+                  ? `Indique estrategias y procedimientos que aplicará para las siguientes evaluaciones:
+- Evaluaciones para el aprendizaje, periódicas, se recomiendan quincenales.
+- Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia.`
+                  : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               rows="4"
               :state="v$.evaluacion.proceso.$error === true
                 ? false
@@ -55,11 +58,14 @@
             label-for="evaluacionAnual"
           >
             <b-form-textarea
-              id="evaluacionAnual"
-              placeholder="Indique estrategias y procedimientos que aplicará para las siguientes evaluaciones:
-- Evaluaciones para el aprendizaje, periódicas, se recomiendan quincenales.
-- Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia."
               v-model="evaluacion.evaluacionAnual"
+              id="evaluacionAnual"
+              :placeholder="$can('update', nombre_permiso)
+                ? `Indique estrategias y procedimientos que aplicará para las siguientes evaluaciones:
+- Evaluaciones para el aprendizaje, periódicas, se recomiendan quincenales.
+- Evaluaciones de resultados; trimestrales, semestrales con informe escrito a la Familia.`
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               rows="4"
               :state="v$.evaluacion.evaluacionAnual.$error === true
                 ? false
@@ -89,9 +95,13 @@
             label-for="observaciones"
           >
             <b-form-textarea
+              v-model="evaluacion.observaciones"
               id="observaciones"
               placeholder="Indique las observaciones"
-              v-model="evaluacion.observaciones"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Indique las observaciones'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               rows="4"
               :state="v$.evaluacion.observaciones.$error === true
                 ? false
@@ -128,6 +138,7 @@
           <btnSubmit
             class="float-right"
             variant="primary"
+            :modulo="nombre_permiso"
             :disabled="this.v$.evaluacion.$errors.length > 0"
             :btnText="btnSubmit"
             @processBtn="submitOption"
@@ -152,6 +163,9 @@ import store from '@/store/index'
 import ToastificationContent
 from '@core/components/toastification/ToastificationContent.vue'
 import { mapGetters, mapActions } from 'vuex'
+
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
 
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
@@ -186,8 +200,10 @@ export default {
       getLibroSelected: 'libros/getLibroSelected'
     }),
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieII3C',
       evaluacion: [],
       cargando: false,
     }
@@ -256,14 +272,13 @@ export default {
     submitOption() {
       this.v$.evaluacion.$touch()
       if (!this.v$.evaluacion.$invalid) {
-        const text = `Estás seguro de actualizar las estrategias y
-          procedimientos de evaluación?`
+        const html = this.formatHTMLSweetInfo('las estrategias y procedimientos de evaluación', '')
         this.$swal({
           title: 'Guardar cambios!',
-          text,
+          html,
           icon: 'info',
           showCancelButton: true,
-          confirmButtonText: 'Si, guardar',
+          confirmButtonText: 'Sí, guardar',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-primary',

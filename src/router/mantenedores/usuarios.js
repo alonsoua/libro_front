@@ -26,7 +26,7 @@ export default [
   {
     path: '/usuarios-create',
     name: 'usuarios-create',
-    component: () => import('@/views/Mantenedores/Usuarios/UsuariosCreate.vue'),
+    component: () => import('@/views/Mantenedores/Usuarios/components/UsuariosCreate.vue'),
     beforeEnter: (to, from, next) => {
       if (!store.getters['auth/authenticated']) {
         return next({
@@ -44,6 +44,32 @@ export default [
         },
         {
           text: 'Crear Usuario',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/usuarios/update',
+    name: 'usuarios-update',
+    component: () => import('@/views/Mantenedores/Usuarios/components/UsuariosUpdate.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
+    meta: {
+      pageTitle: 'Editar usuario',
+      breadcrumb: [
+        {
+          text: 'Usuarios',
+          to: '/usuarios',
+        },
+        {
+          text: 'Editar Usuario',
           active: true,
         },
       ],

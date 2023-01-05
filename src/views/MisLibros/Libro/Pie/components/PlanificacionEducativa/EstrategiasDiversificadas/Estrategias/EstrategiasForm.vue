@@ -67,7 +67,7 @@
 
               <v-select
                 v-model="estrategia.id_asignatura"
-                placeholder="Selecciona la asignatura"
+                placeholder="Selecciona una asignatura..."
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 label="texto"
                 :options="asignaturasOption"
@@ -107,7 +107,7 @@
               /> -->
               <v-select
                 v-model="estrategia.id_periodo"
-                placeholder="Selecciona el periodo"
+                placeholder="Selecciona un periodo..."
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 label="texto"
                 :options="periodosOption"
@@ -204,6 +204,8 @@ import {
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
+import { mapGetters, mapActions } from 'vuex'
+
 // VALIDACIONES //
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
@@ -250,16 +252,37 @@ export default {
       informacion: `Sugerencias de criterios para la evaluación de la estrategia: Recursos educativos responden a los distintos estilos de aprendizaje; Participación de todos los estudiantes, especialmente aquellos que presentan NEE; Logros de los objetivos planteados para la clase; Interacción entre los estudiantes; entre otros.`,
       // required,
       // email,
-      periodosOption: [
-        { id: 1, texto: '1er Semestre' },
-        { id: 2, texto: '2do Semestre' },
-      ],
-      asignaturasOption: [
-        { id: 1, texto: 'Lenguaje' },
-        { id: 2, texto: 'Matemáticas' },
-        { id: 3, texto: 'Historia' },
-      ],
+      periodosOption: [],
+      asignaturasOption: [],
     }
+  },
+  computed: {
+    ...mapGetters({
+      getAsignaturasCurso: 'asignaturas/getAsignaturasCurso',
+      getPeriodosEstablecimiento: 'periodos/getPeriodosEstablecimiento',
+      getLibroSelected: 'libros/getLibroSelected',
+      user: 'auth/user',
+    }),
+    // Vuexy
+    sortOptions() {
+      // Create an options list from our fields
+      return this.fields
+        .filter(f => f.sortable)
+        .map(f => ({ text: f.label, value: f.key }))
+    },
+  },
+  watch: {
+    getAsignaturasCurso(val) {
+      this.asignaturasOption = []
+      this.asignaturasOption = this.getAsignaturasCurso
+    },
+    getPeriodosEstablecimiento(val) {
+      this.periodosOption = []
+      this.periodosOption = this.getPeriodosEstablecimiento
+    },
+    getLibroSelected(val) {
+      this.cargarAsignaturas(this.getLibroSelected.id)
+    },
   },
   props: {
     nombreModal: {
@@ -299,12 +322,42 @@ export default {
       }
     }
   },
+  mounted() {
+    this.cargarAsignaturas(this.getLibroSelected.id)
+    this.cargarPeriodos(this.user.id_establecimiento)
+  },
   methods: {
+    ...mapActions({
+      fetchAsignaturasCurso: 'asignaturas/fetchAsignaturasCurso',
+      fetchPeriodosEstablecimiento: 'periodos/fetchPeriodosEstablecimiento',
+    }),
+    cargarAsignaturas(idCurso) {
+      // this.cargando = true
+      this.fetchAsignaturasCurso(idCurso).then(() => {
+        // this.cargando = false
+      })
+    },
+    cargarPeriodos(idEstablecimiento) {
+      // this.cargando = true
+      this.fetchPeriodosEstablecimiento(idEstablecimiento).then(() => {
+        // this.cargando = false
+      })
+    },
     submitOption() {
       this.v$.estrategia.$touch()
       if (!this.v$.estrategia.$invalid) {
         this.$emit('processForm', this.estrategia)
+        // this.resetForm()
       }
+    },
+    resetForm() {
+      this.estrategia = {
+        estrategia: '',
+        id_asignatura: null,
+        id_periodo: null,
+        criterios: '',
+      }
+      this.v$.$reset()
     },
     dateDisabled(ymd, date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and

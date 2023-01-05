@@ -3,222 +3,272 @@
     :id="nombreModal"
     :title="title"
     centered
-    size="xl"
+    size="lg"
     cancel-title="Cancelar"
     cancel-variant="outline-secondary"
     :ok-disabled="this.v$.planApoyo.$errors.length > 0"
     :ok-title="submitTitle"
     @ok.prevent="submitOption"
   >
-  <b-overlay
-    :show="!cargando"
-    spinner-variant="primary"
-    :variant="$store.state.appConfig.layout.skin"
-  >
-    <b-form>
-      <!-- PLAN: FORM -->
-      <b-row>
+    <b-overlay
+      :show="!cargando"
+      spinner-variant="primary"
+      :variant="$store.state.appConfig.layout.skin"
+    >
+      <b-form>
+        <!-- PLAN: FORM -->
+        <b-row>
 
-        <!-- Field: DESCRIPCION -->
-        <b-col
-          cols="12"
-          md="12"
-          sm="12"
-        >
-          <b-form-group
-            label="Descripción *"
-            label-for="descripcion"
+          <!-- Field: DESCRIPCION -->
+          <b-col
+            cols="6"
+            md="12"
+            sm="12"
           >
-            <b-form-input
-              id="descripcion"
-              placeholder="Ingresa una descripción para el plan de apoyo"
-              v-model="planApoyo.descripcion"
-              rows="2"
-              :state="v$.planApoyo.descripcion.$error === true
-                ? false
-                : null"
-              @blur.native="v$.planApoyo.descripcion.$touch"
-            />
-            <b-form-invalid-feedback
-              v-if="v$.planApoyo.descripcion.$error"
-              id="observacionesInfo"
-              class="text-right"
+            <b-form-group
+              label="Descripción *"
+              label-for="descripcion"
             >
-              <p v-for="error of v$.planApoyo.descripcion.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
+              <b-form-input
+                id="descripcion"
+                placeholder="Ingresa la descripción del plan de apoyo individual"
+                v-model="planApoyo.descripcion"
+                rows="2"
+                :state="v$.planApoyo.descripcion.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.planApoyo.descripcion.$touch"
+              />
+              <b-form-invalid-feedback
+                v-if="v$.planApoyo.descripcion.$error"
+                id="observacionesInfo"
+                class="text-right"
+              >
+                <p
+                  v-for="error of v$.planApoyo.descripcion.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
 
-        <!-- Field: ALUMNO (S) -->
-        <b-col
-          cols="6"
-          md="6"
-          sm="12"
-        >
-          <b-form-group
-            label="Estudiante(s) *"
-            label-for="alumnos"
+          <!-- Field: FECHA TERMINO (S) -->
+          <b-col
+            cols="3"
+            md="6"
+            sm="12"
           >
-            <v-select
-              v-model="planApoyo.alumnos"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              multiple
-              label="title"
-              :options="optionsAlumnos"
-              placeholder="Seleccione el/la estudiante"
-              :class="v$.planApoyo.alumnos.$error === true
-                  ? 'border-danger rounded'
-                  : ''"
+            <b-form-group
+              label="Fecha inicio *"
+              label-for="fecha_inicio"
+            >
+              <b-form-datepicker
+                v-model="planApoyo.fecha_inicio"
+                id="fecha_inicio"
+                placeholder="Abrir calendario"
+                hide-header
+                :date-format-options="{
+                  year: 'numeric',
+                  month: 'short',
+                  day: '2-digit',
+                  weekday: 'short'
+                }"
+                start-weekday="1"
+                locale="es-CL"
+                :date-disabled-fn="dateDisabled"
+                label-help=""
+                :state="v$.planApoyo.fecha_inicio.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.planApoyo.fecha_inicio.$touch"
+              />
+              <b-form-invalid-feedback
+                v-if="v$.planApoyo.fecha_inicio.$error"
+                id="fecha_inicioInfo"
+                class="text-right"
+              >
+                <p
+                  v-for="error of v$.planApoyo.fecha_inicio.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+
+            </b-form-group>
+          </b-col>
+
+          <!-- Field: FECHA TERMINO (S) -->
+          <b-col
+            cols="3"
+            md="6"
+            sm="6"
+          >
+            <b-form-group
+              label="Fecha termino *"
+              label-for="fecha_termino"
+            >
+              <b-form-datepicker
+                v-model="planApoyo.fecha_termino"
+                id="fecha_termino"
+                placeholder="Abrir calendario"
+                hide-header
+                :date-format-options="{
+                  year: 'numeric',
+                  month: 'short',
+                  day: '2-digit',
+                  weekday: 'short'
+                }"
+                start-weekday="1"
+                locale="es-CL"
+                :date-disabled-fn="dateDisabled"
+                label-help=""
+                :state="v$.planApoyo.fecha_termino.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.planApoyo.fecha_termino.$touch"
+              />
+              <b-form-invalid-feedback
+                v-if="v$.planApoyo.fecha_termino.$error"
+                id="fecha_terminoInfo"
+                class="text-right"
+              >
+                <p
+                  v-for="error of v$.planApoyo.fecha_termino.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+
+            </b-form-group>
+          </b-col>
+
+          <!-- Field: ALUMNO -->
+          <b-col
+            cols="6"
+            md="6"
+            sm="12"
+          >
+            <b-form-group
+              label="Estudiante *"
+              label-for="alumno"
+            >
+              <v-select
+                v-model="planApoyo.alumno"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="title"
+                :options="optionsAlumnos"
+                placeholder="Selecciona un estudiante..."
+                :class="v$.planApoyo.alumno.$error === true
+                    ? 'border-danger rounded'
+                    : ''"
+                @blur.native="v$.planApoyo.alumno.$touch"
               />
               <!-- Mensajes Error Validación -->
               <div
-                v-if="v$.planApoyo.alumnos.$error"
-                id="alumnosInfo"
+                v-if="v$.planApoyo.alumno.$error"
+                id="alumnoInfo"
                 class="text-danger text-right"
                 style="font-size: 0.857rem;"
               >
-                <p v-for="error of v$.planApoyo.alumnos.$errors" :key="error.$uid">
+                <p
+                  v-for="error of v$.planApoyo.alumno.$errors"
+                  :key="error.$uid"
+                >
                   {{ error.$message }}
                 </p>
               </div>
 
-          </b-form-group>
-        </b-col>
+            </b-form-group>
+          </b-col>
 
-        <!-- Field: FECHA TERMINO (S) -->
-        <b-col
-          cols="3"
-          md="3"
-          sm="12"
-        >
-          <b-form-group
-            label="Fecha inicio(s) *"
-            label-for="fechaInicio"
+          <!-- Field: APOYO ESPECIALIZADO REQUERIDO -->
+          <b-col
+            cols="6"
+            md="6"
+            sm="12"
           >
-            <b-form-datepicker
-              v-model="planApoyo.fechaInicio"
-              id="fechaInicio"
-              placeholder="Selecciona una fecha"
-              hide-header
-              :date-format-options="{
-                year: 'numeric',
-                month: 'short',
-                day: '2-digit',
-                weekday: 'short'
-              }"
-              start-weekday="1"
-              locale="es-CL"
-              :date-disabled-fn="dateDisabled"
-              label-help=""
-              :state="v$.planApoyo.fechaInicio.$error === true
-                ? false
-                : null"
-              @blur.native="v$.planApoyo.fechaInicio.$touch"
-            />
-            <b-form-invalid-feedback
-              v-if="v$.planApoyo.fechaInicio.$error"
-              id="fechaInicioInfo"
-              class="text-right"
+            <b-form-group
+              label="Apoyo(s) especializado(s) requerido(s) *"
+              label-for="apoyoEspecializado"
             >
-              <p v-for="error of v$.planApoyo.fechaInicio.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback>
+              <v-select
+                v-model="planApoyo.apoyoEspecializado"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                multiple
+                label="title"
+                :options="optionsEspecialistas"
+                placeholder="Selecciona los apoyos especializados..."
+                :class="v$.planApoyo.apoyoEspecializado.$error === true
+                    ? 'border-danger rounded'
+                    : ''"
+                @blur.native="v$.planApoyo.apoyoEspecializado.$touch"
+              />
+              <!-- Mensajes Error Validación -->
+              <div
+                v-if="v$.planApoyo.apoyoEspecializado.$error"
+                id="alumnoInfo"
+                class="text-danger text-right"
+                style="font-size: 0.857rem;"
+              >
+                <p
+                  v-for="error of v$.planApoyo.apoyoEspecializado.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </p>
+              </div>
 
-          </b-form-group>
-        </b-col>
+            </b-form-group>
+          </b-col>
 
-        <!-- Field: FECHA TERMINO (S) -->
-        <b-col
-          cols="3"
-          md="3"
-          sm="12"
-        >
-          <b-form-group
-            label="Fecha termino(s) *"
-            label-for="fechaTermino"
+          <!-- Field: OBSERVACIONES -->
+          <b-col
+            cols="12"
+            md="12"
+            sm="12"
           >
-            <b-form-datepicker
-              v-model="planApoyo.fechaTermino"
-              id="fechaTermino"
-              placeholder="Selecciona una fecha"
-              hide-header
-              :date-format-options="{
-                year: 'numeric',
-                month: 'short',
-                day: '2-digit',
-                weekday: 'short'
-              }"
-              start-weekday="1"
-              locale="es-CL"
-              :date-disabled-fn="dateDisabled"
-              label-help=""
-              :state="v$.planApoyo.fechaTermino.$error === true
-                ? false
-                : null"
-              @blur.native="v$.planApoyo.fechaTermino.$touch"
-            />
-            <b-form-invalid-feedback
-              v-if="v$.planApoyo.fechaTermino.$error"
-              id="fechaTerminoInfo"
-              class="text-right"
+            <b-form-group
+              label="Observaciones *"
+              label-for="observaciones"
             >
-              <p v-for="error of v$.planApoyo.fechaTermino.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback>
+              <b-form-textarea
+                id="observaciones"
+                placeholder="Ingresa las observaciones"
+                v-model="planApoyo.observaciones"
+                rows="2"
+                :state="v$.planApoyo.observaciones.$error === true
+                  ? false
+                  : null"
+                @blur.native="v$.planApoyo.observaciones.$touch"
+              />
+              <b-form-invalid-feedback
+                v-if="v$.planApoyo.observaciones.$error"
+                id="observacionesInfo"
+                class="text-right"
+              >
+                <p
+                  v-for="error of v$.planApoyo.observaciones.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </p>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
 
-          </b-form-group>
-        </b-col>
+        </b-row>
 
-        <!-- Field: OBSERVACIONES -->
-        <b-col
-          cols="12"
-          md="12"
-          sm="12"
-        >
-          <b-form-group
-            label="Observaciones *"
-            label-for="observaciones"
-          >
-            <b-form-textarea
-              id="observaciones"
-              placeholder="Ingresa las observaciones"
-              v-model="planApoyo.observaciones"
-              rows="2"
-              :state="v$.planApoyo.observaciones.$error === true
-                ? false
-                : null"
-              @blur.native="v$.planApoyo.observaciones.$touch"
-            />
-            <b-form-invalid-feedback
-              v-if="v$.planApoyo.observaciones.$error"
-              id="observacionesInfo"
-              class="text-right"
-            >
-              <p v-for="error of v$.planApoyo.observaciones.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </p>
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-
-      </b-row>
-
-      <!-- CALENDARIO -->
-      <b-form-group
-        label="Selecciona los días y horas"
-        class="mb-25 mt-1 h6"
-      />
-      <calendario />
-    </b-form>
-  </b-overlay>
+      </b-form>
+    </b-overlay>
   </b-modal>
 </template>
 
 <script>
+
 
 // ETIQUETAS
 import {
@@ -230,12 +280,11 @@ import {
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 
+import { mapGetters, mapActions } from 'vuex'
+
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers } from '@vuelidate/validators'
-
-// COMPONENTES HIJOS
-import Calendario from './Calendario/Calendario.vue'
 
 export default {
   components: {
@@ -257,8 +306,6 @@ export default {
     VBModal,
     vSelect,
 
-    // COMPONENTES HIJOS
-    Calendario
   },
   directives: {
     'b-modal': VBModal,
@@ -267,22 +314,12 @@ export default {
   data() {
     return {
       cargando: true,
+      horarios: [],
       // required,
       // email,
-      optionsAlumnos: [
-        {
-          value: 1,
-          title: 'Catalina Gaete',
-        },
-        {
-          value: 2,
-          title: 'Thomas Torres',
-        },
-        {
-          value: 3,
-          title: 'Felipe López',
-        },
-      ],
+      optionsAlumnos: [],
+
+      optionsEspecialistas: [],
     }
   },
   props: {
@@ -296,7 +333,7 @@ export default {
     },
     submitTitle: {
       type: String,
-      required: true,
+      default: 'Guardar Plan de Apoyo',
     },
     planApoyo: {
       type: Object,
@@ -306,40 +343,134 @@ export default {
   validations() {
     return {
       planApoyo: {
-        alumnos: {
+        descripcion: {
           $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+          maxLength: helpers.withMessage('Debe tener un máximo de 50 caracteres.'
+            , maxLength(50)),
+        },
+        fecha_inicio: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+        fecha_termino: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+        alumno: {
+          $autoDirty: true,
+          required: helpers.withMessage('El campo es requerido.', required),
+        },
+        apoyoEspecializado: {
+          // $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
         },
         observaciones: {
           $autoDirty: true,
           required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 550 caracteres.', maxLength(550)),
+          maxLength: helpers.withMessage('Debe tener un máximo de 550 caracteres.'
+            , maxLength(550)),
         },
-        descripcion: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-          maxLength: helpers.withMessage('Debe tener un máximo de 150 caracteres.', maxLength(150)),
-        },
-        fechaInicio: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-        },
-        fechaTermino: {
-          $autoDirty: true,
-          required: helpers.withMessage('El campo es requerido.', required),
-        },
+
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      getPlanApoyos: 'II_4_plan_apoyo/getPlanApoyos',
+      getLibroSelected: 'libros/getLibroSelected',
+      getAlumnos: 'personas/getAlumnos',
+    }),
+  },
+  watch: {
+    getLibroSelected() {
+      this.cargaEstudiantesPie(this.getLibroSelected.id)
+      this.cargarApoyos(this.getLibroSelected.id)
+    },
+    getPlanApoyos() {
+      // this.setPlanApoyo(this.getPlanApoyos)
+      this.cargarApoyos(this.getLibroSelected.id)
+      this.v$.planApoyo.$reset()
+    },
+  },
+  mounted() {
+    this.cargaEstudiantesPie(this.getLibroSelected.id)
+    this.cargarApoyos(this.getLibroSelected.id)
+  },
   methods: {
+    ...mapActions({
+      fetchAlumnosPie: 'personas/fetchAlumnosPie',
+    }),
+    cargaEstudiantesPie(idCurso) {
+      // fetchAlumnosPie
+      this.optionsAlumnos = []
+      this.fetchAlumnosPie(idCurso).then(() => {
+        this.getAlumnos.forEach(alumno => {
+          const title = alumno.nombre+' '+alumno.primer_apellido+' '+alumno.segundo_apellido
+          this.optionsAlumnos.push({
+            value: alumno.id_persona_rol,
+            title,
+          })
+        })
+      })
+    },
+    cargarApoyos(idCurso) {
+      this.optionsEspecialistas = []
+      const especialistas = [
+        {
+          value: 15, // id_persona_rol
+          id: 15,
+          title: 'Consuelo Contreras Baeza - Fonoaudiólogo/a',
+        },
+        {
+          value: 16, // id_persona_rol
+          id: 16,
+          title: 'Karen Quiroga - Terapeuta ocupacional',
+        },
+        {
+          value: 17, // id_persona_rol
+          id: 17,
+          title: 'Camila Rivera - Psicólogo/a',
+        },
+      ]
+      especialistas.forEach(especialista => {
+        if (typeof this.planApoyo.apoyoEspecializado !== 'undefined' || this.planApoyo.apoyoEspecializado.length !== 0) {
+          const apoyoIngresado = this.planApoyo.apoyoEspecializado.find(a => a.value === especialista.value)
+
+          if (apoyoIngresado) {
+            this.optionsEspecialistas.push({
+              value: especialista.value,
+              title: especialista.title,
+              disabled: true,
+            })
+          } else {
+            this.optionsEspecialistas.push({
+              value: especialista.value,
+              title: especialista.title,
+            })
+          }
+        } else {
+          this.optionsEspecialistas.push({
+            value: especialista.value,
+            title: especialista.title,
+          })
+        }
+      })
+    },
     submitOption() {
-      console.log('this.planApoyo :', this.planApoyo)
       this.v$.planApoyo.$touch()
-      // if (!this.v$.planApoyo.$invalid) {
-      //   this.cargando = true
-      //   this.$emit('processForm', this.planApoyo)
-      //   this.cargando = false
-      // }
+      if (!this.v$.planApoyo.$invalid) {
+        const data = {
+          descripcion: this.planApoyo.descripcion,
+          observaciones: this.planApoyo.observaciones,
+          fecha_inicio: this.planApoyo.fecha_inicio,
+          fecha_termino: this.planApoyo.fecha_termino,
+          alumno: this.planApoyo.alumno,
+          apoyoEspecializado: this.planApoyo.apoyoEspecializado,
+          horarios: this.horarios,
+        }
+        this.$emit('processForm', data)
+      }
     },
     dateDisabled(ymd, date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and

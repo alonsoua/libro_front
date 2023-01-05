@@ -1,55 +1,72 @@
 <template>
-  <div v-if="selectedEstablecimiento">
-    <b-overlay
-      :show="spinner"
-      spinner-variant="primary"
-      :variant="$store.state.appConfig.layout.skin"
-    >
-      <establecimientosForm
-        btnSubmit="Editar Establecimiento"
-        :establecimiento="selectedEstablecimiento"
-        @processForm="editar"
-      />
-    </b-overlay>
-  </div>
+  <b-overlay
+    :show="spinner"
+    spinner-variant="primary"
+    :variant="$store.state.appConfig.layout.skin"
+  >
+    <aplicacionForm
+      :nombreModal="modal"
+      title="Editar la acción de aplicación de las estrategias diversificadas planificadas"
+      :aplicacion="data.item"
+      @processForm="editar"
+    />
+  </b-overlay>
 </template>
 
 <script>
-
 import { BOverlay } from 'bootstrap-vue'
 import { mapActions, mapState } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import establecimientosForm from './components/EstablecimientosForm.vue'
+import aplicacionForm from './AplicacionForm.vue'
 
 export default {
   components: {
-    establecimientosForm,
     BOverlay,
+    aplicacionForm,
   },
   data() {
     return {
       spinner: false,
     }
   },
-  computed: {
-    ...mapState('establecimientos', ['selectedEstablecimiento']),
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+    idCurso: {
+      type: Number,
+      required: true,
+    },
+    modal: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions({ updateEstablecimiento: 'establecimientos/updateEstablecimiento' }),
-    editar(establecimiento) {
-      this.spinner = true
-      this.updateEstablecimiento(establecimiento).then(() => {
-        const errorEstablecimientos = store.state.establecimientos
-        const errorMessage = errorEstablecimientos.errorMessage.errors
-        if (!errorEstablecimientos.error) {
+    ...mapActions({
+      updateAplicacion: 'III_1_a_acciones_de_aplicacion/updateAplicacion',
+      fetchAplicaciones: 'III_1_a_acciones_de_aplicacion/fetchAplicaciones',
+    }),
+    editar(aplicacion) {
+      const data = {
+        id: aplicacion.id,
+        acciones: aplicacion.acciones,
+        evaluacion: aplicacion.evaluacion,
+        id_detalle_estrategia: aplicacion.id_detalle_estrategia,
+      }
+      this.updateAplicacion(data).then(() => {
+        const statusAplicacion = store.state.III_1_a_acciones_de_aplicacion.status
+        if (statusAplicacion === 'success') {
+          this.fetchAplicaciones(this.idCurso)
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Establecimiento editado 👍',
-              text: `El establecimiento "${establecimiento.nombre}" fue editado con éxito!`,
+              title: 'Acción guardada 👍',
               icon: 'CheckIcon',
+              text: 'La acción fue editada con éxito!',
               variant: 'success',
             },
           },
@@ -57,23 +74,12 @@ export default {
             position: 'bottom-right',
             timeout: 4000,
           })
-          this.$router.replace({
-            name: 'establecimientos',
-          })
-        } else if (errorMessage.nombre) {
+          this.$bvModal.hide(this.modal)
+        }
+        else {
           this.$swal({
             title: 'Error!',
-            text: `${errorMessage.nombre[0]}!`,
-            icon: 'error',
-            customClass: {
-              confirmButton: 'btn btn-primary',
-            },
-            buttonsStyling: false,
-          })
-        } else if (errorEstablecimientos.error) {
-          this.$swal({
-            title: 'Error!',
-            text: 'Ingreso de datos fraudulento!',
+            text: 'Error',
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',
@@ -81,7 +87,6 @@ export default {
             buttonsStyling: false,
           })
         }
-        this.spinner = false
       })
     },
   },

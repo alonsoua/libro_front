@@ -31,7 +31,9 @@ export default function useCalendarEventHandler(props, clearForm, emit) {
   const calendarOptions = computed(() => store.state.calendar.calendarOptions)
 
   const onSubmit = () => {
+    console.log('1 :', 1)
     const eventData = JSON.parse(JSON.stringify(eventLocal))
+    console.log('eventData :', eventData)
 
     // * If event has id => Edit Event
     // Emit event for add/update event

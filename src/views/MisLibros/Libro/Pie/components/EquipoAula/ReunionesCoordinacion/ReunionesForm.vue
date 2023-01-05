@@ -38,7 +38,7 @@
               <b-form-datepicker
                 v-model="reunion.fecha"
                 id="fecha"
-                placeholder="Selecciona una fecha"
+                placeholder="Abrir calendario"
                 hide-header
                 :date-format-options="{
                   year: 'numeric',
@@ -77,14 +77,16 @@
               label="Hora *"
               label-for="horario"
             >
-              <b-input-group class='mb-1'>
+              <b-input-group>
                 <cleave
                   id="time"
                   v-model='reunion.horario'
-                  class="form-control"
                   :raw="false"
                   :options="time"
                   placeholder="hh:mm"
+                  :class="v$.reunion.horario.$error === true
+                    ? 'form-control border-danger rounded'
+                    : 'form-control'"
                 />
 
                 <b-input-group-append>
@@ -98,23 +100,20 @@
                     right
                     locale='es-CL'
                     no-close-button
-                    :state="v$.reunion.horario.$error === true
-                      ? false
-                      : null"
-                    @blur.native="v$.reunion.horario.$touch"
                   />
                 </b-input-group-append>
               </b-input-group>
               <!-- Mensajes Error Validación -->
-              <b-form-invalid-feedback
+              <div
                 v-if="v$.reunion.horario.$error"
-                id="horarioInfo"
-                class="text-right"
+                id="diaInfo"
+                class="text-danger text-right"
+                style="font-size: 0.857rem;"
               >
                 <p v-for="error of v$.reunion.horario.$errors" :key="error.$uid">
                   {{ error.$message }}
                 </p>
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </b-col>
 
@@ -130,7 +129,7 @@
               <v-select
                 v-model="reunion.asistentes"
                 multiple
-                placeholder="Selecciona los asistentes"
+                placeholder="Selecciona los asistentes..."
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 label="texto"
                 :options="asistentesOption"
@@ -202,6 +201,8 @@ import {
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 
+import { mapGetters, mapActions } from 'vuex'
+
 // CLEAVE
 import Cleave from 'vue-cleave-component'
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -250,11 +251,30 @@ export default {
         timePattern: ['h', 'm'],
       },
       cargando: true,
-      asistentesOption: [
-        { id: 1, texto: 'Raul Retamal Cortes' },
-        { id: 2, texto: 'Alonso Bastián Ugarte Álvarez' },
-      ],
+      asistentesOption: [],
     }
+  },
+  computed: {
+    ...mapGetters({
+      getEquipoPie: 'personas/getEquipoPie',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
+    // Vuexy
+    sortOptions() {
+      // Create an options list from our fields
+      return this.fields
+        .filter(f => f.sortable)
+        .map(f => ({ text: f.label, value: f.key }))
+    },
+  },
+  watch: {
+    getEquipoPie(val) {
+      this.asistentesOption = []
+      this.asistentesOption = this.getEquipoPie
+    },
+    getLibroSelected(val) {
+      this.cargarEquipo(this.getLibroSelected.id)
+    },
   },
   props: {
     nombreModal: {
@@ -293,7 +313,19 @@ export default {
       }
     }
   },
+  mounted() {
+    this.cargarEquipo(this.getLibroSelected.id)
+  },
   methods: {
+    ...mapActions({
+      fetchEquipoPie: 'personas/fetchEquipoPie',
+    }),
+    cargarEquipo(idCurso) {
+      // this.cargando = true
+      this.fetchEquipoPie(idCurso).then(() => {
+        // this.cargando = false
+      })
+    },
     submitOption() {
       this.v$.reunion.$touch()
         // this.cargando = true

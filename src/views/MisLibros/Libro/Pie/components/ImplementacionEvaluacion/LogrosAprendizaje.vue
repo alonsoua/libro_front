@@ -28,14 +28,6 @@
         <!-- <inputFiltro
           :filter.sync="filter"
         /> -->
-
-        <!-- CREAR -->
-        <logros-aprendizaje-create
-          submitTitle="Guardar Logro"
-          title="Registrar logros de aprendizaje"
-        />
-        <!-- editar debe enviar id y si cambia  -->
-
       </b-col>
       <b-col
         md="4"
@@ -43,23 +35,21 @@
         class="my-1"
       >
         <!-- BOTON CREAR -->
-        <!-- <btnCrear
-          accion="Coordinar"
-          texto="Reunión"
-          modulo="reuniones_coordinacion"
-          @processAdd="addReunionesCoordinacion"
-        /> -->
         <div
           class="d-flex align-items-center justify-content-end"
         >
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Registrar Logros
-          </b-button>
+          <!-- CREAR -->
+          <logros-aprendizaje-create
+            :idCurso="getLibroSelected.id"
+          />
+
+          <!-- BOTON CREAR -->
+          <btn-crear-modal
+            accion="Registrar"
+            texto="Logros"
+            modal="modal-create"
+            :modulo="nombre_permiso"
+          />
         </div>
       </b-col>
 
@@ -69,7 +59,8 @@
           small
           hover
           noCollapse
-          class="mt-1"
+          bordered
+          class="mt-1 rounded"
           responsive
           :per-page="perPage"
           :current-page="currentPage"
@@ -84,12 +75,6 @@
           @filtered="onFiltered"
         >
 
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
-
           <!-- Cargando -->
           <template #table-busy>
             <div class="text-center text-danger my-2">
@@ -97,64 +82,27 @@
             </div>
           </template>
 
-          <!-- Header: Check -->
-          <!-- <template #head(colCheck)="data">
-
-            <b-form-checkbox
-              :id="data.label"
-              v-model="chkTodo"
-            />
-
-          </template>
-
-          <!-- Column: Check
-          <template #cell(colCheck)="data">
-
-            <b-form-checkbox
-              :id="`chk-${data.item.id}`"
-              v-model="data.item.chkSelected"
-            />
-
-          </template> -->
-
           <!-- Column: alumnos -->
           <template #cell(alumnos)="data">
-            <div
-              v-for="(alumno, key) in data.item.alumnos"
-              :key="key"
-            >
-              - {{alumno.nombre }}
+            <div>
+              {{ data.item.nombre }} {{ data.item.primer_apellido }} {{ data.item.segundo_apellido }}
             </div>
           </template>
 
-          <!-- Column: totalFirmas -->
-          <template #cell(totalFirmas)="data">
-            <div
-              v-for="(asistente, key) in data.item.asistentes"
-              :key="key"
-            >
-              - {{ asistente.nombre }}
-            </div>
-          </template>
-
-          <!-- COLUMNA ESTADO -->
-          <template #cell(estado)="data">
-            <colEstado
-              :data="data"
-              modulo="reunionesCoordinaciones"
-              @processUpdateEstado="updateEstado"
-            />
-          </template>
 
           <!-- Column: Action -->
           <template #cell(acciones)="data">
-            <colAccionesBtnes
-              modulo="reunionesCoordinaciones"
-              :modal="`modal-lg-${data.item.id}`"
+
+            <logros-aprendizaje-update
+              :modal="'modal-update-'+data.item.id"
               :data="data"
-              @processGoToConfig="goToConfig"
-              @processGoToUpdate="goToUpdate"
-              @processGoToClone="goToClone"
+              :idCurso="getLibroSelected.id"
+            />
+
+            <colAccionesBtnes
+              :modulo="nombre_permiso"
+              :modal="`modal-update-${data.item.id}`"
+              :data="data"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -193,14 +141,14 @@
 // ETIQUETAS
 import {
   BTable, BRow, BCol, BPagination, BFormCheckbox, BOverlay, BCardText,
-  BButton, VBModal, BAlert,
+  BButton, BAlert,
 } from 'bootstrap-vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Ripple from 'vue-ripple-directive'
 
 // COMPONENTES RECICLADOS
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
-// import btnCrear from '../../../../../components/List/btnCrear.vue'
+import btnCrearModal from '../../../../../components/List/btnCrearModal.vue'
 import btnMostrar from '../../../../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../../../../components/List/colAccionesBtnes.vue'
 import colPeriodo from '../../../../../components/List/colPeriodo.vue'
@@ -210,6 +158,8 @@ import colNombreImg from '../../../../../components/List/colNombreImg.vue'
 
 // COMPONENTES HIJOS
 import LogrosAprendizajeCreate from './LogrosAprendizaje/LogrosAprendizajeCreate.vue'
+import LogrosAprendizajeUpdate from './LogrosAprendizaje/LogrosAprendizajeUpdate.vue'
+import { formatos } from '@core/mixins/ui/formatos';
 
 export default {
   components: {
@@ -222,11 +172,10 @@ export default {
     BOverlay,
     BCardText,
     BButton,
-    VBModal,
     BAlert,
 
     // COMPONENTES RECICLADOS
-    // btnCrear,
+    btnCrearModal,
     // inputFiltro,
     colAccionesBtnes,
     btnMostrar,
@@ -237,61 +186,18 @@ export default {
 
     // COMPONENTES HIJOS
     LogrosAprendizajeCreate,
+    LogrosAprendizajeUpdate,
   },
   directives: {
-    'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieIII3',
       cargando: false,
       spinner: false,
-      // chk
-      items: [
-        {
-          alumnos: [
-            { nombre: 'Thomás Torres' },
-            { nombre: 'CATALINA GAETE' },
-            { nombre: 'MARTÍN LÓPEZ' },
-          ],
-          logros: '2',
-        },
-        {
-          alumnos: [
-            { nombre: 'MARTÍN LÓPEZ' },
-          ],
-          logros: '15',
-        },
-        {
-          alumnos: [
-            { nombre: 'CATALINA GAETE' },
-          ],
-          logros: '12',
-        },
-        {
-          alumnos: [
-            { nombre: 'Thomás Torres' },
-            { nombre: 'CATALINA GAETE' },
-            { nombre: 'MARTÍN LÓPEZ' },
-          ],
-          logros: '2',
-        },
-        {
-          alumnos: [
-            { nombre: 'MARTÍN LÓPEZ' },
-          ],
-          logros: '0',
-        },
-        {
-          alumnos: [
-            { nombre: 'CATALINA GAETE' },
-          ],
-          logros: '3',
-        },
-      ],
-      selectedchk: [],
-      chkTodo: null,
-      checked: null,
+      items: [],
 
       perPage: 25,
       totalRows: 1,
@@ -310,7 +216,7 @@ export default {
       fields: [
         {
           key: 'alumnos',
-          label: 'Nombre(s) estudiante(s)',
+          label: 'Estudiante',
           sortable: true,
           thStyle: {
             width: '200px !important',
@@ -320,7 +226,7 @@ export default {
         },
         {
           key: 'logros',
-          label: 'nº Logros',
+          label: 'Logros más relevantes',
           sortable: true,
           tdClass: 'text-center',
           thStyle: {
@@ -330,18 +236,18 @@ export default {
             'vertical-align': 'middle',
           },
         },
-        // {
-        //   key: 'estado',
-        //   label: 'Estado',
-        //   sortable: true,
-        //   tdClass: 'text-center',
-        //   thStyle: {
-        //     'text-align': 'center',
-        //     width: '100px !important',
-        //     display: 'table-cell',
-        //     'vertical-align': 'middle',
-        //   },
-        // },
+        {
+          key: 'comentarios',
+          label: 'Comentarios y sugerencias',
+          sortable: true,
+          tdClass: 'text-center',
+          thStyle: {
+            width: '100px !important',
+            'text-align': 'center',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
       ],
       fieldAcciones: [
         {
@@ -359,7 +265,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getReunionesCoordinacions: 'reunionesCoordinaciones/getReunionesCoordinacions' }),
+    ...mapGetters({
+      getLogros: 'III_3_logros/getLogros',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -367,161 +276,69 @@ export default {
         .filter(f => f.sortable)
         .map(f => ({ text: f.label, value: f.key }))
     },
-    disabledExport() {
-      return this.chkCount()
-    },
   },
   watch: {
-    getReunionesCoordinacions(val) {
+    getLogros(val) {
       this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getReunionesCoordinacions
+      this.items = []
+      this.items = this.getLogros
     },
-    chkTodo() {
-      this.chkAll()
+    getLibroSelected(val) {
+      this.cargarLogros(this.getLibroSelected.id)
     },
   },
   mounted() {
-    this.cargarReunionesCoordinacions()
+    this.cargarLogros(this.getLibroSelected.id)
     this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchReunionesCoordinacions: 'reunionesCoordinaciones/fetchReunionesCoordinacions',
-    //   updateReunionesCoordinacionPeriodo: 'reunionesCoordinaciones/updateReunionesCoordinacionPeriodo',
-    //   removeReunionesCoordinacions: 'reunionesCoordinaciones/removeReunionesCoordinacions',
-    // }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
+    ...mapActions({
+      fetchLogros: 'III_3_logros/fetchLogros',
+      removeLogro: 'III_3_logros/removeLogro',
+    }),
     setTableList() {
-      if (this.$can('update', 'reunionesCoordinaciones')
-        || this.$can('delete', 'reunionesCoordinaciones')
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
       ) {
         this.fields.push(this.fieldAcciones)
       }
     },
-    cargarReunionesCoordinacions() {
-      // this.fetchReunionesCoordinacions().then(() => {
-      //   this.cargando = false
-      // })
+    cargarLogros(idCurso) {
+      this.fetchLogros(idCurso).then((response) => {})
     },
-    addReunionesCoordinacion() {
-      // this.$router.replace({
-      //   name: 'reunionesCoordinaciones-create',
-      // })
-    },
-    updatePeriodo(reunionesCoordinacion) {
+    remove(logro) {
+      const html = this.formatHTMLSweetEliminar('el logro', logro.logros)
       this.$swal({
-        title: 'Actualizar periodo!',
-        html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' reunionesCoordinacion<br><span class="font-weight-bolder">'
-          + `${reunionesCoordinacion.nombre}</span>?`,
-        footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' reunionesCoordinacion. No se puede devolver al periodo anterior.</div>',
+        title: 'Eliminar logro!',
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, actualízalo!',
+        confirmButtonText: 'Sí, elimínalo!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          cancelButton: 'btn btn-outline-secondary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateReunionesCoordinacionPeriodo(reunionesCoordinacion).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Periodo activo actualizado!',
-          //     html:
-          //       'El periodo activo del reunionesCoordinacion<br>'
-          //       + ' <span class="font-weight-bolder">'
-          //       + `${reunionesCoordinacion.nombre}</span>`
-          //       + '<br>ha sido actualizado con éxito!',
-          //     customClass: {
-          //       confirmButton: 'btn btn-primary',
-          //     },
-          //   })
-          //   this.spinner = false
-          //   this.cargarReunionesCoordinacions()
-          // })
-        } else {
-          this.spinner = false
-          this.cargarReunionesCoordinacions()
-        }
-      })
-    },
-    updateEstado() {
-      // console.log('update')
-    },
-    goToConfig(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-config',
-      })
-    },
-    goToUpdate(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-update',
-      })
-    },
-    goToClone(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-clone',
-      })
-    },
-    remove(reunionesCoordinacion) {
-      this.$swal({
-        title: 'Eliminar reunionesCoordinacion!',
-        text: `Estás seguro que deseas eliminar el reunionesCoordinacion
-          "${reunionesCoordinacion.nombre}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          // this.removeReunionesCoordinacions(reunionesCoordinacion.id).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Eliminada con éxito!',
-          //     text: `"${reunionesCoordinacion.nombre}" ha sido eliminada!`,
-          //     customClass: {
-          //       confirmButton: 'btn btn-success',
-          //     },
-          //   })
-          //   this.spinner = false
-          // })
+          this.removeLogro(logro.id).then(() => {
+            this.$swal({
+              icon: 'success',
+              title: 'Eliminado con éxito!',
+              text: `El logro ha sido eliminado!`,
+              customClass: {
+                confirmButton: 'btn btn-success',
+              },
+            })
+            this.cargarLogros(this.getLibroSelected.id)
+            this.spinner = false
+          })
         } else {
           this.spinner = false
         }
       })
-    },
-
-    // Checkbox select item Table
-    chkAll() {
-      this.items.forEach(item => {
-        const cliente = this.items.find(i => i.id === item.id)
-        cliente.chkSelected = this.chkTodo
-      })
-    },
-    chkCount() {
-      let chkCount = 0
-      this.items.forEach(item => {
-        chkCount = item.chkSelected
-          ? chkCount + 1
-          : chkCount
-      })
-      return chkCount === 0
     },
 
     // Vuexy

@@ -49,4 +49,20 @@ export default [
       ],
     },
   },
+  {
+    path: '/carga-horaria',
+    name: 'carga-horaria',
+    component: () => import('@/views/Mantenedores/Horarios/CargaHoraria.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.getters['auth/authenticated']) {
+        return next({
+          name: 'login',
+        })
+      }
+      return next()
+    },
+    meta: {
+      pageTitle: 'Configuración de carga horaria',
+    },
+  },
 ]

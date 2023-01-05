@@ -34,7 +34,7 @@ export default {
     async signIn({ dispatch }, credenciales) {
       // Post a la api para singin
       try {
-        const response = await axios({
+        const { data } = await axios({
           method: 'POST',
           url: 'login',
           data: {
@@ -43,33 +43,24 @@ export default {
           },
         })
         // Enviamos el token a la actions attempt
-        return dispatch('attempt', response.data)
+        return dispatch('attempt', data.access_token)
       } catch (e) {
         return e.response.data
       }
     },
-    async attempt({ dispatch, commit, state }, data) {
-      if (typeof data === 'string' && data !== null) {
-        data = JSON.parse(data);
-      } else {
-        // return dispatch('unautorized')
-      }
-
-      if (data !== null && data.access_token) {
-        commit('SET_TOKEN', data.access_token)
+    async attempt({ commit, state }, token) {
+      if (token) {
+        commit('SET_TOKEN', token)
       }
       commit('SET_ERROR', null)
       if (!state.token) {
         return
       }
       try {
-        // const response = await axios.get('auth/me')
+        const { data } = await axios.get('me')
+
         // almacena los datos del usuario autenticado en los getters
-        // const dataUser = {
-        //   data,
-        //   'avility': data.permisos,
-        // }
-        commit('SET_USER', data)
+        commit('SET_USER', data[0])
       } catch (e) {
         commit('SET_TOKEN', null)
         commit('SET_USER', null)
@@ -77,9 +68,12 @@ export default {
       }
     },
     signOut({ commit }) {
-      console.log('signOut :', 1)
-      return axios.post('logout').then(() => {
-        console.log('2 :', 2)
+      return axios.post('logout')
+      .then((response) => {
+        // Remove userData from localStorage
+        commit('SET_TOKEN', null)
+        commit('SET_USER', null)
+      }).catch((e) => {
         commit('SET_TOKEN', null)
         commit('SET_USER', null)
       })

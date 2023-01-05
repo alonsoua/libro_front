@@ -71,8 +71,9 @@
                   id="horas_aula"
                   v-model="apoyo.horas_aula"
                   type="number"
+                  :min="2"
                   placeholder="Ingresa las horas de apoyo en aula"
-                  @keyup='apoyo.horas_aula = formatSoloNumeros(apoyo.horas_aula)'
+                  @keyup='apoyo.horas_aula = formatSoloNumerosUnDigito(apoyo.horas_aula)'
                   @blur.native="v$.apoyo.horas_aula.$touch"
                 />
                     <!-- :state="v$.apoyo.horas_aula.$error === true
@@ -115,7 +116,7 @@
                   v-model="apoyo.horas_fuera"
                   type="number"
                   placeholder="Ingresa las horas de apoyo fuera del aula"
-                  @keyup='apoyo.horas_fuera = formatSoloNumeros(apoyo.horas_fuera)'
+                  @keyup='apoyo.horas_fuera = formatSoloNumerosUnDigito(apoyo.horas_fuera)'
                   @blur.native="v$.apoyo.horas_fuera.$touch"
                 />
                   <!-- :state="v$.apoyo.horas_fuera.$error === true
@@ -187,6 +188,8 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 
+import { mapGetters, mapActions } from 'vuex'
+
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, email, helpers, numeric } from '@vuelidate/validators'
@@ -229,29 +232,40 @@ export default {
   data() {
     return {
       cargando: true,
-      asignaturasOption: [
-        { id: 1, texto: 'Lenguaje' },
-        { id: 2, texto: 'Matemáticas' },
-        { id: 3, texto: 'Historia' },
-      ],
-      ambitosOption: [
-        { id: 1, texto: 'Ambito 1' },
-        { id: 2, texto: 'Ambito 2' },
-        { id: 3, texto: 'Ambito 3' },
-      ],
-      aprendizajeOption: [
-        { id: 1, texto: 'Aprendizaje 1' },
-        { id: 2, texto: 'Aprendizaje 2' },
-        { id: 3, texto: 'Aprendizaje 3' },
-      ],
-      // required,
-      // email,
-      // dependenciasOption: [
-      //   { value: 'Municipal', text: 'Municipal' },
-      //   { value: 'Paricular', text: 'Paricular' },
-      //   { value: 'Particular Subvencionado', text: 'Particular Subvencionado' },
+      asignaturasOption: [],
+      // ambitosOption: [
+      //   { id: 1, texto: 'Ambito 1' },
+      //   { id: 2, texto: 'Ambito 2' },
+      //   { id: 3, texto: 'Ambito 3' },
+      // ],
+      // aprendizajeOption: [
+      //   { id: 1, texto: 'Aprendizaje 1' },
+      //   { id: 2, texto: 'Aprendizaje 2' },
+      //   { id: 3, texto: 'Aprendizaje 3' },
       // ],
     }
+  },
+  computed: {
+    ...mapGetters({
+      getAsignaturasCurso: 'asignaturas/getAsignaturasCurso',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
+    // Vuexy
+    sortOptions() {
+      // Create an options list from our fields
+      return this.fields
+        .filter(f => f.sortable)
+        .map(f => ({ text: f.label, value: f.key }))
+    },
+  },
+  watch: {
+    getAsignaturasCurso(val) {
+      this.asignaturasOption = []
+      this.asignaturasOption = this.getAsignaturasCurso
+    },
+    getLibroSelected(val) {
+      this.cargarAsignaturas(this.getLibroSelected.id)
+    },
   },
   props: {
     nombreModal: {
@@ -290,7 +304,19 @@ export default {
       }
     }
   },
+  mounted() {
+    this.cargarAsignaturas(this.getLibroSelected.id)
+  },
   methods: {
+    ...mapActions({
+      fetchAsignaturasCurso: 'asignaturas/fetchAsignaturasCurso',
+    }),
+    cargarAsignaturas(idCurso) {
+      // this.cargando = true
+      this.fetchAsignaturasCurso(idCurso).then(() => {
+        // this.cargando = false
+      })
+    },
     submitOption() {
       this.v$.apoyo.$touch()
       if (!this.v$.apoyo.$invalid) {

@@ -1,4 +1,7 @@
 export default [
+  // {
+  //   header: 'Apps & Pages',
+  // },
   {
     title: 'Configuraciones',
     icon: 'ToolIcon',

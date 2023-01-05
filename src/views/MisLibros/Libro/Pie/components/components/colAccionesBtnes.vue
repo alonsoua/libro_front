@@ -3,7 +3,7 @@
 
     <!-- v-if="$can('update', modulo)" -->
     <b-button
-      variant="secondary"
+      variant="success"
       class="btn-sm btn-icon"
       title="Editar"
       @click="$emit('processGoToUpdate', data.item)"
@@ -15,7 +15,7 @@
 
     <!-- v-if="$can('delete', modulo)" -->
     <b-button
-      variant="secondary"
+      variant="danger"
       class="btn-sm btn-icon"
       @click="!estado ? '' : $emit('processRemove', data.item.id)"
       :title="!estado ? moduloCreado + ': ' + cantidad : 'Eliminar' "

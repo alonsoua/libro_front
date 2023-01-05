@@ -1,6 +1,6 @@
 <template>
-  <!-- v-if="$can('create', modulo)" -->
-   <div
+    <!-- v-if="$can('create', modulo)" -->
+  <div
     class="d-flex align-items-center justify-content-end"
   >
       <!-- v-b-modal.${modal} -->

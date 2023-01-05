@@ -52,12 +52,20 @@ export default {
       fetchReuniones: 'I_2_reuniones/fetchReuniones',
     }),
     editar(reunion) {
-       const data = {
+      let asistentes = []
+      reunion.asistentes.forEach(asistente => {
+        if (typeof asistente.id === 'undefined') {
+          asistentes.push(asistente)
+        } else {
+          asistentes.push(asistente.id)
+        }
+      })
+      const data = {
         id: reunion.id,
         fecha: reunion.fecha,
         horario: reunion.horario,
         acuerdos: reunion.acuerdos,
-        personas: reunion.asistentes,
+        personas: asistentes,
         id_cursos: this.idCurso,
         id_periodo: 1,
       }
@@ -83,7 +91,7 @@ export default {
         else {
           this.$swal({
             title: 'Error!',
-            text: 'Error',
+            text: store.state.I_2_reuniones.message,
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',

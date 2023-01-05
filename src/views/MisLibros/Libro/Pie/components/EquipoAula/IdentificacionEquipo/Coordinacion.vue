@@ -3,29 +3,35 @@
     :show="!cargando"
     spinner-variant="primary"
     :variant="$store.state.appConfig.layout.skin"
+    class="mb-25"
   >
+    <b-row>
+      <b-col md="8">
+        <b-card-text
+          style="margin-top: 8px;"
+          class="h5 mb-1"
+        >
+          Coordinación del Programa
+        </b-card-text>
+      </b-col>
+      <b-col md="4" class="mt-2">
+      </b-col>
+    </b-row>
     <b-form
       ref="form"
       :style="{height: trHeight}"
-      class="repeater-form mb-2"
-      style="min-height: 552px !important; max-height: 552px !important; margin: 0px -17px 0px 0px; padding: 0px 14px 0px 0px;"
+      class="repeater-form mt-0 overflow-auto border-light"
+      style="min-height: 380px !important; max-height: 380px !important; margin: 0px 0px 15px 0px; padding: 20px 18px 0px 18px;"
       @submit.prevent="repeateAgain"
-
     >
-      <b-card-text
-        style="margin-top: 8px;"
-        class="h5"
-      >
-        Coordinación del Programa
-      </b-card-text>
       <!-- Row Loop -->
       <b-row
-        class="mt-2"
+        class=""
         ref="row"
       >
 
         <!-- EN EL ESTABLECIMIENTO -->
-        <b-col md="10">
+        <b-col md="9">
           <b-form-group
             label="En el establecimiento"
             label-for="establecimiento"
@@ -35,6 +41,7 @@
               id="establecimiento"
               type="text"
               placeholder="Ingresa el coordinador en el establecimiento"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -47,14 +54,20 @@
             class="text-center"
           >
             <firmas
+              :idModal="1"
               :data.sync="item"
+              :modulo="nombre_permiso"
               text="Firmar identificación de equipo de aula como coordinador en el establecimiento"
             />
           </b-form-group>
         </b-col>
 
+        <b-col cols="12">
+          <hr class="mt-0">
+        </b-col>
+
         <!-- EN EL DAEM -->
-        <b-col md="10">
+        <b-col md="9">
           <b-form-group
             label="En el DAEM (si el PIE es comunal)"
             label-for="daem"
@@ -64,6 +77,7 @@
               id="daem"
               type="text"
               placeholder="Ingresa el coordinador en DAEM"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -76,15 +90,21 @@
             class="text-center"
           >
             <firmas
+              :idModal="2"
               :data.sync="item"
+              :modulo="nombre_permiso"
               text="Firmar identificación de equipo de aula como coordinador en el DAEM"
             />
           </b-form-group>
         </b-col>
 
+        <b-col cols="12">
+          <hr class="mt-0">
+        </b-col>
+
 
         <!-- CON REDES DE APOYO -->
-        <b-col md="10">
+        <b-col md="9">
           <b-form-group
             label="Con redes de apoyo"
             label-for="redes"
@@ -94,6 +114,7 @@
               id="redes"
               type="text"
               placeholder="Ingresa el coordinador de redes de apoyo"
+              :plaintext="!$can('update', nombre_permiso)"
             />
           </b-form-group>
         </b-col>
@@ -106,7 +127,9 @@
             class="text-center"
           >
             <firmas
+              :idModal="3"
               :data.sync="item"
+              :modulo="nombre_permiso"
               text="Firmar identificación de equipo de aula como red de apoyo"
             />
           </b-form-group>
@@ -115,25 +138,26 @@
 
       <colLinea />
 
-      <!-- Action Buttons -->
-      <b-row
-        ref="row"
-      >
-        <b-col md="8">
-        </b-col>
-
-        <b-col md="4">
-          <btnSubmit
-            v-if="cargando"
-            class="float-right"
-            variant="primary"
-            :btnText="btnSubmit"
-            @processBtn="submitOption"
-          />
-        </b-col>
-
-      </b-row>
     </b-form>
+    <!-- Action Buttons -->
+    <b-row
+      ref="row"
+    >
+      <b-col md="8">
+      </b-col>
+
+      <b-col md="4">
+        <btnSubmit
+          v-if="cargando"
+          class="mt-0 mb-1 pr-1 pl-1 float-right"
+          variant="primary"
+          :btnText="btnSubmit"
+          :modulo="nombre_permiso"
+          @processBtn="submitOption"
+        />
+      </b-col>
+
+    </b-row>
   </b-overlay>
 </template>
 
@@ -180,10 +204,11 @@ export default {
   mixins: [heightTransition],
   data() {
     return {
-
+      nombre_permiso: 'pieI1',
       cargando: true,
+      item: {},
       coordinacion: {
-        daem: 'Natalia Barrera Garcia',
+        daem: 'Daniela Herrera Duarte',
         establecimiento: 'Paola Frez Ojeda',
         redes: 'Carmen Tapia Pradenas',
       },

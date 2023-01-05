@@ -41,11 +41,10 @@
         class="my-50"
       >
 
-        <!-- modulo="Estrategia" -->
         <!-- CREAR y EDITAR -->
         <estrategiasCreate
           submitTitle="Guardar Estrategia"
-          title="Registrar estrategia diversificada"
+          title="Registrar estrategia diversificada que aplicará el profesor de educación regular para el curso"
           :idCurso.sync="getLibroSelected.id"
         />
 
@@ -54,6 +53,7 @@
           accion="Registrar"
           texto="Estrategia"
           modal="modal-create"
+          :modulo="nombre_permiso"
         />
 
       </b-col>
@@ -98,6 +98,7 @@
             <col-acciones-btnes
               :modal="'modal-update-'+data.item.id"
               :data="data"
+              :modulo="nombre_permiso"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -155,6 +156,8 @@ import colNombreImg from '../../../../../../components/List/colNombreImg.vue'
 import estrategiasCreate from './Estrategias/EstrategiasCreate.vue'
 import estrategiasUpdate from './Estrategias/EstrategiasUpdate.vue'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
 
 export default {
   components: {
@@ -188,8 +191,10 @@ export default {
     'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieII1B',
       cargando: false,
       spinner: false,
       items: [],
@@ -217,8 +222,7 @@ export default {
           label: 'Estrategia',
           sortable: true,
           thStyle: {
-            'text-align': 'center',
-            width: '330px !important',
+            width: '250px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -236,13 +240,13 @@ export default {
           },
         },
         {
-          key: 'periodo',
+          key: 'nombre_periodo',
           label: 'Período de tiempo en que se aplicará',
           sortable: true,
           tdClass: 'text-center',
           thStyle: {
             'text-align': 'center',
-            width: '100px !important',
+            width: '120px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -252,8 +256,7 @@ export default {
           label: 'Criterios para la evaluación de la estrategia',
           sortable: true,
           thStyle: {
-            'text-align': 'center',
-            width: '200px !important',
+            width: '250px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -308,11 +311,11 @@ export default {
       removeEstrategia: 'II_1_b_estrategias/removeEstrategia',
     }),
     setTableList() {
-      this.fields.push(this.fieldAcciones)
-      // if (this.$can('update', 'II_1_b_estrategias')
-      //   || this.$can('delete', 'II_1_b_estrategias')
-      // ) {
-      // }
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
+      ) {
+        this.fields.push(this.fieldAcciones)
+      }
     },
     cargarEstrategias(idCurso) {
       this.fetchEstrategias(idCurso).then(() => {
@@ -320,17 +323,17 @@ export default {
       })
     },
     remove(estrategia) {
+      const html = this.formatHTMLSweetEliminar('la estrategia', estrategia.estrategia)
       this.$swal({
         title: 'Eliminar estrategia!',
-        text: `Estás seguro que deseas eliminar el estrategia:
-          "${estrategia.estrategia}"?`,
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, eliminala!',
+        confirmButtonText: 'Sí, elimínala!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          cancelButton: 'btn btn-outline-secondary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
@@ -343,7 +346,7 @@ export default {
           this.removeEstrategia(data).then(() => {
             this.$swal({
               icon: 'success',
-              title: 'Eliminada con éxito!',
+              title: 'Eliminado con éxito!',
               text: `La estrategia ha sido eliminada!`,
               customClass: {
                 confirmButton: 'btn btn-success',

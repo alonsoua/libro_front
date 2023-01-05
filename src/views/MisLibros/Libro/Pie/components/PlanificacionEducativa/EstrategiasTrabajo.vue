@@ -17,7 +17,7 @@
         ref="row"
       >
         <!-- NOMBRE -->
-        <b-col md="3">
+        <b-col md="2">
           <b-form-group
             label="Estrategias de participación"
             label-for="participacion"
@@ -36,7 +36,10 @@
                 v-model="item.descripcion"
                 id="descripcion"
                 type="text"
-                placeholder="Ingresa una descripción"
+                :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa una descripción'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
                 row="2"
               /> -->
           </b-form-group>
@@ -52,7 +55,10 @@
               v-model="item.descripcion"
               id="descripcion"
               type="text"
-              placeholder="Ingresa una descripción"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa una descripción'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               row="2"
             />
           </b-form-group>
@@ -68,14 +74,21 @@
               v-model="item.seguimiento"
               id="seguimiento"
               type="text"
-              placeholder="Ingresa el seguimiento"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa el seguimiento'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               row="2"
             />
           </b-form-group>
         </b-col>
 
         <!-- Evaluación -->
-        <b-col md="3">
+        <b-col
+          :md="item.participacion === 'Otra acción'
+            ? 3
+            : 4"
+        >
           <b-form-group
             label="Evaluación"
             label-for="evaluacion"
@@ -84,14 +97,17 @@
               v-model="item.evaluacion"
               id="evaluacion"
               type="text"
-              placeholder="Ingresa la evaluación"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa la evaluación'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               row="2"
             />
           </b-form-group>
         </b-col>
 
         <!-- Remove Button -->
-        <!-- <b-col
+        <b-col
           v-if="index > 2"
           lg="1"
           md="1"
@@ -101,7 +117,7 @@
             v-ripple.400="'rgba(234, 84, 85, 0.15)'"
             variant="outline-danger"
             class="mt-0 mt-md-3 float-left btn btn-sm"
-            @click="deleteEstrategiaDetalle(index, item.id)"
+            @click="removeAccion(index, item.id_estrategia_detalle)"
           >
             <feather-icon
               icon="TrashIcon"
@@ -110,11 +126,12 @@
           </b-button>
         </b-col>
         <b-col cols="12">
-          <hr>
-        </b-col> -->
+          <colLinea/>
+        </b-col>
       </b-row>
-      <!-- <b-button
-        :disabled="items.length >= 6"
+      <b-button
+        v-if="$can('create', nombre_permiso)"
+        :disabled="items.length >= 9"
         v-ripple.400="'rgba(255, 255, 255, 0.15)'"
         variant="outline-primary"
         @click="repeateAgain"
@@ -123,8 +140,8 @@
           icon="PlusIcon"
           class="mr-25"
         />
-        <span>Agregar estrategia</span>
-      </b-button> -->
+        <span>Agregar acción</span>
+      </b-button>
 
       <!-- OBSERVACIONES -->
       <b-row class="mt-3">
@@ -135,7 +152,10 @@
           >
             <b-form-textarea
               id="observaciones"
-              placeholder="Ingresa las observaciones"
+              :placeholder="$can('update', nombre_permiso)
+                ? 'Ingresa las observaciones'
+                : 'Sin información'"
+              :plaintext="!$can('update', nombre_permiso)"
               v-model="estrategia.observaciones"
               rows="4"
               :state="v$.estrategia.observaciones.$error === true
@@ -160,13 +180,14 @@
         </b-col>
       </b-row>
 
-      <colLinea />
+      <colLinea/>
 
       <!-- Action Buttons -->
       <btnSubmit
         class="float-right"
         variant="primary"
         :disabled="this.v$.estrategia.$errors.length > 0"
+        :modulo="nombre_permiso"
         :btnText="btnSubmit"
         @processBtn="submitOption"
       />
@@ -195,6 +216,9 @@ import { mapGetters, mapActions } from 'vuex'
 import colLinea from '../../../../../components/Form/colLinea.vue'
 import btnSubmit from '../../../../../components/Form/btnSubmit.vue'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
+
 // VALIDACIONES
 import useVuelidate from '@vuelidate/core'
 import { required
@@ -218,7 +242,7 @@ export default {
   directives: {
     Ripple,
   },
-  mixins: [heightTransition],
+  mixins: [heightTransition, formatos],
   computed: {
     ...mapGetters({
       getEstrategia: 'II_5_b_estrategias_trabajo/getEstrategia',
@@ -228,6 +252,7 @@ export default {
   },
   data() {
     return {
+      nombre_permiso: 'pieII5',
       cargando: false,
       estrategia: {},
       items: [],
@@ -288,7 +313,6 @@ export default {
       removeEstrategiaDetalle: 'II_5_b_estrategias_trabajo/removeEstrategiaDetalle',
     }),
     cargarEstrategias(idCurso) {
-      console.log('idCurso :', idCurso)
       this.cargando = true
       this.fetchEstrategia(idCurso).then(() => {
         if (typeof this.getEstrategia !== 'undefined') {
@@ -321,7 +345,7 @@ export default {
       this.items = []
       this.getEstrategiaDetalle.forEach(estrategia => {
         this.items.push({
-          id: estrategia.id,
+          id_estrategia_detalle: estrategia.id,
           participacion: estrategia.participacion,
           descripcion: estrategia.descripcion,
           seguimiento: estrategia.seguimiento,
@@ -332,14 +356,14 @@ export default {
     submitOption() {
       this.v$.estrategia.$touch()
       if (!this.v$.estrategia.$invalid) {
-        const text = `Estás seguro de actualizar las estrategias y
-          procedimientos de estrategia?`
+        const text = 'las estrategias y procedimientos de estrategia'
+        const html = this.formatHTMLSweetInfo(text, '')
         this.$swal({
           title: 'Guardar cambios!',
-          text,
+          html,
           icon: 'info',
           showCancelButton: true,
-          confirmButtonText: 'Si, guardar',
+          confirmButtonText: 'Sí, guardar',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-primary',
@@ -395,31 +419,21 @@ export default {
       this.spinner = true
       this.updateEstrategia(estrategia).then((reponse) => {
         this.msjActualizar()
-        this.cargarEstrategias(this.getLibroSelected.id)
-        this.editarEstrategiaDetalle(estrategia)
+        this.deleteEstrategiaDetalle(estrategia)
+        // this.cargarEstrategias(this.getLibroSelected.id)
         this.spinner = false
       })
 
     },
-
-    editarEstrategiaDetalle(estrategia) {
-      this.items.forEach(item => {
-        const data = {
-          id: item.id,
-          id_estrategia_familia: estrategia.id,
-          participacion: item.participacion,
-          descripcion: item.descripcion,
-          seguimiento: item.seguimiento,
-          evaluacion: item.evaluacion,
+    deleteEstrategiaDetalle(estrategia) {
+      this.getEstrategiaDetalle.forEach(estrategiaDetalle => {
+        const data = {
+          id_estrategia_detalle: estrategiaDetalle.id,
+          id_curso: estrategia.id_curso,
         }
-        this.updateEstrategiaDetalle(data).then((response) => {
-          console.log('response :', response)
-
-          // if Registro no encontrado, lo
-          this.cargarEstrategias(this.getLibroSelected.id)
-          this.spinner = false
-        })
+        this.removeEstrategiaDetalle(data)
       })
+      this.agregarEstrategiaDetalle(estrategia)
     },
 
     msjActualizar() {
@@ -438,43 +452,42 @@ export default {
       })
     },
 
-    deleteEstrategiaDetalle(index, id_estrategia_detalle) {
-      this.$swal({
-        title: 'Eliminar estrategia!',
-        text: `Estás seguro que deseas eliminar la estrategia?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, elimínala!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          const data = {
-            id_curso: this.getLibroSelected.id,
-            id_estrategia_detalle,
-          }
-          this.removeEstrategiaDetalle(data).then(() => {
+    removeAccion(index, id_estrategia_detalle) {
+      if (typeof id_estrategia_detalle !== 'undefined') {
+        const info = this.getEstrategia.message === 'Registro no existe'
+          ? ''
+          : 'Este cambió se hará efectivo al dar click en el botón Actualizar Estrategias.'
+        const html = this.formatHTMLSweetEliminar('la acción', '', info)
+        this.$swal({
+          title: 'Eliminar acción!',
+          html,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, elimínala!',
+          cancelButtonText: 'Cancelar',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-secondary ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          this.spinner = true
+          if (result.value) {
+            const data = {
+              id_curso: this.getLibroSelected.id,
+              id_estrategia_detalle,
+            }
             this.items.splice(index, 1)
             this.trTrimHeight(this.$refs.row[0].offsetHeight)
-            this.$swal({
-              icon: 'success',
-              title: 'Eliminada con éxito!',
-              text: `La estrategia ha sido eliminada!`,
-              customClass: {
-                confirmButton: 'btn btn-success',
-              },
-            })
             this.spinner = false
-          })
-        } else {
-          this.spinner = false
-        }
-      })
+          } else {
+            this.spinner = false
+          }
+        })
+      } else {
+        this.items.splice(index, 1)
+        this.trTrimHeight(this.$refs.row[0].offsetHeight)
+      }
     },
     resetForms() {
       this.estrategia = []
@@ -499,13 +512,6 @@ export default {
         {
           id: 3,
           participacion: 'En la evaluacion',
-          descripcion: '',
-          seguimiento: '',
-          evaluacion: '',
-        },
-        {
-          id: 4,
-          participacion: 'Otra acción',
           descripcion: '',
           seguimiento: '',
           evaluacion: '',

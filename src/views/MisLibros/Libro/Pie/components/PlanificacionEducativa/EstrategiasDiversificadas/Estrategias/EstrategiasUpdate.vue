@@ -1,7 +1,7 @@
 <template>
   <estrategias-form
     :nombreModal="modal"
-    title="Editar estrategia diversificada"
+    title="Editar estrategia diversificada que aplicará el profesor de educación regular para el curso"
     :estrategia="data.item"
     @processForm="editar"
   />
@@ -61,7 +61,7 @@ export default {
         else {
           this.$swal({
             title: 'Error!',
-            text: 'Error',
+            text: store.state.II_1_b_estrategias.message,
             icon: 'error',
             customClass: {
               confirmButton: 'btn btn-primary',

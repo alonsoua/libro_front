@@ -4,15 +4,16 @@ export default async function reuniones() {
   return 0
 }
 
-export async function fetchReuniones({ commit }, idCurso) {
+export async function fetchReuniones({ commit, dispatch }, idCurso) {
   try {
     const { data } = await axios({
       method: 'GET',
       url: `reunion/${idCurso}`,
     })
+    // console.log('/reunion Reuniones de coordinación GET con exito... ', data)
     commit('setReuniones', data)
   } catch (e) {
-    commit('reunionesError', e.response.data)
+    commit('reunionError', e.response.data)
   }
 }
 

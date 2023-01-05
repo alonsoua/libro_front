@@ -1,38 +1,69 @@
 <template>
   <b-button-group>
 
+    <!-- v-if="$can('create', modulo)" -->
+    <template
+      v-if="clone && $can('create', modulo)"
+    >
+      <b-button
+        v-if="modalClone"
+        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+        v-b-modal="modalClone"
+        variant="primary"
+        class="btn-sm btn-icon mr-25"
+        title="Duplicar"
+      >
+        <feather-icon
+          icon="CopyIcon"
+        />
+      </b-button>
+      <b-button
+        v-else
+        variant="primary"
+        class="btn-sm btn-icon mr-25"
+        title="Duplicar"
+        @click="$emit('processGoToClone', data.item)"
+      >
+        <feather-icon
+          icon="Edit3Icon"
+        />
+      </b-button>
+    </template>
+
     <!-- EDITAR en MODAL -->
     <!-- v-if="$can('update', modulo)" -->
-    <b-button
-      v-if="modal"
-      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-      v-b-modal="modal"
-      variant="success"
-      class="btn-sm btn-icon mr-25"
-      :title="'Editar ' + modal"
+    <template
+      v-if="$can('update', modulo)"
     >
-      <feather-icon
-        icon="Edit3Icon"
-      />
-    </b-button>
+      <b-button
+        v-if="modal !== 'false'"
+        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+        v-b-modal="modal"
+        variant="success"
+        class="btn-sm btn-icon mr-25"
+        :title="'Editar'"
+      >
+        <feather-icon
+          icon="Edit3Icon"
+        />
+      </b-button>
 
-    <!-- EDITAR en OTRA VISTA -->
-    <!-- v-if="$can('update', modulo)" -->
-    <b-button
-      v-else
-      variant="success"
-      class="btn-sm btn-icon mr-25"
-      :title="'Editar'"
-      @click="$emit('processGoToUpdate', data.item)"
-    >
-      <feather-icon
-        icon="Edit3Icon"
-      />
-    </b-button>
+      <b-button
+        v-else
+        variant="success"
+        class="btn-sm btn-icon mr-25"
+        :title="'Editar'"
+        @click="$emit('processGoToUpdate', data.item)"
+      >
+        <feather-icon
+          icon="Edit3Icon"
+        />
+      </b-button>
+    </template>
 
     <!-- ELIMINAR -->
-    <!-- v-if="$can('delete', modulo)" -->
     <b-button
+      v-if="$can('delete', modulo)"
       variant="danger"
       class="btn-sm btn-icon"
       @click="!estado ? '' : $emit('processRemove', data.item.id)"
@@ -81,8 +112,16 @@ export default {
     },
     modal: {
       type: String,
-      default: false,
-    }
+      default: 'false',
+    },
+    clone: {
+      type: String,
+      default: '',
+    },
+    modalClone: {
+      type: String,
+      default: 'false',
+    },
   },
   data() {
     return {

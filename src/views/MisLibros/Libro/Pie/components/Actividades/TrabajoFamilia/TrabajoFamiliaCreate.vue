@@ -1,27 +1,13 @@
 <template>
-
-  <b-modal
-    id="modal-create"
-    :title="title"
-    :ok-title="submitTitle"
-    cancel-title="Cancelar"
-    cancel-variant="outline-secondary"
-    size="xl"
-    no-close-on-backdrop
-    centered
-    @ok="agregar"
-  >
-    <trabajo-familia-form
-      :apoyo.sync="data"
-      @processForm="agregar"
-    />
-  </b-modal>
+  <trabajo-familia-form
+    nombreModal="modal-create"
+    title="Registrar trabajo con la familia, apoderados y/o con el o la estudiante"
+    :actividad.sync="data"
+    @processForm="agregar"
+  />
 </template>
 
 <script>
-import {
-  BModal, VBModal
-} from 'bootstrap-vue'
 import { mapActions } from 'vuex'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -31,15 +17,10 @@ import TrabajoFamiliaForm from './TrabajoFamiliaForm.vue'
 
 export default {
   components: {
-    // ETIQUETAS
-    BModal,
-    VBModal,
-
     // COMPONENTES
     TrabajoFamiliaForm,
   },
   directives: {
-    'b-modal': VBModal,
     Ripple,
   },
   data() {
@@ -47,66 +28,67 @@ export default {
       data: {
         alumnos: [],
         objetivos: '',
-        apoyos: [],
+        actividades: [],
       },
     }
   },
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    submitTitle: {
-      type: String,
+    idCurso: {
+      type: Number,
       required: true,
     },
   },
   methods: {
-    // ...mapActions({ createEstablecimiento: 'establecimientos/addEstablecimientos' }),
-    agregar() {
-      console.log('reunion :', this.data)
-      // this.createEstablecimiento(establecimiento).then(() => {
-      //   const errorEstablecimientos = store.state.establecimientos
-      //   const errorMessage = errorEstablecimientos.errorMessage.errors
-      //   if (!errorEstablecimientos.error) {
-      //     this.$toast({
-      //       component: ToastificationContent,
-      //       props: {
-      //         title: 'Establecimiento creado 👍',
-      //         icon: 'CheckIcon',
-      //         text: `El establecimiento "${establecimiento.nombre}" fue creado con éxito!`,
-      //         variant: 'success',
-      //       },
-      //     },
-      //     {
-      //       position: 'bottom-right',
-      //       timeout: 4000,
-      //     })
-      //     this.$router.replace({
-      //       name: 'establecimientos',
-      //     })
-      //   } else if (errorMessage.nombre) {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: `${errorMessage.nombre[0]}!`,
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   } else {
-      //     this.$swal({
-      //       title: 'Error!',
-      //       text: 'Ingreso de datos fraudulento!',
-      //       icon: 'error',
-      //       customClass: {
-      //         confirmButton: 'btn btn-primary',
-      //       },
-      //       buttonsStyling: false,
-      //     })
-      //   }
-      // })
+    ...mapActions({
+      createActividad: 'IV_actividades/addActividad',
+      fetchActividades: 'IV_actividades/fetchActividades',
+    }),
+    agregar(actividad) {
+      const data = {
+        fecha: actividad.fecha,
+        texto_1: actividad.texto_1,
+        texto_2: actividad.texto_2,
+        texto_3: actividad.texto_3,
+        texto_4: actividad.texto_4,
+        tipo: 1, //Tipo Actividad: Trabajo Familia
+        id_curso: this.idCurso,
+        personas: actividad.personas,
+      }
+      this.createActividad(data).then(() => {
+        const statusActividades = store.state.IV_actividades.status
+        if (statusActividades === 'success') {
+          const data = {
+            idCurso: this.idCurso,
+            tipo: 1, // Tipo Trabajo Comunidad
+          }
+          this.fetchActividades(data)
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Trabajo guardado 👍',
+              icon: 'CheckIcon',
+              text: 'El trabajo fue ingresado con éxito!',
+              variant: 'success',
+            },
+          },
+          {
+            position: 'bottom-right',
+            timeout: 4000,
+          })
+          this.$bvModal.hide('modal-create')
+        }
+        else {
+          this.$swal({
+            title: 'Error!',
+            text: store.state.IV_actividades.message,
+            icon: 'error',
+            customClass: {
+              confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+          })
+        }
+      })
     },
   },
 }

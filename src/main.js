@@ -14,6 +14,7 @@ import './global-components'
 
 // 3rd party plugins
 import '@/libs/portal-vue'
+import '@/libs/acl'
 import '@/libs/vue-select'
 import '@/libs/toastification'
 import '@/libs/sweet-alerts'
@@ -25,6 +26,8 @@ require('@/store/:auth/subscriber')
 
 axios.defaults.baseURL = 'http://localhost:8000/v1/'
 // axios.defaults.baseURL = 'https://apipie.softinnova.cl/v1/'
+// axios.defaults.baseURL = 'http://127.0.0.1:8000/v1/'
+
 
 
 
@@ -45,14 +48,22 @@ require('@core/scss/core.scss')
 // import assets styles
 require('@/assets/scss/style.scss')
 
-Vue.config.productionTip = false
+Vue.config.productionTip = true
 
 // new Vue({
 //   router,
 //   store,
 //   render: h => h(App),
 // }).$mount('#app')
-store.dispatch('auth/attempt', localStorage.getItem('userData')).then(() => {
+// store.dispatch('auth/attempt', localStorage.getItem('userData')).then(() => {
+//   new Vue({
+//     router,
+//     store,
+//     render: h => h(App),
+//   }).$mount('#app')
+// })
+
+store.dispatch('auth/attempt', localStorage.getItem('token')).then(() => {
   new Vue({
     router,
     store,

@@ -51,6 +51,7 @@
 
         <!-- BOTON CREAR -->
         <btn-crear-modal
+          :modulo="nombre_permiso"
           accion="Registrar"
           texto="Apoyo"
           modal="modal-create"
@@ -109,6 +110,7 @@
             <col-acciones-btnes
               :modal="'modal-update-'+data.item.id"
               :data="data"
+              :modulo="nombre_permiso"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -165,6 +167,8 @@ import colNombreImg from '../../../../../../components/List/colNombreImg.vue'
 import apoyosCreate from './Apoyos/ApoyosCreate.vue'
 import apoyosUpdate from './Apoyos/ApoyosUpdate.vue'
 
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
 
 export default {
   components: {
@@ -198,8 +202,10 @@ export default {
     'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieII2B',
       cargando: false,
       spinner: false,
       items: [],
@@ -319,11 +325,11 @@ export default {
       removeApoyo: 'II_2_b_apoyos/removeApoyo',
     }),
     setTableList() {
-      this.fields.push(this.fieldAcciones)
-      // if (this.$can('update', 'reunionesCoordinaciones')
-      //   || this.$can('delete', 'reunionesCoordinaciones')
-      // ) {
-      // }
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
+      ) {
+        this.fields.push(this.fieldAcciones)
+      }
     },
     cargarApoyos(idCurso) {
       this.fetchApoyos(idCurso).then(() => {
@@ -331,16 +337,17 @@ export default {
       })
     },
     remove(apoyo) {
+      const html = this.formatHTMLSweetEliminar('el apoyo', '')
       this.$swal({
         title: 'Eliminar apoyo!',
-        text: 'Estás seguro que deseas eliminar el apoyo?',
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo!',
+        confirmButtonText: 'Sí, elimínalo!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          cancelButton: 'btn btn-outline-secondary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {

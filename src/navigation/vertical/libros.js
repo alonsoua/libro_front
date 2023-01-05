@@ -1,10 +1,10 @@
 export default [
   {
     title: 'Mis Libros',
-    icon: 'BookOpenIcon',
+    icon: 'BookIcon',
     route: 'mis-libros',
-    // resource: 'home',
-    // action: 'read',
+    resource: 'mislibros',
+    action: 'read',
     // children: [
     //   {
     //     title: 'Avances de Aprendizajes',

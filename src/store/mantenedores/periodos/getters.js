@@ -6,6 +6,6 @@ export function getPeriodos(state) {
   return state.periodos
 }
 
-export function getPeriodosActivos(state) {
-  return state.periodosActivos
+export function getPeriodosEstablecimiento(state) {
+  return state.periodosEstablecimiento
 }

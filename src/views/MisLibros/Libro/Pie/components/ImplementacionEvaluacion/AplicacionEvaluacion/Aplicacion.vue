@@ -29,11 +29,6 @@
           :filter.sync="filter"
         /> -->
 
-        <!-- CREAR y EDITAR -->
-        <aplicacion-create
-          submitTitle="Guardar Acción"
-          title="Registrar acción para la aplicación de estrategias diversificadas planificadas"
-        />
 
       </b-col>
       <b-col
@@ -45,15 +40,22 @@
         <div
           class="d-flex align-items-center justify-content-end"
         >
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            v-b-modal.modal-create
-            variant="primary"
-            class="btn-md"
-          >
-            Registrar Acción
-          </b-button>
+
+          <!-- CREAR y EDITAR -->
+          <aplicacion-create
+            :idCurso="getLibroSelected.id"
+          />
+
+          <!-- BOTON CREAR -->
+          <btn-crear-modal
+            accion="Registrar"
+            texto="Acción"
+            modal="modal-create"
+            :modulo="nombre_permiso"
+          />
+
         </div>
+
       </b-col>
 
       <b-col cols="12" style="min-height: 366px !important;">
@@ -62,8 +64,9 @@
           small
           hover
           noCollapse
-          class="mt-1"
           responsive
+          bordered
+          class="mt-1 rounded"
           :per-page="perPage"
           :current-page="currentPage"
           :items="items"
@@ -76,13 +79,6 @@
           :filter-included-fields="filterOn"
           @filtered="onFiltered"
         >
-
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <spinner />
-            </div>
-          </template>
-
           <!-- Cargando -->
           <template #table-busy>
             <div class="text-center text-danger my-2">
@@ -90,24 +86,18 @@
             </div>
           </template>
 
-          <!-- COLUMNA ESTADO -->
-          <template #cell(estado)="data">
-            <colEstado
-              :data="data"
-              modulo="reunionesCoordinaciones"
-              @processUpdateEstado="updateEstado"
-            />
-          </template>
 
           <!-- Column: Action -->
-          <template #cell(acciones)="data">
-            <colAccionesBtnes
-              modulo="reunionesCoordinaciones"
-              :modal="`modal-lg-${data.item.id}`"
+          <template #cell(actions)="data">
+            <aplicacion-update
+              :modal="'modal-update-'+data.item.id"
               :data="data"
-              @processGoToConfig="goToConfig"
-              @processGoToUpdate="goToUpdate"
-              @processGoToClone="goToClone"
+              :idCurso="getLibroSelected.id"
+            />
+            <colAccionesBtnes
+              :modal="'modal-update-'+data.item.id"
+              :data="data"
+              :modulo="nombre_permiso"
               @processRemove="remove(data.item)"
             />
           </template>
@@ -155,6 +145,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 // COMPONENTES RECICLADOS
 // import inputFiltro from '../../../../../../components/List/inputFiltro.vue'
+import btnCrearModal from '../../../../../../components/List/btnCrearModal.vue'
 import btnMostrar from '../../../../../../components/List/btnMostrar.vue'
 import colAccionesBtnes from '../../../../../../components/List/colAccionesBtnes.vue'
 import colPeriodo from '../../../../../../components/List/colPeriodo.vue'
@@ -164,6 +155,10 @@ import colNombreImg from '../../../../../../components/List/colNombreImg.vue'
 
 // COMPONENTES HIJOS
 import aplicacionCreate from './Aplicacion/AplicacionCreate.vue'
+import aplicacionUpdate from './Aplicacion/AplicacionUpdate.vue'
+
+// FORMATOS
+import { formatos } from '@core/mixins/ui/formatos'
 
 export default {
   components: {
@@ -180,6 +175,7 @@ export default {
     BAlert,
 
     // COMPONENTES RECICLADOS
+    btnCrearModal,
     colAccionesBtnes,
     // inputFiltro,
     btnMostrar,
@@ -190,36 +186,39 @@ export default {
 
     // COMPONENTES HIJOS
     aplicacionCreate,
+    aplicacionUpdate,
   },
   directives: {
     'b-modal': VBModal,
     Ripple,
   },
+  mixins: [formatos],
   data() {
     return {
+      nombre_permiso: 'pieIII1A',
       cargando: false,
       spinner: false,
       items: [
-        {
-          accionesDesarrolladas: 'DIVISIÓN DEL CURSO',
-          evaluacion: 'MEJOR APRECIACIÓN DE LAS NECESIDAD DE CADA UNO DE LOS Y LAS NIÑAS.',
-          periodo: '1er Semestre',
-        },
-        {
-          accionesDesarrolladas: 'USO DE PLATAFORMA ZOOM PARA ENTREGA DE CLASES VIRTUALES',
-          evaluacion: 'BUEN USO DE LA PLATAFORMA, SIMPLE Y AMIGABLE PARA APODERADOS, NIÑOS(AS) Y PROFESIONALES.',
-          periodo: '1er Semestre',
-        },
-        {
-          accionesDesarrolladas: 'USO DE ESTRATEGIAS LÚDICAS Y PARTICIPATIVAS PARA LOS Y LAS NIÑAS.',
-          evaluacion: 'ADQUISICIÓN DE HABILIDADES DEL NIVEL 1 DE LA PRIORIZACIÓN.',
-          periodo: '1er Semestre',
-        },
-        {
-          accionesDesarrolladas: 'ARTICULACIÓN Y TRABAJO COLABORATIVO ENTRE LOS PROFESIONALES.',
-          evaluacion: 'MEJOR APRECIACIÓN DE CADA ALUMNO(A) Y NECESIDADES DE APOYO.',
-          periodo: '1er Semestre',
-        },
+        // {
+        //   accionesDesarrolladas: 'DIVISIÓN DEL CURSO',
+        //   evaluacion: 'MEJOR APRECIACIÓN DE LAS NECESIDAD DE CADA UNO DE LOS Y LAS NIÑAS.',
+        //   periodo: '1er Semestre',
+        // },
+        // {
+        //   accionesDesarrolladas: 'USO DE PLATAFORMA ZOOM PARA ENTREGA DE CLASES VIRTUALES',
+        //   evaluacion: 'BUEN USO DE LA PLATAFORMA, SIMPLE Y AMIGABLE PARA APODERADOS, NIÑOS(AS) Y PROFESIONALES.',
+        //   periodo: '1er Semestre',
+        // },
+        // {
+        //   accionesDesarrolladas: 'USO DE ESTRATEGIAS LÚDICAS Y PARTICIPATIVAS PARA LOS Y LAS NIÑAS.',
+        //   evaluacion: 'ADQUISICIÓN DE HABILIDADES DEL NIVEL 1 DE LA PRIORIZACIÓN.',
+        //   periodo: '1er Semestre',
+        // },
+        // {
+        //   accionesDesarrolladas: 'ARTICULACIÓN Y TRABAJO COLABORATIVO ENTRE LOS PROFESIONALES.',
+        //   evaluacion: 'MEJOR APRECIACIÓN DE CADA ALUMNO(A) Y NECESIDADES DE APOYO.',
+        //   periodo: '1er Semestre',
+        // },
       ],
       selectedchk: [],
       chkTodo: null,
@@ -241,11 +240,21 @@ export default {
       },
       fields: [
         {
-          key: 'accionesDesarrolladas',
+          key: 'estrategia',
+          label: 'Periodo (estrategia)',
+          sortable: true,
+          thStyle: {
+            width: '200px !important',
+            display: 'table-cell',
+            'vertical-align': 'middle',
+          },
+        },
+        {
+          key: 'acciones',
           label: 'Acciones Desarrolladas',
           sortable: true,
           thStyle: {
-            width: '300px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
@@ -255,25 +264,27 @@ export default {
           label: 'Evaluación (resultados) de las estrategias aplicadas',
           sortable: true,
           thStyle: {
-            width: '300px !important',
+            width: '200px !important',
             display: 'table-cell',
             'vertical-align': 'middle',
           },
         },
-        {
-          key: 'periodo',
-          label: 'Periodo',
-          sortable: true,
-          thStyle: {
-            width: '100px !important',
-            display: 'table-cell',
-            'vertical-align': 'middle',
-          },
-        },
+        // {
+        //   key: 'fecha_creacion',
+        //   label: 'Fecha Creación',
+        //   sortable: true,
+        //   tdClass: 'text-center',
+        //   thStyle: {
+        //     width: '100px !important',
+        //     'text-align': 'center',
+        //     display: 'table-cell',
+        //     'vertical-align': 'middle',
+        //   },
+        // },
       ],
       fieldAcciones: [
         {
-          key: 'acciones',
+          key: 'actions',
           label: 'acciones',
           tdClass: 'text-center',
           thStyle: {
@@ -287,7 +298,10 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({ getReunionesCoordinacions: 'reunionesCoordinaciones/getReunionesCoordinacions' }),
+    ...mapGetters({
+      getAplicaciones: 'III_1_a_acciones_de_aplicacion/getAplicaciones',
+      getLibroSelected: 'libros/getLibroSelected',
+    }),
     // Vuexy
     sortOptions() {
       // Create an options list from our fields
@@ -300,55 +314,47 @@ export default {
     },
   },
   watch: {
-    getReunionesCoordinacions(val) {
+    getAplicaciones(val) {
       this.totalRows = val.length
-      // this.items = []
-      // this.items = this.getReunionesCoordinacions
+      this.items = []
+      this.items = this.getAplicaciones
+    },
+    getLibroSelected(val) {
+      this.cargarAplicaciones(this.getLibroSelected.id)
     },
     chkTodo() {
       this.chkAll()
     },
   },
   mounted() {
-    this.cargarReunionesCoordinacions()
+    this.cargarAplicaciones(this.getLibroSelected.id)
     this.setTableList()
   },
   methods: {
-    // ...mapActions({
-    //   fetchReunionesCoordinacions: 'reunionesCoordinaciones/fetchReunionesCoordinacions',
-    //   updateReunionesCoordinacionPeriodo: 'reunionesCoordinaciones/updateReunionesCoordinacionPeriodo',
-    //   removeReunionesCoordinacions: 'reunionesCoordinaciones/removeReunionesCoordinacions',
-    // }),
-    // ...mapMutations('reunionesCoordinaciones', ['setReunionesCoordinacion']),
+    ...mapActions({
+      fetchAplicaciones: 'III_1_a_acciones_de_aplicacion/fetchAplicaciones',
+      removeAplicacion: 'III_1_a_acciones_de_aplicacion/removeAplicacion',
+    }),
     setTableList() {
-      if (this.$can('update', 'reunionesCoordinaciones')
-        || this.$can('delete', 'reunionesCoordinaciones')
+      if (this.$can('update', this.nombre_permiso)
+        || this.$can('delete', this.nombre_permiso)
       ) {
         this.fields.push(this.fieldAcciones)
       }
     },
-    cargarReunionesCoordinacions() {
-      // this.fetchReunionesCoordinacions().then(() => {
-      //   this.cargando = false
-      // })
+    cargarAplicaciones(idCurso) {
+      this.fetchAplicaciones(idCurso).then(() => {
+        this.cargando = false
+      })
     },
-    addReunionesCoordinacion() {
-      // this.$router.replace({
-      //   name: 'reunionesCoordinaciones-create',
-      // })
-    },
-    updatePeriodo(reunionesCoordinacion) {
+    remove(aplicacion) {
+      const html = this.formatHTMLSweetEliminar('la acción', aplicacion.acciones)
       this.$swal({
-        title: 'Actualizar periodo!',
-        html: 'Estás seguro que deseas actualizar el periodo activo del'
-          + ' reunionesCoordinacion<br><span class="font-weight-bolder">'
-          + `${reunionesCoordinacion.nombre}</span>?`,
-        footer: '<div class="text-center text-primary">Al actualizar el'
-          + ' periodo activo, se creará un nuevo marco de trabajo para el'
-          + ' reunionesCoordinacion. No se puede devolver al periodo anterior.</div>',
+        title: 'Eliminar acción!',
+        html,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, actualízalo!',
+        confirmButtonText: 'Sí, elimínala!',
         cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-primary',
@@ -358,77 +364,22 @@ export default {
       }).then(result => {
         this.spinner = true
         if (result.value) {
-          // this.updateReunionesCoordinacionPeriodo(reunionesCoordinacion).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Periodo activo actualizado!',
-          //     html:
-          //       'El periodo activo del reunionesCoordinacion<br>'
-          //       + ' <span class="font-weight-bolder">'
-          //       + `${reunionesCoordinacion.nombre}</span>`
-          //       + '<br>ha sido actualizado con éxito!',
-          //     customClass: {
-          //       confirmButton: 'btn btn-primary',
-          //     },
-          //   })
-          //   this.spinner = false
-          //   this.cargarReunionesCoordinacions()
-          // })
-        } else {
-          this.spinner = false
-          this.cargarReunionesCoordinacions()
-        }
-      })
-    },
-    updateEstado() {
-      // console.log('update')
-    },
-    goToConfig(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-config',
-      })
-    },
-    goToUpdate(reunionesCoordinacion) {
-      this.setReunionesCoordinacion(reunionesCoordinacion)
-      this.$router.push({
-        name: 'reunionesCoordinaciones-update',
-      })
-    },
-    // goToClone(reunionesCoordinacion) {
-    //   this.setReunionesCoordinacion(reunionesCoordinacion)
-    //   this.$router.push({
-    //     name: 'reunionesCoordinaciones-clone',
-    //   })
-    // },
-    remove(reunionesCoordinacion) {
-      this.$swal({
-        title: 'Eliminar reunionesCoordinacion!',
-        text: `Estás seguro que deseas eliminar el reunionesCoordinacion
-          "${reunionesCoordinacion.nombre}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        this.spinner = true
-        if (result.value) {
-          // this.removeReunionesCoordinacions(reunionesCoordinacion.id).then(() => {
-          //   this.$swal({
-          //     icon: 'success',
-          //     title: 'Eliminada con éxito!',
-          //     text: `"${reunionesCoordinacion.nombre}" ha sido eliminada!`,
-          //     customClass: {
-          //       confirmButton: 'btn btn-success',
-          //     },
-          //   })
-          //   this.spinner = false
-          // })
+          const data = {
+            id: aplicacion.id,
+            id_curso: this.getLibroSelected.id,
+          }
+          this.removeAplicacion(data).then(() => {
+            this.$swal({
+              icon: 'success',
+              title: 'Eliminado con éxito!',
+              text: `La acción ha sido eliminada!`,
+              customClass: {
+                confirmButton: 'btn btn-success',
+              },
+            })
+
+            this.spinner = false
+          })
         } else {
           this.spinner = false
         }

@@ -6,7 +6,7 @@ export default [
     name: 'mis-libros',
     component: () => import('@/views/MisLibros/MisLibros.vue'),
     beforeEnter: (to, from, next) => {
-      console.log('store.getters[auth/authenticated] :', store.getters['auth/authenticated'])
+      console.log('MIS LIBROS GET authenticated:', store.getters['auth/authenticated'])
       if (!store.getters['auth/authenticated']) {
         console.log('1 :', 1)
         return next({
@@ -48,7 +48,7 @@ export default [
           to: '/mis-libros',
         },
         {
-          text: 'Libro Abierto',
+          text: 'Libro',
           active: true,
           configs: true,
           optionsConfigs: [

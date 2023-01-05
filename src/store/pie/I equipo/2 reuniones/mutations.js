@@ -2,7 +2,6 @@ export function setReuniones(state, reuniones) {
   state.reuniones = reuniones
 }
 
-
 export function setResponse(state, payload) {
   state.status = payload.status
   state.message = payload.message
